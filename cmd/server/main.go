@@ -78,7 +78,7 @@ func main() {
 	rep := repository.NewDB(db, log)
 	h := handler.New(rep, guard)
 
-	//// Регистрируем сервис
+	// Регистрируем сервис
 	pb.RegisterAPIServer(s, h)
 
 	// Включаем reflection — одна строка

@@ -53,6 +53,8 @@ func (h *Handler) RegisterUser(ctx context.Context, in *pb.UserRequest) (*pb.Use
 				"token", tokenString,
 			)
 			_ = grpc.SetHeader(ctx, md)
+			_ = grpc.SendHeader(ctx, md)
+			_ = grpc.SetTrailer(ctx, md)
 		}
 	}
 
@@ -91,6 +93,8 @@ func (h *Handler) LoginUser(ctx context.Context, in *pb.UserRequest) (*pb.UserRe
 				"token", tokenString,
 			)
 			_ = grpc.SetHeader(ctx, md)
+			_ = grpc.SendHeader(ctx, md)
+			_ = grpc.SetTrailer(ctx, md)
 		}
 	}
 

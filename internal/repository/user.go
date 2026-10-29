@@ -10,24 +10,7 @@ import (
 	"github.com/alexsey-popov/gkeep/internal/models"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jmoiron/sqlx"
 )
-
-// DB Репозиторий БД
-type DB struct {
-	Repository
-
-	db  *sqlx.DB
-	log *slog.Logger
-}
-
-// New Создание нового репозитория БД
-func NewDB(db *sqlx.DB, log *slog.Logger) *DB {
-	return &DB{
-		db:  db,
-		log: log,
-	}
-}
 
 // CreateUser создание нового пользователя
 func (rep DB) CreateUser(ctx context.Context, login, passHash string) (*models.User, error) {

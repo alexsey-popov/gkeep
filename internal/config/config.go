@@ -20,7 +20,7 @@ const (
 	// Токен проверки аутентификации
 	FlagJwtToken    = "j"
 	EnvJwtToken     = "JWT_TOKEN"
-	DefaultJwtToken = ""
+	DefaultJwtToken = "secret"
 )
 
 // Server - Структура конфигурации для сервера
