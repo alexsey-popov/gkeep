@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/config"
 	"github.com/alexsey-popov/gkeep/internal/handler"
 	pb "github.com/alexsey-popov/gkeep/internal/handler/proto"
@@ -57,11 +58,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Создаем gRPC сервер без зарегистрированной службы
-	s := grpc.NewServer()
+	// Создаём объект аутентификации
+	guard := auth.New(cfg.JwtToken)
+
+	// Создаем gRPC сервер с зарегистрированным интерцептором аутентификации
+	s := grpc.NewServer(
+		grpc.UnaryInterceptor(guard.UnaryServerInterceptor()),
+	)
 
 	rep := repository.NewDB(db, log)
-	h := handler.New(rep)
+	h := handler.New(rep, guard)
 
 	//// Регистрируем сервис
 	pb.RegisterUsersServer(s, h)

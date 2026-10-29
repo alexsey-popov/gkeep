@@ -7,6 +7,12 @@ build-server:
 build-server-and-listen: build-server
 	./cmd/server/server -d="host=localhost user=gkeep password=gkeep dbname=gkeep sslmode=disable"
 
+build-client:
+	go build -o="cmd/client/client" cmd/client/main.go
+
+build-client-and-listen: build-client
+	./cmd/client/client
+
 # Запускаем миграции
 migrate-up:
 	migrate -database $(DATABASE_DSN) -path ./migrations up

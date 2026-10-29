@@ -5,9 +5,12 @@ import (
 	"context"
 	"errors"
 
+	"github.com/alexsey-popov/gkeep/internal/auth"
 	pb "github.com/alexsey-popov/gkeep/internal/handler/proto"
 	"github.com/alexsey-popov/gkeep/internal/repository"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -15,24 +18,36 @@ import (
 type Handler struct {
 	pb.UnimplementedUsersServer
 
-	rep repository.Repository
+	rep   repository.Repository
+	guard *auth.Guard
 }
 
 // New создание нового обработчика
-func New(rep repository.Repository) *Handler {
-	return &Handler{
+func New(rep repository.Repository, guard ...*auth.Guard) *Handler {
+	h := &Handler{
 		rep: rep,
 	}
+	if len(guard) > 0 {
+		h.guard = guard[0]
+	}
+	return h
 }
 
 // RegisterUser регистрация пользователя
 func (h *Handler) RegisterUser(ctx context.Context, in *pb.UserRequest) (*pb.UserResponse, error) {
 	var response pb.UserResponse
 
-	user, err := h.rep.CreateUser(ctx, in.GetLogin(), in.GetPassword())
+	password := in.GetPassword()
+	if h.guard != nil {
+		hash, err := h.guard.GetHash(password)
+		if err != nil {
+			return &response, status.Error(codes.Internal, "ошибка при обработке пароля")
+		}
+		password = hash
+	}
+
+	user, err := h.rep.CreateUser(ctx, in.GetLogin(), password)
 	if err != nil {
-		// Если произошла ошибка валидации - пишем одно
-		//response.SetError(fmt.Sprintf(`Пользователь с email %s уже существует`, in.GetLogin()))
 		// Если произошла ошибка уникальности - пишем другое
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "Указанный логин занят")
@@ -50,6 +65,18 @@ func (h *Handler) RegisterUser(ctx context.Context, in *pb.UserRequest) (*pb.Use
 		}.Build(),
 	)
 
+	// Добавляем метаданные при успешной регистрации
+	if h.guard != nil {
+		tokenString, _, err := h.guard.NewUserToken(user.Id)
+		if err == nil && tokenString != "" {
+			md := metadata.Pairs(
+				"authorization", "Bearer "+tokenString,
+				"token", tokenString,
+			)
+			_ = grpc.SetHeader(ctx, md)
+		}
+	}
+
 	return &response, nil
 }
 
@@ -62,6 +89,12 @@ func (h *Handler) LoginUser(ctx context.Context, in *pb.UserRequest) (*pb.UserRe
 		return &response, status.Error(codes.Unknown, err.Error())
 	}
 
+	if h.guard != nil {
+		if !h.guard.CheckPassword(in.GetPassword(), user.Password) {
+			return &response, status.Error(codes.Unauthenticated, "неверный логин или пароль")
+		}
+	}
+
 	// А тут заполняем response данными пользователя
 	response.SetUser(
 		pb.User_builder{
@@ -69,6 +102,18 @@ func (h *Handler) LoginUser(ctx context.Context, in *pb.UserRequest) (*pb.UserRe
 			Login: &user.Login,
 		}.Build(),
 	)
+
+	// Добавляем метаданные при успешной аутентификации
+	if h.guard != nil {
+		tokenString, _, err := h.guard.NewUserToken(user.Id)
+		if err == nil && tokenString != "" {
+			md := metadata.Pairs(
+				"authorization", "Bearer "+tokenString,
+				"token", tokenString,
+			)
+			_ = grpc.SetHeader(ctx, md)
+		}
+	}
 
 	return &response, nil
 }
