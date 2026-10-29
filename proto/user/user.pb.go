@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        v7.36.2
-// source: internal/handler/proto/user.proto
+// source: proto/user/user.proto
 
-package proto
+package user
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -20,6 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Пользователь
 type User struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
@@ -32,7 +33,7 @@ type User struct {
 
 func (x *User) Reset() {
 	*x = User{}
-	mi := &file_internal_handler_proto_user_proto_msgTypes[0]
+	mi := &file_proto_user_user_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +45,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_handler_proto_user_proto_msgTypes[0]
+	mi := &file_proto_user_user_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -143,7 +144,7 @@ type UserRequest struct {
 
 func (x *UserRequest) Reset() {
 	*x = UserRequest{}
-	mi := &file_internal_handler_proto_user_proto_msgTypes[1]
+	mi := &file_proto_user_user_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -155,7 +156,7 @@ func (x *UserRequest) String() string {
 func (*UserRequest) ProtoMessage() {}
 
 func (x *UserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_handler_proto_user_proto_msgTypes[1]
+	mi := &file_proto_user_user_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -254,7 +255,7 @@ type UserResponse struct {
 
 func (x *UserResponse) Reset() {
 	*x = UserResponse{}
-	mi := &file_internal_handler_proto_user_proto_msgTypes[2]
+	mi := &file_proto_user_user_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -266,7 +267,7 @@ func (x *UserResponse) String() string {
 func (*UserResponse) ProtoMessage() {}
 
 func (x *UserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_handler_proto_user_proto_msgTypes[2]
+	mi := &file_proto_user_user_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -345,63 +346,57 @@ func (b0 UserResponse_builder) Build() *UserResponse {
 	return m0
 }
 
-var File_internal_handler_proto_user_proto protoreflect.FileDescriptor
+var File_proto_user_user_proto protoreflect.FileDescriptor
 
-const file_internal_handler_proto_user_proto_rawDesc = "" +
+const file_proto_user_user_proto_rawDesc = "" +
 	"\n" +
-	"!internal/handler/proto/user.proto\x12\x06models\",\n" +
+	"\x15proto/user/user.proto\x12\n" +
+	"proto.user\",\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05login\x18\x02 \x01(\tR\x05login\"?\n" +
 	"\vUserRequest\x12\x14\n" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"F\n" +
-	"\fUserResponse\x12 \n" +
-	"\x04user\x18\x01 \x01(\v2\f.models.UserR\x04user\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error2z\n" +
-	"\x05Users\x129\n" +
-	"\fRegisterUser\x12\x13.models.UserRequest\x1a\x14.models.UserResponse\x126\n" +
-	"\tLoginUser\x12\x13.models.UserRequest\x1a\x14.models.UserResponseB\x18Z\x16internal/handler/protob\beditionsp\xe8\a"
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"J\n" +
+	"\fUserResponse\x12$\n" +
+	"\x04user\x18\x01 \x01(\v2\x10.proto.user.UserR\x04user\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05errorB+Z)github.com/alexsey-popov/gkeep/proto/userb\beditionsp\xe8\a"
 
-var file_internal_handler_proto_user_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_internal_handler_proto_user_proto_goTypes = []any{
-	(*User)(nil),         // 0: models.User
-	(*UserRequest)(nil),  // 1: models.UserRequest
-	(*UserResponse)(nil), // 2: models.UserResponse
+var file_proto_user_user_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_proto_user_user_proto_goTypes = []any{
+	(*User)(nil),         // 0: proto.user.User
+	(*UserRequest)(nil),  // 1: proto.user.UserRequest
+	(*UserResponse)(nil), // 2: proto.user.UserResponse
 }
-var file_internal_handler_proto_user_proto_depIdxs = []int32{
-	0, // 0: models.UserResponse.user:type_name -> models.User
-	1, // 1: models.Users.RegisterUser:input_type -> models.UserRequest
-	1, // 2: models.Users.LoginUser:input_type -> models.UserRequest
-	2, // 3: models.Users.RegisterUser:output_type -> models.UserResponse
-	2, // 4: models.Users.LoginUser:output_type -> models.UserResponse
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
+var file_proto_user_user_proto_depIdxs = []int32{
+	0, // 0: proto.user.UserResponse.user:type_name -> proto.user.User
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_internal_handler_proto_user_proto_init() }
-func file_internal_handler_proto_user_proto_init() {
-	if File_internal_handler_proto_user_proto != nil {
+func init() { file_proto_user_user_proto_init() }
+func file_proto_user_user_proto_init() {
+	if File_proto_user_user_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_internal_handler_proto_user_proto_rawDesc), len(file_internal_handler_proto_user_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_user_user_proto_rawDesc), len(file_proto_user_user_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   3,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   0,
 		},
-		GoTypes:           file_internal_handler_proto_user_proto_goTypes,
-		DependencyIndexes: file_internal_handler_proto_user_proto_depIdxs,
-		MessageInfos:      file_internal_handler_proto_user_proto_msgTypes,
+		GoTypes:           file_proto_user_user_proto_goTypes,
+		DependencyIndexes: file_proto_user_user_proto_depIdxs,
+		MessageInfos:      file_proto_user_user_proto_msgTypes,
 	}.Build()
-	File_internal_handler_proto_user_proto = out.File
-	file_internal_handler_proto_user_proto_goTypes = nil
-	file_internal_handler_proto_user_proto_depIdxs = nil
+	File_proto_user_user_proto = out.File
+	file_proto_user_user_proto_goTypes = nil
+	file_proto_user_user_proto_depIdxs = nil
 }

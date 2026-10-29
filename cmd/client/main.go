@@ -7,9 +7,9 @@ import (
 
 	"github.com/alexsey-popov/gkeep/internal/client"
 	"github.com/alexsey-popov/gkeep/internal/config"
-	pb "github.com/alexsey-popov/gkeep/internal/handler/proto"
+	pb "github.com/alexsey-popov/gkeep/proto"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 )
 
 func main() {
@@ -18,9 +18,15 @@ func main() {
 		log.Fatalf("ошибка инициализации конфигурации клиента: %v", err)
 	}
 
+	// Получает TLS сертификат
+	tlsCreds, err := generateTLSCreds()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	conn, err := grpc.NewClient(
 		cfg.Address,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(tlsCreds),
 	)
 	if err != nil {
 		log.Fatalf("не удалось подключиться к серверу gRPC по адресу %s: %v", cfg.Address, err)
@@ -31,10 +37,17 @@ func main() {
 		}
 	}()
 
-	usersClient := pb.NewUsersClient(conn)
+	usersClient := pb.NewAPIClient(conn)
 	app := client.NewApp(usersClient)
 
 	if err := app.Run(); err != nil {
 		log.Fatalf("ошибка выполнения приложения: %v", err)
 	}
+}
+
+// generateTLSCreds получение TLS сертификата клиента
+func generateTLSCreds() (credentials.TransportCredentials, error) {
+	certFile := "ca.crt"
+
+	return credentials.NewClientTLSFromFile(certFile, "")
 }

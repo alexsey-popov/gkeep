@@ -10,13 +10,14 @@ import (
 	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/config"
 	"github.com/alexsey-popov/gkeep/internal/handler"
-	pb "github.com/alexsey-popov/gkeep/internal/handler/proto"
 	"github.com/alexsey-popov/gkeep/internal/repository"
 	"github.com/alexsey-popov/gkeep/migrations"
+	pb "github.com/alexsey-popov/gkeep/proto"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -61,8 +62,16 @@ func main() {
 	// Создаём объект аутентификации
 	guard := auth.New(cfg.JwtToken)
 
+	// Получаем TLS сертификат
+	tlsCreds, err := generateTLSCreds()
+	if err != nil {
+		slog.Error("ошибка получении TLS сертификата", "error", err)
+		os.Exit(1)
+	}
+
 	// Создаем gRPC сервер с зарегистрированным интерцептором аутентификации
 	s := grpc.NewServer(
+		grpc.Creds(tlsCreds),
 		grpc.UnaryInterceptor(guard.UnaryServerInterceptor()),
 	)
 
@@ -70,7 +79,7 @@ func main() {
 	h := handler.New(rep, guard)
 
 	//// Регистрируем сервис
-	pb.RegisterUsersServer(s, h)
+	pb.RegisterAPIServer(s, h)
 
 	// Включаем reflection — одна строка
 	reflection.Register(s)
@@ -82,4 +91,12 @@ func main() {
 		slog.Error("ошибка при работе сервера", "error", err)
 		os.Exit(1)
 	}
+}
+
+// generateTLSCreds получение TLS сертификата сервера
+func generateTLSCreds() (credentials.TransportCredentials, error) {
+	certFile := "server.crt"
+	keyFile := "server.key"
+
+	return credentials.NewServerTLSFromFile(certFile, keyFile)
 }

@@ -1,8 +1,8 @@
 edition = "2023";
 
-package models;
+package proto.user;
 
-option go_package = "internal/handler/proto";
+option go_package = "github.com/alexsey-popov/gkeep/proto/user";
 
 // Пользователь
 message User {
@@ -18,9 +18,4 @@ message UserRequest {
 message UserResponse {
   User user = 1;
   string error = 2;
-}
-
-service Users {
-  rpc RegisterUser(UserRequest) returns (UserResponse);
-  rpc LoginUser(UserRequest) returns (UserResponse);
 }

@@ -6,7 +6,8 @@ import (
 	"strings"
 	"time"
 
-	pb "github.com/alexsey-popov/gkeep/internal/handler/proto"
+	api "github.com/alexsey-popov/gkeep/proto"
+	pb "github.com/alexsey-popov/gkeep/proto/user"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"google.golang.org/grpc"
@@ -25,7 +26,7 @@ type Session struct {
 type App struct {
 	tviewApp    *tview.Application
 	pages       *tview.Pages
-	usersClient pb.UsersClient
+	usersClient api.APIClient
 	session     *Session
 
 	loginForm    *tview.Form
@@ -42,7 +43,7 @@ type App struct {
 }
 
 // NewApp создает новый экземпляр терминального приложения
-func NewApp(usersClient pb.UsersClient) *App {
+func NewApp(usersClient api.APIClient) *App {
 	a := &App{
 		tviewApp:    tview.NewApplication(),
 		pages:       tview.NewPages(),
