@@ -50,7 +50,6 @@ func (rep DB) PasswordList(ctx context.Context, userID, name, page string) ([]mo
 
 	if page != "" {
 		if pageNum, err := strconv.Atoi(page); err == nil && pageNum > 0 {
-			pageSize := 20
 			offset := (pageNum - 1) * pageSize
 			query += fmt.Sprintf(" LIMIT %d OFFSET %d", pageSize, offset)
 		}

@@ -24,6 +24,9 @@ type Repository interface {
 // ErrConflictUnique ошибка конфликта уникальности при выполнении команды
 var ErrConflictUnique = errors.New("ошибка уникальности по полю в БД")
 
+// pageSize размер пачки данных (для операции получение списка)
+var pageSize = 20
+
 // DB Репозиторий БД
 type DB struct {
 	Repository

@@ -10,7 +10,14 @@ import (
 	pb "github.com/alexsey-popov/gkeep/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+
+	_ "embed"
 )
+
+// Файл .version содержит версию, хеш и дату
+//
+//go:generate echo "$(git describe --tags) $(date +%s)" > .version
+var version string
 
 func main() {
 	cfg, err := config.NewClient(os.Args[1:], os.LookupEnv)

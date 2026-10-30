@@ -161,7 +161,7 @@ func (a *App) initRegisterForm() {
 		})
 
 	a.registerForm.SetBorder(true).
-		SetTitle(" [::b]Регистрация в gKeep[::-] ").
+		SetTitle(" [::b]Регистрация[::-] ").
 		SetTitleAlign(tview.AlignCenter).
 		SetBorderColor(tcell.ColorDarkCyan)
 }
@@ -200,7 +200,7 @@ func (a *App) initDataTypesView() {
 		AddItem(btnFlex, 3, 0, false)
 
 	a.dataTypesFlex.SetBorder(true).
-		SetTitle(" [::b]Типы данных gKeep[::-] ").
+		SetTitle(" [::b]Типы данных[::-] ").
 		SetTitleAlign(tview.AlignCenter).
 		SetBorderColor(tcell.ColorDarkGreen)
 
@@ -496,12 +496,12 @@ func (a *App) loadPasswords() {
 		return
 	}
 
-	for _, item := range a.currentPasswords {
+	for i, item := range a.currentPasswords {
 		itemCopy := item
 		a.passwordsList.AddItem(
 			itemCopy.GetName(),
-			fmt.Sprintf("Логин: %s", itemCopy.GetLogin()),
-			0,
+			"",
+			rune('0'+i+1),
 			func() {
 				a.openPasswordView(itemCopy)
 			},
