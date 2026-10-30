@@ -1,0 +1,21 @@
+edition = "2023";
+
+package proto.user;
+
+option go_package = "github.com/alexsey-popov/gkeep/proto/user";
+
+// Пользователь
+message User {
+  string id = 1;
+  string login = 2;
+}
+
+message UserRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message UserResponse {
+  User user = 1;
+  string error = 2;
+}

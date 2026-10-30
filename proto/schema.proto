@@ -1,0 +1,20 @@
+edition = "2023";
+
+package proto;
+
+option go_package = "github.com/alexsey-popov/gkeep/proto";
+
+import "proto/user/user.proto";
+import "proto/password/password.proto";
+
+service API {
+  // Пользователь
+  rpc RegisterUser(user.UserRequest) returns (user.UserResponse);
+  rpc LoginUser(user.UserRequest) returns (user.UserResponse);
+
+  // Пароли
+  rpc PasswordList(password.PasswordListRequest) returns (password.PasswordListResponse);
+  rpc PasswordCreate(password.PasswordCreateRequest) returns (password.PasswordResponse);
+  rpc PasswordUpdate(password.PasswordUpdateRequest) returns (password.PasswordResponse);
+  rpc PasswordDelete(password.PasswordDeleteRequest) returns (password.PasswordResponse);
+}
