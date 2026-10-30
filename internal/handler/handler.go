@@ -16,12 +16,11 @@ type Handler struct {
 }
 
 // New создание нового обработчика
-func New(rep repository.Repository, guard ...*auth.Guard) *Handler {
+func New(rep repository.Repository, guard *auth.Guard) *Handler {
 	h := &Handler{
-		rep: rep,
+		rep:   rep,
+		guard: guard,
 	}
-	if len(guard) > 0 {
-		h.guard = guard[0]
-	}
+
 	return h
 }

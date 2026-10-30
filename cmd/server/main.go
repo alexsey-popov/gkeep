@@ -1,24 +1,23 @@
-// Сервер
+// Сервер менеджера паролей, обрабатывает gRPC запросы
 package main
 
 import (
-	"fmt"
+	"context"
 	"log/slog"
-	"net"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/config"
 	"github.com/alexsey-popov/gkeep/internal/handler"
 	"github.com/alexsey-popov/gkeep/internal/repository"
+	"github.com/alexsey-popov/gkeep/internal/server"
 	"github.com/alexsey-popov/gkeep/migrations"
-	pb "github.com/alexsey-popov/gkeep/proto"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/reflection"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
@@ -28,9 +27,7 @@ func main() {
 	// Создаём объект конфига сервера
 	cfg, err := config.NewServer(os.Args[1:], os.LookupEnv)
 	if err != nil {
-		log.Error(err.Error(),
-			slog.Any("error", err),
-		)
+		log.Error("Ошибка при парсинге конфига", slog.Any("error", err))
 		os.Exit(1)
 	}
 
@@ -42,61 +39,57 @@ func main() {
 		)
 		os.Exit(1)
 	}
-	defer db.Close()
+	defer func() {
+		if err = db.Close(); err != nil {
+			log.Error("Ошибка при закрытии соединения с БД", slog.Any("error", err))
+		}
+	}()
 
 	// Выполняем миграции БД
 	if err = migrations.Up(db); err != nil {
-		log.Error(err.Error(),
+		log.Error("Ошибка при выполнении миграций",
 			slog.Any("error", err),
 		)
-		os.Exit(1)
-	}
-
-	// Нужно определить порт для сервера
-	listen, err := net.Listen("tcp", cfg.Address)
-	if err != nil {
-		slog.Error("ошибка при инициализации listener", "error", err)
 		os.Exit(1)
 	}
 
 	// Создаём объект аутентификации
 	guard := auth.New(cfg.JwtToken)
 
-	// Получаем TLS сертификат
-	tlsCreds, err := generateTLSCreds()
-	if err != nil {
-		slog.Error("ошибка получении TLS сертификата", "error", err)
-		os.Exit(1)
-	}
-
-	// Создаем gRPC сервер с зарегистрированным интерцептором аутентификации
-	s := grpc.NewServer(
-		grpc.Creds(tlsCreds),
-		grpc.UnaryInterceptor(guard.UnaryServerInterceptor()),
-	)
-
+	// Создаём репозиторий
 	rep := repository.NewDB(db, log)
+
+	// Создаём обработчик запросов
 	h := handler.New(rep, guard)
 
-	// Регистрируем сервис
-	pb.RegisterAPIServer(s, h)
-
-	// Включаем reflection — одна строка
-	reflection.Register(s)
-
-	//
-	fmt.Println("сервер gRPC начал работу")
-	// Получение запроса gRpc
-	if err := s.Serve(listen); err != nil {
-		slog.Error("ошибка при работе сервера", "error", err)
+	srv, err := server.New(log, cfg, db, guard)
+	if err != nil {
+		log.Error("Ошибка при создании сервера", slog.Any("error", err))
 		os.Exit(1)
 	}
-}
 
-// generateTLSCreds получение TLS сертификата сервера
-func generateTLSCreds() (credentials.TransportCredentials, error) {
-	certFile := "server.crt"
-	keyFile := "server.key"
+	// Контекст, который отменится при получении SIGINT или SIGTERM
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
-	return credentials.NewServerTLSFromFile(certFile, keyFile)
+	// Создаём errgroup
+	g, gCtx := errgroup.WithContext(ctx)
+
+	// Запускаем сервер в отдельной горутине
+	g.Go(func() error {
+		return srv.Serve(h)
+	})
+
+	// Graceful shutdown в отдельной горутине
+	g.Go(func() error {
+		// Дожидаемся сигнала и пытаемся выполнить Graceful shutdown
+		<-gCtx.Done()
+
+		return srv.Close()
+	})
+
+	// Ожидаем завершения всех горутин
+	if err = g.Wait(); err != nil {
+		log.Info("завершение с ошибкой", slog.Any("error", err))
+	}
 }

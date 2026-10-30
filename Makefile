@@ -3,11 +3,14 @@ SHELL := /bin/bash
 # Подключение к БД
 DATABASE_DSN="postgres://gkeep:gkeep@localhost:5432/gkeep?sslmode=disable"
 
+# Секретный JWT токен
+JWT="secret"
+
 build-server:
 	go build -o="cmd/server/server" cmd/server/main.go
 
 build-server-and-listen: build-server
-	./cmd/server/server -d="host=localhost user=gkeep password=gkeep dbname=gkeep sslmode=disable"
+	./cmd/server/server -db="host=localhost user=gkeep password=gkeep dbname=gkeep sslmode=disable" -jwt="${JWT}"
 
 build-client:
 	go build -o="cmd/client/client" cmd/client/main.go

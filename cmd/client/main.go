@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// Получает TLS сертификат
-	tlsCreds, err := generateTLSCreds()
+	tlsCreds, err := credentials.NewClientTLSFromFile(cfg.TLSCert, "")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,11 +43,4 @@ func main() {
 	if err := app.Run(); err != nil {
 		log.Fatalf("ошибка выполнения приложения: %v", err)
 	}
-}
-
-// generateTLSCreds получение TLS сертификата клиента
-func generateTLSCreds() (credentials.TransportCredentials, error) {
-	certFile := "ca.crt"
-
-	return credentials.NewClientTLSFromFile(certFile, "")
 }

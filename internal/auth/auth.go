@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -75,23 +74,6 @@ func (g Guard) JWTAuth() *jwtauth.JWTAuth {
 	return g.jwt
 }
 
-// GuestMiddleware Доступ только для неаутентифицированных пользователей
-func (g Guard) GuestMiddleware(h http.Handler) http.Handler {
-
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Извлекаем токен из контекста запроса
-		_, claims, err := jwtauth.FromContext(r.Context())
-
-		// Если ошибки нет и claims существуют - значит пользователь уже авторизован и нужно вывести ошибку
-		if err == nil && claims != nil {
-			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-			return
-		}
-
-		h.ServeHTTP(w, r)
-	})
-}
-
 // ExtractTokenFromMetadata извлекает токен авторизации из входящих метаданных gRPC
 func ExtractTokenFromMetadata(ctx context.Context) string {
 	md, ok := metadata.FromIncomingContext(ctx)
@@ -142,19 +124,19 @@ func (g Guard) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		tokenString := ExtractTokenFromMetadata(ctx)
 
 		if isGuestMethod(info.FullMethod) {
-			// Обратная проверка: пользователь должен быть не аутентифицирован
+			// Если эндпоинт предназначен для неаутентифицированного пользователя - проверяем отсутствие аутентификации
 			if tokenString != "" {
 				token, err := g.jwt.Decode(tokenString)
 				if err == nil && token != nil {
-					return nil, status.Error(codes.PermissionDenied, "пользователь уже аутентифицирован")
+					return nil, status.Error(codes.PermissionDenied, "пользователь уже аутентифицирован в системе")
 				}
 			}
 			return handler(ctx, req)
 		}
 
-		// Для защищенных методов пользователь должен быть аутентифицирован
+		// Проверяем наличие токена
 		if tokenString == "" {
-			return nil, status.Error(codes.Unauthenticated, "отсутствует токен аутентификации в metadata")
+			return nil, status.Error(codes.Unauthenticated, "отсутствует токен аутентификации")
 		}
 
 		token, err := g.jwt.Decode(tokenString)
@@ -191,11 +173,11 @@ func UserIDFromContext(ctx context.Context) (string, error) {
 		return "", err
 	}
 	if claims == nil {
-		return "", errors.New("claims not found in context")
+		return "", errors.New("не удалось извлечь пользователя из контекста")
 	}
 	userID, ok := claims["user_id"].(string)
 	if !ok {
-		return "", errors.New("user_id not found in claims")
+		return "", errors.New("user_id не найден в claims")
 	}
 	return userID, nil
 }

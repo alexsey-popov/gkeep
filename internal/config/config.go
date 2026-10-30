@@ -8,19 +8,34 @@ import (
 
 const (
 	// Адрес сервера (gRPC)
-	FlagAddress    = "a"
+	FlagAddress    = "addr"
 	EnvAddress     = "ADDRESS"
 	DefaultAddress = "localhost:50051"
 
 	// Адрес подключения к базе данных
-	FlagDatabaseURI    = "d"
+	FlagDatabaseURI    = "db"
 	EnvDatabaseURI     = "DATABASE_URI"
 	DefaultDatabaseURI = ""
 
 	// Токен проверки аутентификации
-	FlagJwtToken    = "j"
+	FlagJwtToken    = "jwt"
 	EnvJwtToken     = "JWT_TOKEN"
-	DefaultJwtToken = "secret"
+	DefaultJwtToken = ""
+
+	// TLS сертификат сервера
+	FlagServerTLSCert    = "srv-tls-cert"
+	EnvServerTLSCert     = "SERVER_TLS_CERT"
+	DefaultServerTLSCert = "server.crt"
+
+	// TLS ключ сервера
+	FlagServerTLSKey    = "srv-tls-key"
+	EnvServerTLSKey     = "SERVER_TLS_KEY"
+	DefaultServerTLSKey = "server.key"
+
+	// TLS сертификат сервера
+	FlagClientTLSCert    = "client-tls-cert"
+	EnvClientTLSCert     = "CLIENT_TLS_CERT"
+	DefaultClientTLSCert = "ca.crt"
 )
 
 // Server - Структура конфигурации для сервера
@@ -28,11 +43,14 @@ type Server struct {
 	Address     string
 	DatabaseURI string
 	JwtToken    string
+	TLSCert     string
+	TLSKey      string
 }
 
 // Client - Структура конфигурации для клиента
 type Client struct {
 	Address string
+	TLSCert string
 }
 
 // EnvLookupFunc заглушка для `os.LookupEnv`
@@ -57,11 +75,15 @@ func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
 	userAddress := getEnvString(lookupFunc, EnvAddress, DefaultAddress)
 	databaseURI := getEnvString(lookupFunc, EnvDatabaseURI, DefaultDatabaseURI)
 	jwtToken := getEnvString(lookupFunc, EnvJwtToken, DefaultJwtToken)
+	certTLS := getEnvString(lookupFunc, EnvServerTLSCert, DefaultServerTLSCert)
+	keyTLS := getEnvString(lookupFunc, EnvServerTLSKey, DefaultServerTLSKey)
 
 	// Получаем данные из флагов
 	fs.StringVar(&cfg.Address, FlagAddress, userAddress, "Адрес системы программы лояльности")
 	fs.StringVar(&cfg.DatabaseURI, FlagDatabaseURI, databaseURI, "Адрес подключения к базе данных")
 	fs.StringVar(&cfg.JwtToken, FlagJwtToken, jwtToken, "Токен проверки аутентификации пользователей")
+	fs.StringVar(&cfg.TLSCert, FlagServerTLSCert, certTLS, "TLS сертификат для сервера")
+	fs.StringVar(&cfg.TLSKey, FlagServerTLSKey, keyTLS, "TLS ключ для сервера")
 
 	if err := fs.Parse(args); err != nil {
 		return nil, fmt.Errorf("ошибка при парсинге флагов: %w", err)
@@ -78,9 +100,11 @@ func NewClient(args []string, lookupFunc EnvLookupFunc) (*Client, error) {
 
 	// Получаем данные из env или их дефолтные значения
 	userAddress := getEnvString(lookupFunc, EnvAddress, DefaultAddress)
+	certTLS := getEnvString(lookupFunc, EnvClientTLSCert, DefaultClientTLSCert)
 
 	// Получаем данные из флагов
 	fs.StringVar(&cfg.Address, FlagAddress, userAddress, "Адрес системы программы лояльности")
+	fs.StringVar(&cfg.TLSCert, FlagClientTLSCert, certTLS, "TLS сертификат для клиента")
 
 	if err := fs.Parse(args); err != nil {
 		return nil, fmt.Errorf("ошибка при парсинге флагов: %w", err)

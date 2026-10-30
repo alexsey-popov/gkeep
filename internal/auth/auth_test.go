@@ -2,12 +2,9 @@ package auth
 
 import (
 	"context"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
 
-	"github.com/go-chi/jwtauth/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -56,103 +53,6 @@ func TestCheckPassword(t *testing.T) {
 
 	assert.True(t, guard.CheckPassword(password, hash))
 	assert.False(t, guard.CheckPassword("wrongpassword", hash))
-}
-
-// TestGuestMiddleware Проверка посредника GuestMiddleware (только для неаутентифицированных пользователей)
-func TestGuestMiddleware(t *testing.T) {
-	secret := "secret"
-	guard := New(secret)
-
-	// Middleware должен работать в связке с Verifier
-	h := jwtauth.Verifier(guard.jwt)(guard.GuestMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})))
-
-	t.Run("positive - GuestMiddleware для неавторизированного пользователя", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		rec := httptest.NewRecorder()
-		h.ServeHTTP(rec, req)
-		assert.Equal(t, http.StatusOK, rec.Code)
-	})
-
-	t.Run("negative - GuestMiddleware для авторизированного пользователя", func(t *testing.T) {
-		tokenString, _, _ := guard.NewUserToken("user123")
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Authorization", "Bearer "+tokenString)
-
-		rec := httptest.NewRecorder()
-		h.ServeHTTP(rec, req)
-		assert.Equal(t, http.StatusForbidden, rec.Code)
-	})
-}
-
-// TestAuthGroup Проверка группы роутов только для аутентифицированных пользователей
-func TestAuthGroup(t *testing.T) {
-	secret := "secret"
-	guard := New(secret)
-	userId := "user123"
-
-	mux := http.NewServeMux()
-	handler := jwtauth.Verifier(guard.jwt)(jwtauth.Authenticator(guard.jwt)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, claims, _ := jwtauth.FromContext(r.Context())
-		assert.Equal(t, userId, claims["user_id"])
-		w.WriteHeader(http.StatusOK)
-	})))
-	mux.Handle("GET /protected", handler)
-
-	ts := httptest.NewServer(mux)
-	defer ts.Close()
-
-	t.Run("positive - AuthGroup для авторизированного пользователя", func(t *testing.T) {
-		tokenString, _, _ := guard.NewUserToken(userId)
-		req, _ := http.NewRequest(http.MethodGet, ts.URL+"/protected", nil)
-		req.Header.Set("Authorization", "Bearer "+tokenString)
-
-		resp, err := http.DefaultClient.Do(req)
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-	})
-
-	t.Run("negative - AuthGroup для неавторизированного пользователя", func(t *testing.T) {
-		resp, err := http.Get(ts.URL + "/protected")
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
-	})
-}
-
-// TestGuestGroup Проверка группы роутов только для неаутентифицированных пользователей
-func TestGuestGroup(t *testing.T) {
-	secret := "secret"
-	guard := New(secret)
-
-	mux := http.NewServeMux()
-	handler := jwtauth.Verifier(guard.jwt)(guard.GuestMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})))
-	mux.Handle("GET /guest-only", handler)
-
-	ts := httptest.NewServer(mux)
-	defer ts.Close()
-
-	t.Run("positive - GuestGroup для неавторизированного пользователя", func(t *testing.T) {
-		resp, err := http.Get(ts.URL + "/guest-only")
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-	})
-
-	t.Run("negative - GuestGroup для авторизированного пользователя", func(t *testing.T) {
-		tokenString, _, _ := guard.NewUserToken("user123")
-		req, _ := http.NewRequest(http.MethodGet, ts.URL+"/guest-only", nil)
-		req.Header.Set("Authorization", "Bearer "+tokenString)
-
-		resp, err := http.DefaultClient.Do(req)
-		require.NoError(t, err)
-		defer resp.Body.Close()
-		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
-	})
 }
 
 // TestUnaryServerInterceptor Проверка gRPC unary интерцептора аутентификации
