@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,6 +30,7 @@ type App struct {
 	pages       *tview.Pages
 	usersClient api.APIClient
 	session     *Session
+	version     string
 
 	// Экраны приложения
 	loginForm          *tview.Form
@@ -62,17 +64,29 @@ type App struct {
 	editPassLoginField *tview.InputField
 	editPassValField   *tview.InputField
 
+	// Кнопки пагинации
+	prevPageBtn *tview.Button
+	nextPageBtn *tview.Button
+
 	// Текущее состояние данных
 	currentPasswords []*pbPassword.Password
 	currentPassword  *pbPassword.Password
+	currentPage      int
 }
 
 // NewApp создает новый экземпляр терминального приложения
-func NewApp(usersClient api.APIClient) *App {
+func NewApp(usersClient api.APIClient, version ...string) *App {
+	ver := ""
+	if len(version) > 0 {
+		ver = strings.TrimSpace(version[0])
+	}
+
 	a := &App{
 		tviewApp:         tview.NewApplication(),
 		pages:            tview.NewPages(),
 		usersClient:      usersClient,
+		version:          ver,
+		currentPage:      1,
 		currentPasswords: make([]*pbPassword.Password, 0),
 	}
 
@@ -126,7 +140,7 @@ func (a *App) initLoginForm() {
 		})
 
 	a.loginForm.SetBorder(true).
-		SetTitle(" [::b]Вход в gKeep[::-] ").
+		SetTitle(a.getLoginTitle()).
 		SetTitleAlign(tview.AlignCenter).
 		SetBorderColor(tcell.ColorCadetBlue)
 }
@@ -161,7 +175,7 @@ func (a *App) initRegisterForm() {
 		})
 
 	a.registerForm.SetBorder(true).
-		SetTitle(" [::b]Регистрация[::-] ").
+		SetTitle(a.getRegisterTitle()).
 		SetTitleAlign(tview.AlignCenter).
 		SetBorderColor(tcell.ColorDarkCyan)
 }
@@ -221,11 +235,17 @@ func (a *App) initPasswordsListView() {
 			}
 		})
 
-	addBtn := tview.NewButton("Добавить пароль").
+	addBtn := tview.NewButton("Добавить").
 		SetSelectedFunc(func() {
 			a.clearCreatePasswordFields()
 			a.pages.SwitchToPage("password_create")
 		})
+
+	a.prevPageBtn = tview.NewButton("< Пред.").
+		SetSelectedFunc(a.prevPage)
+
+	a.nextPageBtn = tview.NewButton("След. >").
+		SetSelectedFunc(a.nextPage)
 
 	refreshBtn := tview.NewButton("Обновить").
 		SetSelectedFunc(func() {
@@ -239,13 +259,17 @@ func (a *App) initPasswordsListView() {
 
 	btnFlex := tview.NewFlex().
 		SetDirection(tview.FlexColumn).
-		AddItem(openBtn, 12, 1, true).
+		AddItem(openBtn, 10, 1, true).
 		AddItem(nil, 1, 0, false).
-		AddItem(addBtn, 18, 1, false).
+		AddItem(addBtn, 11, 1, false).
 		AddItem(nil, 1, 0, false).
-		AddItem(refreshBtn, 12, 1, false).
+		AddItem(a.prevPageBtn, 10, 1, false).
 		AddItem(nil, 1, 0, false).
-		AddItem(backBtn, 10, 1, false)
+		AddItem(a.nextPageBtn, 10, 1, false).
+		AddItem(nil, 1, 0, false).
+		AddItem(refreshBtn, 11, 1, false).
+		AddItem(nil, 1, 0, false).
+		AddItem(backBtn, 8, 1, false)
 
 	a.passwordsFlex = tview.NewFlex().
 		SetDirection(tview.FlexRow).
@@ -253,7 +277,7 @@ func (a *App) initPasswordsListView() {
 		AddItem(btnFlex, 3, 0, false)
 
 	a.passwordsFlex.SetBorder(true).
-		SetTitle(" [::b]Список паролей[::-] ").
+		SetTitle(a.getPasswordsListTitle()).
 		SetTitleAlign(tview.AlignCenter).
 		SetBorderColor(tcell.ColorCadetBlue)
 }
@@ -458,6 +482,7 @@ func (a *App) handleLogout() {
 	a.session = nil
 	a.currentPasswords = nil
 	a.currentPassword = nil
+	a.currentPage = 1
 	a.clearLoginFields()
 	a.clearRegisterFields()
 	a.clearCreatePasswordFields()
@@ -466,6 +491,7 @@ func (a *App) handleLogout() {
 
 // openPasswordList загружает список паролей и переключает на экран списка
 func (a *App) openPasswordList() {
+	a.currentPage = 1
 	a.loadPasswords()
 	a.pages.SwitchToPage("password_list")
 }
@@ -477,10 +503,16 @@ func (a *App) loadPasswords() {
 		return
 	}
 
+	if a.currentPage < 1 {
+		a.currentPage = 1
+	}
+
 	ctx, cancel := a.authCtx(context.Background())
 	defer cancel()
 
 	req := &pbPassword.PasswordListRequest{}
+	req.SetPage(strconv.Itoa(a.currentPage))
+
 	resp, err := a.usersClient.PasswordList(ctx, req)
 	if err != nil {
 		st := status.Convert(err)
@@ -490,18 +522,29 @@ func (a *App) loadPasswords() {
 
 	a.currentPasswords = resp.GetPassword()
 	a.passwordsList.Clear()
+	a.passwordsFlex.SetTitle(a.getPasswordsListTitle())
 
 	if len(a.currentPasswords) == 0 {
-		a.passwordsList.AddItem("[gray]Нет сохраненных паролей[-]", "Нажмите кнопку 'Добавить пароль' для создания записи", 0, nil)
+		if a.currentPage > 1 {
+			a.passwordsList.AddItem("[gray]На этой странице нет записей[-]", "Нажмите кнопку '< Пред.' для возврата", 0, nil)
+		} else {
+			a.passwordsList.AddItem("[gray]Нет сохраненных паролей[-]", "Нажмите кнопку 'Добавить' для создания записи", 0, nil)
+		}
 		return
 	}
 
 	for i, item := range a.currentPasswords {
 		itemCopy := item
+		shortcut := rune(0)
+		if i < 9 {
+			shortcut = rune('1' + i)
+		} else if i == 9 {
+			shortcut = '0'
+		}
 		a.passwordsList.AddItem(
 			itemCopy.GetName(),
 			"",
-			rune('0'+i+1),
+			shortcut,
 			func() {
 				a.openPasswordView(itemCopy)
 			},
@@ -573,6 +616,7 @@ func (a *App) handlePasswordCreate() {
 	}
 
 	a.clearCreatePasswordFields()
+	a.currentPage = 1
 	a.loadPasswords()
 	a.pages.SwitchToPage("password_list")
 }
@@ -664,6 +708,10 @@ func (a *App) handlePasswordDelete() {
 
 	a.currentPassword = nil
 	a.loadPasswords()
+	if len(a.currentPasswords) == 0 && a.currentPage > 1 {
+		a.currentPage--
+		a.loadPasswords()
+	}
 	a.pages.SwitchToPage("password_list")
 }
 
@@ -685,13 +733,77 @@ func (a *App) updateUserInfo() {
 		return
 	}
 
+	versionStr := ""
+	if a.version != "" {
+		versionStr = fmt.Sprintf("   [gray]Версия:[white] %s[-]", a.version)
+	}
+
 	info := fmt.Sprintf(
-		"[green]Пользователь:[white] %s   [gray](ID: %s)[-]\n[gray]Выберите тип данных для работы с хранилищем:[-]",
+		"[green]Пользователь:[white] %s   [gray][-]%s\n[gray]Выберите тип данных для работы с хранилищем:[-]",
 		a.session.Login,
-		a.session.UserID,
+		versionStr,
 	)
 
 	a.dataTypesUserText.SetText(info)
+}
+
+// GetVersion возвращает установленную версию приложения
+func (a *App) GetVersion() string {
+	return a.version
+}
+
+// SetVersion обновляет версию приложения и заголовок формы входа
+func (a *App) SetVersion(v string) {
+	a.version = strings.TrimSpace(v)
+	a.loginForm.SetTitle(a.getLoginTitle())
+	a.registerForm.SetTitle(a.getRegisterTitle())
+	if a.session != nil {
+		a.updateUserInfo()
+	}
+}
+
+// prevPage переключает на предыдущую страницу списка паролей
+func (a *App) prevPage() {
+	if a.currentPage > 1 {
+		a.currentPage--
+		a.loadPasswords()
+	}
+}
+
+// nextPage переключает на следующую страницу списка паролей
+func (a *App) nextPage() {
+	if len(a.currentPasswords) > 0 {
+		a.currentPage++
+		a.loadPasswords()
+	}
+}
+
+// GetCurrentPage возвращает номер текущей страницы
+func (a *App) GetCurrentPage() int {
+	return a.currentPage
+}
+
+// SetCurrentPage устанавливает номер текущей страницы
+func (a *App) SetCurrentPage(p int) {
+	if p < 1 {
+		p = 1
+	}
+	a.currentPage = p
+}
+
+func (a *App) getLoginTitle() string {
+	return fmt.Sprintf(" [::b]Вход в gKeep[::-] [gray](%s)[-] ", a.version)
+}
+
+func (a *App) getRegisterTitle() string {
+	return fmt.Sprintf(" [::b]Регистрация[::-] [gray](%s)[-] ", a.version)
+}
+
+func (a *App) getPasswordsListTitle() string {
+	if a.currentPage <= 1 {
+		return " [::b]Список паролей (Стр. 1)[::-] "
+	}
+	return fmt.Sprintf(" [::b]Список паролей (Стр. %d)[::-] ", a.currentPage)
 }
 
 // showErrorModal показывает модальное окно с сообщением об ошибке

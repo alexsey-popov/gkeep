@@ -24,6 +24,8 @@ func TestNewServer(t *testing.T) {
 				Address:     DefaultAddress,
 				DatabaseURI: DefaultDatabaseURI,
 				JwtToken:    DefaultJwtToken,
+				TLSCert:     DefaultServerTLSCert,
+				TLSKey:      DefaultServerTLSKey,
 			},
 		},
 		{
@@ -39,6 +41,8 @@ func TestNewServer(t *testing.T) {
 				Address:     "localhost:1111",
 				DatabaseURI: "database",
 				JwtToken:    "env token",
+				TLSCert:     DefaultServerTLSCert,
+				TLSKey:      DefaultServerTLSKey,
 			},
 		},
 		{
@@ -54,6 +58,8 @@ func TestNewServer(t *testing.T) {
 				Address:     "localhost:3333",
 				DatabaseURI: "different_database",
 				JwtToken:    "flag token",
+				TLSCert:     DefaultServerTLSCert,
+				TLSKey:      DefaultServerTLSKey,
 			},
 		},
 		{
@@ -73,6 +79,8 @@ func TestNewServer(t *testing.T) {
 				Address:     "localhost:3333",
 				DatabaseURI: "different_database",
 				JwtToken:    "flag token",
+				TLSCert:     DefaultServerTLSCert,
+				TLSKey:      DefaultServerTLSKey,
 			},
 		},
 		{
@@ -120,6 +128,7 @@ func TestNewClient(t *testing.T) {
 			success: true,
 			want: &Client{
 				Address: DefaultAddress,
+				TLSCert: DefaultClientTLSCert,
 			},
 		},
 		{
@@ -129,6 +138,7 @@ func TestNewClient(t *testing.T) {
 			success: true,
 			want: &Client{
 				Address: "localhost:9090",
+				TLSCert: DefaultClientTLSCert,
 			},
 		},
 	}

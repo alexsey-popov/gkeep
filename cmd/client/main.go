@@ -10,14 +10,12 @@ import (
 	pb "github.com/alexsey-popov/gkeep/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-
-	_ "embed"
 )
 
-// Файл .version содержит версию, хеш и дату
-//
-//go:generate echo "$(git describe --tags) $(date +%s)" > .version
-var version string
+var (
+	Version   = "0.0.0"
+	BuildDate = "0000-00-00"
+)
 
 func main() {
 	cfg, err := config.NewClient(os.Args[1:], os.LookupEnv)
@@ -45,7 +43,7 @@ func main() {
 	}()
 
 	usersClient := pb.NewAPIClient(conn)
-	app := client.NewApp(usersClient)
+	app := client.NewApp(usersClient, fmt.Sprintf("%s %s", Version, BuildDate))
 
 	if err := app.Run(); err != nil {
 		log.Fatalf("ошибка выполнения приложения: %v", err)

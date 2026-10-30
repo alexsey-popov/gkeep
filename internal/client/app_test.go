@@ -388,3 +388,110 @@ func TestExtractTokenFromHeader(t *testing.T) {
 		assert.Equal(t, "", extractTokenFromHeader(md))
 	})
 }
+
+func TestApp_Version(t *testing.T) {
+	mockClient := &mockUsersClient{}
+
+	t.Run("default empty version", func(t *testing.T) {
+		app := NewApp(mockClient)
+		assert.Equal(t, "", app.GetVersion())
+	})
+
+	t.Run("version provided in NewApp", func(t *testing.T) {
+		app := NewApp(mockClient, "v1.2.3")
+		assert.Equal(t, "v1.2.3", app.GetVersion())
+	})
+
+	t.Run("set version dynamically updates info", func(t *testing.T) {
+		app := NewApp(mockClient)
+		app.session = &Session{Token: "test-token", UserID: "uid-1", Login: "user1"}
+		app.updateUserInfo()
+		assert.NotContains(t, app.dataTypesUserText.GetText(true), "Версия:")
+
+		app.SetVersion("v2.0.0")
+		assert.Equal(t, "v2.0.0", app.GetVersion())
+		assert.Contains(t, app.dataTypesUserText.GetText(true), "Версия: v2.0.0")
+	})
+}
+
+func TestApp_PasswordPagination(t *testing.T) {
+	requestedPages := make([]string, 0)
+	mockClient := &mockUsersClient{
+		passwordListFunc: func(ctx context.Context, in *pbPassword.PasswordListRequest, opts ...grpc.CallOption) (*pbPassword.PasswordListResponse, error) {
+			page := in.GetPage()
+			requestedPages = append(requestedPages, page)
+
+			resp := &pbPassword.PasswordListResponse{}
+			if page == "1" || page == "" {
+				pName := "Page1_Item"
+				resp.SetPassword([]*pbPassword.Password{
+					pbPassword.Password_builder{Name: &pName}.Build(),
+				})
+			} else if page == "2" {
+				pName := "Page2_Item"
+				resp.SetPassword([]*pbPassword.Password{
+					pbPassword.Password_builder{Name: &pName}.Build(),
+				})
+			} else {
+				resp.SetPassword([]*pbPassword.Password{})
+			}
+			return resp, nil
+		},
+	}
+
+	app := NewApp(mockClient)
+	app.session = &Session{Token: "test-token", UserID: "uid-1", Login: "user1"}
+
+	t.Run("initial load requests page 1", func(t *testing.T) {
+		requestedPages = nil
+		app.loadPasswords()
+		assert.Equal(t, 1, app.GetCurrentPage())
+		require.Len(t, requestedPages, 1)
+		assert.Equal(t, "1", requestedPages[0])
+		assert.Len(t, app.currentPasswords, 1)
+		assert.Equal(t, "Page1_Item", app.currentPasswords[0].GetName())
+	})
+
+	t.Run("prev button on page 1 does not decrement", func(t *testing.T) {
+		requestedPages = nil
+		app.prevPage()
+		assert.Equal(t, 1, app.GetCurrentPage())
+		assert.Empty(t, requestedPages)
+	})
+
+	t.Run("next button increments page and loads page 2", func(t *testing.T) {
+		requestedPages = nil
+		app.nextPage()
+		assert.Equal(t, 2, app.GetCurrentPage())
+		require.Len(t, requestedPages, 1)
+		assert.Equal(t, "2", requestedPages[0])
+		assert.Len(t, app.currentPasswords, 1)
+		assert.Equal(t, "Page2_Item", app.currentPasswords[0].GetName())
+	})
+
+	t.Run("prev button on page 2 decrements to page 1", func(t *testing.T) {
+		requestedPages = nil
+		app.prevPage()
+		assert.Equal(t, 1, app.GetCurrentPage())
+		require.Len(t, requestedPages, 1)
+		assert.Equal(t, "1", requestedPages[0])
+		assert.Len(t, app.currentPasswords, 1)
+		assert.Equal(t, "Page1_Item", app.currentPasswords[0].GetName())
+	})
+
+	t.Run("openPasswordList resets to page 1", func(t *testing.T) {
+		app.SetCurrentPage(5)
+		requestedPages = nil
+		app.openPasswordList()
+		assert.Equal(t, 1, app.GetCurrentPage())
+		require.Len(t, requestedPages, 1)
+		assert.Equal(t, "1", requestedPages[0])
+	})
+
+	t.Run("empty page on page > 1 shows pagination hint", func(t *testing.T) {
+		app.SetCurrentPage(3)
+		app.loadPasswords()
+		assert.Empty(t, app.currentPasswords)
+		assert.Equal(t, 3, app.GetCurrentPage())
+	})
+}

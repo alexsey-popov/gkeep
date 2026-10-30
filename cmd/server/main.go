@@ -20,9 +20,16 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+const (
+	Version   = "0.0.1"
+	BuildDate = "2026-10-30"
+)
+
 func main() {
 	// Создаём логгер
 	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
+
+	log.Info("gKeep", Version, BuildDate)
 
 	// Создаём объект конфига сервера
 	cfg, err := config.NewServer(os.Args[1:], os.LookupEnv)
