@@ -60,6 +60,7 @@ type App struct {
 	createPassValField   *tview.InputField
 
 	// Поля редактирования пароля
+	editPassIDField    *tview.InputField
 	editPassNameField  *tview.InputField
 	editPassLoginField *tview.InputField
 	editPassValField   *tview.InputField
@@ -361,10 +362,14 @@ func (a *App) initPasswordCreateForm() {
 
 // initPasswordEditForm создает форму редактирования пароля
 func (a *App) initPasswordEditForm() {
+	a.editPassIDField = tview.NewInputField().
+		SetLabel("ID: ").
+		SetFieldWidth(32)
+	a.editPassIDField.SetDisabled(true)
+
 	a.editPassNameField = tview.NewInputField().
 		SetLabel("Название: ").
 		SetFieldWidth(32)
-	a.editPassNameField.SetDisabled(true)
 
 	a.editPassLoginField = tview.NewInputField().
 		SetLabel("Логин: ").
@@ -375,6 +380,7 @@ func (a *App) initPasswordEditForm() {
 		SetFieldWidth(32)
 
 	a.passwordEditForm = tview.NewForm().
+		AddFormItem(a.editPassIDField).
 		AddFormItem(a.editPassNameField).
 		AddFormItem(a.editPassLoginField).
 		AddFormItem(a.editPassValField).
@@ -578,6 +584,7 @@ func (a *App) openPasswordEdit(p *pbPassword.Password) {
 		return
 	}
 	a.currentPassword = p
+	a.editPassIDField.SetText(p.GetId())
 	a.editPassNameField.SetText(p.GetName())
 	a.editPassLoginField.SetText(p.GetLogin())
 	a.editPassValField.SetText(p.GetPassword())
@@ -623,11 +630,18 @@ func (a *App) handlePasswordCreate() {
 
 // handlePasswordUpdate обновляет пароль выбранной записи
 func (a *App) handlePasswordUpdate() {
+	ID := strings.TrimSpace(a.editPassIDField.GetText())
+	name := strings.TrimSpace(a.editPassNameField.GetText())
 	login := strings.TrimSpace(a.editPassLoginField.GetText())
 	passwordVal := a.editPassValField.GetText()
 
 	if login == "" {
 		a.showErrorModal("Логин не может быть пустым", "password_edit")
+		return
+	}
+
+	if name == "" {
+		a.showErrorModal("Название не может быть пустым", "password_edit")
 		return
 	}
 
@@ -640,6 +654,8 @@ func (a *App) handlePasswordUpdate() {
 	defer cancel()
 
 	req := &pbPassword.PasswordUpdateRequest{}
+	req.SetId(ID)
+	req.SetName(name)
 	req.SetLogin(login)
 	req.SetPassword(passwordVal)
 

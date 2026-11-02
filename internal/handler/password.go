@@ -92,14 +92,7 @@ func (h *Handler) PasswordUpdate(ctx context.Context, in *password.PasswordUpdat
 		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
 	}
 
-	login := strings.TrimSpace(in.GetLogin())
-	if login == "" {
-		return &response, status.Error(codes.InvalidArgument, "логин не может быть пустым")
-	}
-
-	pwd := in.GetPassword()
-
-	item, err := h.rep.PasswordUpdate(ctx, userID, login, pwd)
+	item, err := h.rep.PasswordUpdate(ctx, userID, in.GetId(), in.GetName(), in.GetLogin(), in.GetPassword())
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &response, status.Error(codes.NotFound, "запись не найдена")

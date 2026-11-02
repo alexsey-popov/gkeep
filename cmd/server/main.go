@@ -20,9 +20,9 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const (
-	Version   = "0.0.1"
-	BuildDate = "2026-10-30"
+var (
+	Version   = "0.0.0"
+	BuildDate = "0000-00-00"
 )
 
 func main() {

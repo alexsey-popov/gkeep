@@ -151,21 +151,6 @@ func (g Guard) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 
-// UnaryInterceptor псевдоним для UnaryServerInterceptor
-func (g Guard) UnaryInterceptor() grpc.UnaryServerInterceptor {
-	return g.UnaryServerInterceptor()
-}
-
-// UnaryServerInterceptor возвращает unary interceptor для переданного Guard
-func UnaryServerInterceptor(g *Guard) grpc.UnaryServerInterceptor {
-	return g.UnaryServerInterceptor()
-}
-
-// UnaryInterceptor возвращает unary interceptor для переданного Guard
-func UnaryInterceptor(g *Guard) grpc.UnaryServerInterceptor {
-	return g.UnaryServerInterceptor()
-}
-
 // UserIDFromContext извлекает user_id из токена в контексте
 func UserIDFromContext(ctx context.Context) (string, error) {
 	_, claims, err := jwtauth.FromContext(ctx)

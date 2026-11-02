@@ -15,6 +15,7 @@ service API {
   // Пароли
   rpc PasswordList(password.PasswordListRequest) returns (password.PasswordListResponse);
   rpc PasswordCreate(password.PasswordCreateRequest) returns (password.PasswordResponse);
+  rpc PasswordShow(password.PasswordShowRequest) returns (password.PasswordResponse);
   rpc PasswordUpdate(password.PasswordUpdateRequest) returns (password.PasswordResponse);
   rpc PasswordDelete(password.PasswordDeleteRequest) returns (password.PasswordResponse);
 }

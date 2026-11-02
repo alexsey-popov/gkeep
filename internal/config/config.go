@@ -2,8 +2,10 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"strings"
 )
 
 const (
@@ -13,14 +15,12 @@ const (
 	DefaultAddress = "localhost:50051"
 
 	// Адрес подключения к базе данных
-	FlagDatabaseURI    = "db"
-	EnvDatabaseURI     = "DATABASE_URI"
-	DefaultDatabaseURI = ""
+	FlagDatabaseURI = "db"
+	EnvDatabaseURI  = "DATABASE_URI"
 
 	// Токен проверки аутентификации
-	FlagJwtToken    = "jwt"
-	EnvJwtToken     = "JWT_TOKEN"
-	DefaultJwtToken = ""
+	FlagJwtToken = "jwt"
+	EnvJwtToken  = "JWT_TOKEN"
 
 	// TLS сертификат сервера
 	FlagServerTLSCert    = "srv-tls-cert"
@@ -37,6 +37,9 @@ const (
 	EnvClientTLSCert     = "CLIENT_TLS_CERT"
 	DefaultClientTLSCert = "ca.crt"
 )
+
+// MissingRequiredField ошибка, сообщающая о том, что некоторые обязательные поля не были указаны
+var MissingRequiredField = errors.New("некоторые обязательные поля не заполнены")
 
 // Server - Структура конфигурации для сервера
 type Server struct {
@@ -73,8 +76,8 @@ func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
 
 	// Получаем данные из env или их дефолтные значения
 	userAddress := getEnvString(lookupFunc, EnvAddress, DefaultAddress)
-	databaseURI := getEnvString(lookupFunc, EnvDatabaseURI, DefaultDatabaseURI)
-	jwtToken := getEnvString(lookupFunc, EnvJwtToken, DefaultJwtToken)
+	databaseURI := getEnvString(lookupFunc, EnvDatabaseURI, "")
+	jwtToken := getEnvString(lookupFunc, EnvJwtToken, "")
 	certTLS := getEnvString(lookupFunc, EnvServerTLSCert, DefaultServerTLSCert)
 	keyTLS := getEnvString(lookupFunc, EnvServerTLSKey, DefaultServerTLSKey)
 
@@ -87,6 +90,11 @@ func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
 
 	if err := fs.Parse(args); err != nil {
 		return nil, fmt.Errorf("ошибка при парсинге флагов: %w", err)
+	}
+
+	// Проверяем заполненность обязательных полей
+	if strings.Trim(cfg.JwtToken, " ") == "" || strings.Trim(cfg.DatabaseURI, " ") == "" {
+		return cfg, MissingRequiredField
 	}
 
 	return cfg, nil

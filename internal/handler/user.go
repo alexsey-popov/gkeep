@@ -32,8 +32,8 @@ func (h *Handler) RegisterUser(ctx context.Context, in *pb.UserRequest) (*pb.Use
 			return &response, status.Error(codes.AlreadyExists, "Указанный логин занят")
 		}
 
-		// Иначе - логируем и высылаем общее сообщение
-		return &response, status.Error(codes.Unknown, "Указанный логин занят")
+		// Иначе высылаем общее сообщение об ошибке (логирование происходит на уровне репозитория)
+		return &response, status.Error(codes.Internal, "Ошибка на стороне сервера")
 	}
 
 	// А тут заполняем response данными пользователя

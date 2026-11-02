@@ -17,7 +17,7 @@ type Repository interface {
 
 	PasswordList(ctx context.Context, userID, name, page string) ([]models.Password, error)
 	PasswordCreate(ctx context.Context, userID, name, login, password string) (*models.Password, error)
-	PasswordUpdate(ctx context.Context, userID, login, password string) (*models.Password, error)
+	PasswordUpdate(ctx context.Context, userID, id, name, login, password string) (*models.Password, error)
 	PasswordDelete(ctx context.Context, userID, id string) (*models.Password, error)
 }
 
@@ -25,15 +25,16 @@ type Repository interface {
 var ErrConflictUnique = errors.New("ошибка уникальности по полю в БД")
 
 // pageSize размер пачки данных (для операции получение списка)
-var pageSize = 20
+const pageSize = 20
 
 // DB Репозиторий БД
 type DB struct {
-	Repository
-
 	db  *sqlx.DB
 	log *slog.Logger
 }
+
+// Проверка на то, что структура DB удовлетворяет интерфейсу Repository
+var _ Repository = (*DB)(nil)
 
 // New Создание нового репозитория БД
 func NewDB(db *sqlx.DB, log *slog.Logger) *DB {

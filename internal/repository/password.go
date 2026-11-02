@@ -18,7 +18,7 @@ import (
 func (rep DB) PasswordCreate(ctx context.Context, userID, name, login, password string) (*models.Password, error) {
 	var item models.Password
 
-	query := `INSERT INTO passwords (user_id, name, login, password) VALUES ($1, $2, $3, $4) RETURNING *`
+	query := `INSERT INTO passwords (user_id, name, login, password) VALUES ($1, $2, $3, $4) RETURNING id, user_id, name, login, password, created_at`
 
 	err := rep.db.GetContext(ctx, &item, query, userID, name, login, password)
 	if err != nil {
@@ -38,7 +38,7 @@ func (rep DB) PasswordCreate(ctx context.Context, userID, name, login, password 
 func (rep DB) PasswordList(ctx context.Context, userID, name, page string) ([]models.Password, error) {
 	items := make([]models.Password, 0)
 
-	query := `SELECT * FROM passwords WHERE user_id = $1`
+	query := `SELECT id, user_id, name, login, password, created_at FROM passwords WHERE user_id = $1`
 	args := []any{userID}
 
 	if name != "" {
@@ -65,12 +65,12 @@ func (rep DB) PasswordList(ctx context.Context, userID, name, page string) ([]mo
 }
 
 // PasswordUpdate обновление пароля по логину пользователя
-func (rep DB) PasswordUpdate(ctx context.Context, userID, login, password string) (*models.Password, error) {
+func (rep DB) PasswordUpdate(ctx context.Context, userID, id, name, login, password string) (*models.Password, error) {
 	var item models.Password
 
-	query := `UPDATE passwords SET password = $1 WHERE user_id = $2 AND login = $3 RETURNING *`
+	query := `UPDATE passwords SET name = $1, password = $2, login = $3 WHERE id = $4 AND user_id = $5 RETURNING id, user_id, name, login, password, created_at`
 
-	err := rep.db.GetContext(ctx, &item, query, password, userID, login)
+	err := rep.db.GetContext(ctx, &item, query, name, password, login, id, userID)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			rep.log.Error("ошибка при обновлении пароля в БД", slog.Any("error", err))
@@ -85,7 +85,7 @@ func (rep DB) PasswordUpdate(ctx context.Context, userID, login, password string
 func (rep DB) PasswordDelete(ctx context.Context, userID, id string) (*models.Password, error) {
 	var item models.Password
 
-	query := `DELETE FROM passwords WHERE user_id = $1 AND id = $2 RETURNING *`
+	query := `DELETE FROM passwords WHERE user_id = $1 AND id = $2 RETURNING id, user_id, login, password, created_at`
 
 	err := rep.db.GetContext(ctx, &item, query, userID, id)
 	if err != nil {

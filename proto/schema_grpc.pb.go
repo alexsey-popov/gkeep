@@ -25,6 +25,7 @@ const (
 	API_LoginUser_FullMethodName      = "/proto.API/LoginUser"
 	API_PasswordList_FullMethodName   = "/proto.API/PasswordList"
 	API_PasswordCreate_FullMethodName = "/proto.API/PasswordCreate"
+	API_PasswordShow_FullMethodName   = "/proto.API/PasswordShow"
 	API_PasswordUpdate_FullMethodName = "/proto.API/PasswordUpdate"
 	API_PasswordDelete_FullMethodName = "/proto.API/PasswordDelete"
 )
@@ -39,6 +40,7 @@ type APIClient interface {
 	// Пароли
 	PasswordList(ctx context.Context, in *password.PasswordListRequest, opts ...grpc.CallOption) (*password.PasswordListResponse, error)
 	PasswordCreate(ctx context.Context, in *password.PasswordCreateRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error)
+	PasswordShow(ctx context.Context, in *password.PasswordShowRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error)
 	PasswordUpdate(ctx context.Context, in *password.PasswordUpdateRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error)
 	PasswordDelete(ctx context.Context, in *password.PasswordDeleteRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error)
 }
@@ -91,6 +93,16 @@ func (c *aPIClient) PasswordCreate(ctx context.Context, in *password.PasswordCre
 	return out, nil
 }
 
+func (c *aPIClient) PasswordShow(ctx context.Context, in *password.PasswordShowRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(password.PasswordResponse)
+	err := c.cc.Invoke(ctx, API_PasswordShow_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *aPIClient) PasswordUpdate(ctx context.Context, in *password.PasswordUpdateRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(password.PasswordResponse)
@@ -121,6 +133,7 @@ type APIServer interface {
 	// Пароли
 	PasswordList(context.Context, *password.PasswordListRequest) (*password.PasswordListResponse, error)
 	PasswordCreate(context.Context, *password.PasswordCreateRequest) (*password.PasswordResponse, error)
+	PasswordShow(context.Context, *password.PasswordShowRequest) (*password.PasswordResponse, error)
 	PasswordUpdate(context.Context, *password.PasswordUpdateRequest) (*password.PasswordResponse, error)
 	PasswordDelete(context.Context, *password.PasswordDeleteRequest) (*password.PasswordResponse, error)
 	mustEmbedUnimplementedAPIServer()
@@ -144,6 +157,9 @@ func (UnimplementedAPIServer) PasswordList(context.Context, *password.PasswordLi
 }
 func (UnimplementedAPIServer) PasswordCreate(context.Context, *password.PasswordCreateRequest) (*password.PasswordResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method PasswordCreate not implemented")
+}
+func (UnimplementedAPIServer) PasswordShow(context.Context, *password.PasswordShowRequest) (*password.PasswordResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method PasswordShow not implemented")
 }
 func (UnimplementedAPIServer) PasswordUpdate(context.Context, *password.PasswordUpdateRequest) (*password.PasswordResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method PasswordUpdate not implemented")
@@ -244,6 +260,24 @@ func _API_PasswordCreate_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _API_PasswordShow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(password.PasswordShowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).PasswordShow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_PasswordShow_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).PasswordShow(ctx, req.(*password.PasswordShowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _API_PasswordUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(password.PasswordUpdateRequest)
 	if err := dec(in); err != nil {
@@ -302,6 +336,10 @@ var API_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PasswordCreate",
 			Handler:    _API_PasswordCreate_Handler,
+		},
+		{
+			MethodName: "PasswordShow",
+			Handler:    _API_PasswordShow_Handler,
 		},
 		{
 			MethodName: "PasswordUpdate",
