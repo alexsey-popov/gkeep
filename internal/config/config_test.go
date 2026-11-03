@@ -16,25 +16,13 @@ func TestNewServer(t *testing.T) {
 		want    *Server
 	}{
 		{
-			name:    "positive - Пустой конфиг",
-			args:    make([]string, 0),
-			env:     make(map[string]string),
-			success: true,
-			want: &Server{
-				Address:     DefaultAddress,
-				DatabaseURI: DefaultDatabaseURI,
-				JwtToken:    DefaultJwtToken,
-				TLSCert:     DefaultServerTLSCert,
-				TLSKey:      DefaultServerTLSKey,
-			},
-		},
-		{
 			name: "positive - Только env",
 			args: make([]string, 0),
 			env: map[string]string{
 				EnvAddress:     "localhost:1111",
 				EnvDatabaseURI: "database",
 				EnvJwtToken:    "env token",
+				EnvCryptoKey:   "01245678901245678901245678901",
 			},
 			success: true,
 			want: &Server{
@@ -43,6 +31,7 @@ func TestNewServer(t *testing.T) {
 				JwtToken:    "env token",
 				TLSCert:     DefaultServerTLSCert,
 				TLSKey:      DefaultServerTLSKey,
+				CryptoKey:   []byte("01245678901245678901245678901"),
 			},
 		},
 		{
@@ -51,6 +40,7 @@ func TestNewServer(t *testing.T) {
 				"-" + FlagAddress, "localhost:3333",
 				"-" + FlagDatabaseURI, "different_database",
 				"-" + FlagJwtToken, "flag token",
+				"-" + FlagCryptoKey, "01245678901245678901245678901",
 			},
 			env:     make(map[string]string),
 			success: true,
@@ -60,6 +50,7 @@ func TestNewServer(t *testing.T) {
 				JwtToken:    "flag token",
 				TLSCert:     DefaultServerTLSCert,
 				TLSKey:      DefaultServerTLSKey,
+				CryptoKey:   []byte("01245678901245678901245678901"),
 			},
 		},
 		{
@@ -68,11 +59,13 @@ func TestNewServer(t *testing.T) {
 				"-" + FlagAddress, "localhost:3333",
 				"-" + FlagDatabaseURI, "different_database",
 				"-" + FlagJwtToken, "flag token",
+				"-" + FlagCryptoKey, "flag5678901245678901245678901",
 			},
 			env: map[string]string{
 				EnvAddress:     "localhost:1111",
 				EnvDatabaseURI: "database",
 				EnvJwtToken:    "env token",
+				EnvCryptoKey:   "env45678901245678901245678901",
 			},
 			success: true,
 			want: &Server{
@@ -81,7 +74,15 @@ func TestNewServer(t *testing.T) {
 				JwtToken:    "flag token",
 				TLSCert:     DefaultServerTLSCert,
 				TLSKey:      DefaultServerTLSKey,
+				CryptoKey:   []byte("flag5678901245678901245678901"),
 			},
+		},
+		{
+			name:    "negative - Пустой конфиг",
+			args:    make([]string, 0),
+			env:     make(map[string]string),
+			success: false,
+			want:    nil,
 		},
 		{
 			name: "negative - Ошибка при парсинге флагов",

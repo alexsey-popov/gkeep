@@ -85,7 +85,7 @@ func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
 	jwtToken := getEnvString(lookupFunc, EnvJwtToken, "")
 	certTLS := getEnvString(lookupFunc, EnvServerTLSCert, DefaultServerTLSCert)
 	keyTLS := getEnvString(lookupFunc, EnvServerTLSKey, DefaultServerTLSKey)
-	cryptoKey := getEnvString(lookupFunc, EnvCryptoKey, "")
+	cfg.CryptoKey = []byte(getEnvString(lookupFunc, EnvCryptoKey, ""))
 
 	// Получаем данные из флагов
 	fs.StringVar(&cfg.Address, FlagAddress, userAddress, "Адрес системы программы лояльности")
@@ -97,9 +97,7 @@ func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
 	// Отдельно обрабатываем CryptoKey т.к. мы должны получить []byte
 	fs.Func(FlagCryptoKey, "Ключ шифрования данных в БД", func(flagValue string) error {
 		// Если значение флага пусто - подставляем данные из env
-		if strings.TrimSpace(flagValue) == "" {
-			cfg.CryptoKey = []byte(cryptoKey)
-		} else {
+		if strings.TrimSpace(flagValue) != "" {
 			cfg.CryptoKey = []byte(flagValue)
 		}
 
