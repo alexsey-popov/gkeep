@@ -32,6 +32,7 @@ func (h *Handler) PasswordList(ctx context.Context, in *password.PasswordListReq
 
 	pbList := make([]*password.Password, 0, len(items))
 	for _, item := range items {
+		// Переприсваивать уже не надо, но хуже от этого не будет
 		item := item
 		pbList = append(pbList, password.Password_builder{
 			Id:       &item.Id,

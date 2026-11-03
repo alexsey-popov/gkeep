@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log/slog"
 
+	"github.com/alexsey-popov/gkeep/internal/crypto"
 	"github.com/alexsey-popov/gkeep/internal/models"
 	"github.com/jmoiron/sqlx"
 )
@@ -29,18 +30,20 @@ const pageSize = 20
 
 // DB Репозиторий БД
 type DB struct {
-	db  *sqlx.DB
-	log *slog.Logger
+	db     *sqlx.DB
+	log    *slog.Logger
+	cipher *crypto.Service
 }
 
 // Проверка на то, что структура DB удовлетворяет интерфейсу Repository
 var _ Repository = (*DB)(nil)
 
 // New Создание нового репозитория БД
-func NewDB(db *sqlx.DB, log *slog.Logger) *DB {
+func NewDB(db *sqlx.DB, log *slog.Logger, cipher *crypto.Service) *DB {
 	return &DB{
-		db:  db,
-		log: log,
+		db:     db,
+		log:    log,
+		cipher: cipher,
 	}
 }
 

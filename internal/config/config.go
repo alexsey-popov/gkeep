@@ -36,6 +36,10 @@ const (
 	FlagClientTLSCert    = "client-tls-cert"
 	EnvClientTLSCert     = "CLIENT_TLS_CERT"
 	DefaultClientTLSCert = "ca.crt"
+
+	// Ключ шифрования данных в БД
+	FlagCryptoKey = "crypto-key"
+	EnvCryptoKey  = "CRYPTO_KEY"
 )
 
 // MissingRequiredField ошибка, сообщающая о том, что некоторые обязательные поля не были указаны
@@ -48,6 +52,7 @@ type Server struct {
 	JwtToken    string
 	TLSCert     string
 	TLSKey      string
+	CryptoKey   []byte
 }
 
 // Client - Структура конфигурации для клиента
@@ -80,6 +85,7 @@ func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
 	jwtToken := getEnvString(lookupFunc, EnvJwtToken, "")
 	certTLS := getEnvString(lookupFunc, EnvServerTLSCert, DefaultServerTLSCert)
 	keyTLS := getEnvString(lookupFunc, EnvServerTLSKey, DefaultServerTLSKey)
+	cryptoKey := getEnvString(lookupFunc, EnvCryptoKey, "")
 
 	// Получаем данные из флагов
 	fs.StringVar(&cfg.Address, FlagAddress, userAddress, "Адрес системы программы лояльности")
@@ -88,12 +94,26 @@ func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
 	fs.StringVar(&cfg.TLSCert, FlagServerTLSCert, certTLS, "TLS сертификат для сервера")
 	fs.StringVar(&cfg.TLSKey, FlagServerTLSKey, keyTLS, "TLS ключ для сервера")
 
+	// Отдельно обрабатываем CryptoKey т.к. мы должны получить []byte
+	fs.Func(FlagCryptoKey, "Ключ шифрования данных в БД", func(flagValue string) error {
+		// Если значение флага пусто - подставляем данные из env
+		if strings.TrimSpace(flagValue) == "" {
+			cfg.CryptoKey = []byte(cryptoKey)
+		} else {
+			cfg.CryptoKey = []byte(flagValue)
+		}
+
+		return nil
+	})
+
 	if err := fs.Parse(args); err != nil {
 		return nil, fmt.Errorf("ошибка при парсинге флагов: %w", err)
 	}
 
 	// Проверяем заполненность обязательных полей
-	if strings.Trim(cfg.JwtToken, " ") == "" || strings.Trim(cfg.DatabaseURI, " ") == "" {
+	if strings.TrimSpace(cfg.JwtToken) == "" ||
+		strings.TrimSpace(cfg.DatabaseURI) == "" ||
+		len(cfg.CryptoKey) == 0 {
 		return cfg, MissingRequiredField
 	}
 

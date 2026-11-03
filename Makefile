@@ -6,6 +6,9 @@ DATABASE_DSN="postgres://gkeep:gkeep@localhost:5432/gkeep?sslmode=disable"
 # Секретный JWT токен
 JWT="secret"
 
+# Ключ шифрования данных в БД
+CRYPTO_KEY="778d2643f49a2203ca3c43786f648618"
+
 # Название файла отчётом по покрытию кода тестами
 COVER_FILE?=cover.out
 
@@ -13,7 +16,7 @@ build-server:
 	go build -o="cmd/server/server" -ldflags "-X 'main.version=${version}' -X 'main.buildDate=${date}'" cmd/server/main.go
 
 build-server-and-listen: build-server
-	./cmd/server/server -db="host=localhost user=gkeep password=gkeep dbname=gkeep sslmode=disable" -jwt="${JWT}"
+	./cmd/server/server -db="host=localhost user=gkeep password=gkeep dbname=gkeep sslmode=disable" -jwt=${JWT} -crypto-key=${CRYPTO_KEY}
 
 build-client:
 	go build -o="cmd/client/client" -ldflags "-X 'main.Version=$$(git describe --tags --always)' -X 'main.BuildDate=$$(date +'%d-%m-%Y')'" cmd/client/main.go

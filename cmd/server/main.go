@@ -10,6 +10,7 @@ import (
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/config"
+	"github.com/alexsey-popov/gkeep/internal/crypto"
 	"github.com/alexsey-popov/gkeep/internal/handler"
 	"github.com/alexsey-popov/gkeep/internal/repository"
 	"github.com/alexsey-popov/gkeep/internal/server"
@@ -63,8 +64,17 @@ func main() {
 	// Создаём объект аутентификации
 	guard := auth.New(cfg.JwtToken)
 
+	// Создаём объект шифрования
+	cipher, err := crypto.New(cfg.CryptoKey)
+	if err != nil {
+		log.Error("Ошибка при создании объекта шифрования",
+			slog.Any("error", err),
+		)
+		os.Exit(1)
+	}
+
 	// Создаём репозиторий
-	rep := repository.NewDB(db, log)
+	rep := repository.NewDB(db, log, cipher)
 
 	// Создаём обработчик запросов
 	h := handler.New(rep, guard)
