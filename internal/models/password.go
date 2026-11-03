@@ -3,7 +3,7 @@ package models
 
 import "time"
 
-// Password запись сохраненного пароля
+// Password связка логин/пароль
 type Password struct {
 	Id        string    `db:"id"`
 	UserId    string    `db:"user_id"`

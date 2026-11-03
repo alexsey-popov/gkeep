@@ -7,7 +7,9 @@
 package proto
 
 import (
+	card "github.com/alexsey-popov/gkeep/proto/card"
 	password "github.com/alexsey-popov/gkeep/proto/password"
+	text "github.com/alexsey-popov/gkeep/proto/text"
 	user "github.com/alexsey-popov/gkeep/proto/user"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -26,7 +28,8 @@ var File_proto_schema_proto protoreflect.FileDescriptor
 
 const file_proto_schema_proto_rawDesc = "" +
 	"\n" +
-	"\x12proto/schema.proto\x12\x05proto\x1a\x15proto/user/user.proto\x1a\x1dproto/password/password.proto2\xcb\x04\n" +
+	"\x12proto/schema.proto\x12\x05proto\x1a\x15proto/user/user.proto\x1a\x1dproto/password/password.proto\x1a\x15proto/card/card.proto\x1a\x15proto/text/text.proto2\x89\n" +
+	"\n" +
 	"\x03API\x12A\n" +
 	"\fRegisterUser\x12\x17.proto.user.UserRequest\x1a\x18.proto.user.UserResponse\x12>\n" +
 	"\tLoginUser\x12\x17.proto.user.UserRequest\x1a\x18.proto.user.UserResponse\x12Y\n" +
@@ -34,7 +37,23 @@ const file_proto_schema_proto_rawDesc = "" +
 	"\x0ePasswordCreate\x12%.proto.password.PasswordCreateRequest\x1a .proto.password.PasswordResponse\x12U\n" +
 	"\fPasswordShow\x12#.proto.password.PasswordShowRequest\x1a .proto.password.PasswordResponse\x12Y\n" +
 	"\x0ePasswordUpdate\x12%.proto.password.PasswordUpdateRequest\x1a .proto.password.PasswordResponse\x12Y\n" +
-	"\x0ePasswordDelete\x12%.proto.password.PasswordDeleteRequest\x1a .proto.password.PasswordResponseB&Z$github.com/alexsey-popov/gkeep/protob\beditionsp\xe8\a"
+	"\x0ePasswordDelete\x12%.proto.password.PasswordDeleteRequest\x1a .proto.password.PasswordResponse\x12E\n" +
+	"\bCardList\x12\x1b.proto.card.CardListRequest\x1a\x1c.proto.card.CardListResponse\x12E\n" +
+	"\n" +
+	"CardCreate\x12\x1d.proto.card.CardCreateRequest\x1a\x18.proto.card.CardResponse\x12A\n" +
+	"\bCardShow\x12\x1b.proto.card.CardShowRequest\x1a\x18.proto.card.CardResponse\x12E\n" +
+	"\n" +
+	"CardUpdate\x12\x1d.proto.card.CardUpdateRequest\x1a\x18.proto.card.CardResponse\x12E\n" +
+	"\n" +
+	"CardDelete\x12\x1d.proto.card.CardDeleteRequest\x1a\x18.proto.card.CardResponse\x12E\n" +
+	"\bTextList\x12\x1b.proto.text.TextListRequest\x1a\x1c.proto.text.TextListResponse\x12E\n" +
+	"\n" +
+	"TextCreate\x12\x1d.proto.text.TextCreateRequest\x1a\x18.proto.text.TextResponse\x12A\n" +
+	"\bTextShow\x12\x1b.proto.text.TextShowRequest\x1a\x18.proto.text.TextResponse\x12E\n" +
+	"\n" +
+	"TextUpdate\x12\x1d.proto.text.TextUpdateRequest\x1a\x18.proto.text.TextResponse\x12E\n" +
+	"\n" +
+	"TextDelete\x12\x1d.proto.text.TextDeleteRequest\x1a\x18.proto.text.TextResponseB&Z$github.com/alexsey-popov/gkeep/protob\beditionsp\xe8\a"
 
 var file_proto_schema_proto_goTypes = []any{
 	(*user.UserRequest)(nil),               // 0: proto.user.UserRequest
@@ -43,30 +62,64 @@ var file_proto_schema_proto_goTypes = []any{
 	(*password.PasswordShowRequest)(nil),   // 3: proto.password.PasswordShowRequest
 	(*password.PasswordUpdateRequest)(nil), // 4: proto.password.PasswordUpdateRequest
 	(*password.PasswordDeleteRequest)(nil), // 5: proto.password.PasswordDeleteRequest
-	(*user.UserResponse)(nil),              // 6: proto.user.UserResponse
-	(*password.PasswordListResponse)(nil),  // 7: proto.password.PasswordListResponse
-	(*password.PasswordResponse)(nil),      // 8: proto.password.PasswordResponse
+	(*card.CardListRequest)(nil),           // 6: proto.card.CardListRequest
+	(*card.CardCreateRequest)(nil),         // 7: proto.card.CardCreateRequest
+	(*card.CardShowRequest)(nil),           // 8: proto.card.CardShowRequest
+	(*card.CardUpdateRequest)(nil),         // 9: proto.card.CardUpdateRequest
+	(*card.CardDeleteRequest)(nil),         // 10: proto.card.CardDeleteRequest
+	(*text.TextListRequest)(nil),           // 11: proto.text.TextListRequest
+	(*text.TextCreateRequest)(nil),         // 12: proto.text.TextCreateRequest
+	(*text.TextShowRequest)(nil),           // 13: proto.text.TextShowRequest
+	(*text.TextUpdateRequest)(nil),         // 14: proto.text.TextUpdateRequest
+	(*text.TextDeleteRequest)(nil),         // 15: proto.text.TextDeleteRequest
+	(*user.UserResponse)(nil),              // 16: proto.user.UserResponse
+	(*password.PasswordListResponse)(nil),  // 17: proto.password.PasswordListResponse
+	(*password.PasswordResponse)(nil),      // 18: proto.password.PasswordResponse
+	(*card.CardListResponse)(nil),          // 19: proto.card.CardListResponse
+	(*card.CardResponse)(nil),              // 20: proto.card.CardResponse
+	(*text.TextListResponse)(nil),          // 21: proto.text.TextListResponse
+	(*text.TextResponse)(nil),              // 22: proto.text.TextResponse
 }
 var file_proto_schema_proto_depIdxs = []int32{
-	0, // 0: proto.API.RegisterUser:input_type -> proto.user.UserRequest
-	0, // 1: proto.API.LoginUser:input_type -> proto.user.UserRequest
-	1, // 2: proto.API.PasswordList:input_type -> proto.password.PasswordListRequest
-	2, // 3: proto.API.PasswordCreate:input_type -> proto.password.PasswordCreateRequest
-	3, // 4: proto.API.PasswordShow:input_type -> proto.password.PasswordShowRequest
-	4, // 5: proto.API.PasswordUpdate:input_type -> proto.password.PasswordUpdateRequest
-	5, // 6: proto.API.PasswordDelete:input_type -> proto.password.PasswordDeleteRequest
-	6, // 7: proto.API.RegisterUser:output_type -> proto.user.UserResponse
-	6, // 8: proto.API.LoginUser:output_type -> proto.user.UserResponse
-	7, // 9: proto.API.PasswordList:output_type -> proto.password.PasswordListResponse
-	8, // 10: proto.API.PasswordCreate:output_type -> proto.password.PasswordResponse
-	8, // 11: proto.API.PasswordShow:output_type -> proto.password.PasswordResponse
-	8, // 12: proto.API.PasswordUpdate:output_type -> proto.password.PasswordResponse
-	8, // 13: proto.API.PasswordDelete:output_type -> proto.password.PasswordResponse
-	7, // [7:14] is the sub-list for method output_type
-	0, // [0:7] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: proto.API.RegisterUser:input_type -> proto.user.UserRequest
+	0,  // 1: proto.API.LoginUser:input_type -> proto.user.UserRequest
+	1,  // 2: proto.API.PasswordList:input_type -> proto.password.PasswordListRequest
+	2,  // 3: proto.API.PasswordCreate:input_type -> proto.password.PasswordCreateRequest
+	3,  // 4: proto.API.PasswordShow:input_type -> proto.password.PasswordShowRequest
+	4,  // 5: proto.API.PasswordUpdate:input_type -> proto.password.PasswordUpdateRequest
+	5,  // 6: proto.API.PasswordDelete:input_type -> proto.password.PasswordDeleteRequest
+	6,  // 7: proto.API.CardList:input_type -> proto.card.CardListRequest
+	7,  // 8: proto.API.CardCreate:input_type -> proto.card.CardCreateRequest
+	8,  // 9: proto.API.CardShow:input_type -> proto.card.CardShowRequest
+	9,  // 10: proto.API.CardUpdate:input_type -> proto.card.CardUpdateRequest
+	10, // 11: proto.API.CardDelete:input_type -> proto.card.CardDeleteRequest
+	11, // 12: proto.API.TextList:input_type -> proto.text.TextListRequest
+	12, // 13: proto.API.TextCreate:input_type -> proto.text.TextCreateRequest
+	13, // 14: proto.API.TextShow:input_type -> proto.text.TextShowRequest
+	14, // 15: proto.API.TextUpdate:input_type -> proto.text.TextUpdateRequest
+	15, // 16: proto.API.TextDelete:input_type -> proto.text.TextDeleteRequest
+	16, // 17: proto.API.RegisterUser:output_type -> proto.user.UserResponse
+	16, // 18: proto.API.LoginUser:output_type -> proto.user.UserResponse
+	17, // 19: proto.API.PasswordList:output_type -> proto.password.PasswordListResponse
+	18, // 20: proto.API.PasswordCreate:output_type -> proto.password.PasswordResponse
+	18, // 21: proto.API.PasswordShow:output_type -> proto.password.PasswordResponse
+	18, // 22: proto.API.PasswordUpdate:output_type -> proto.password.PasswordResponse
+	18, // 23: proto.API.PasswordDelete:output_type -> proto.password.PasswordResponse
+	19, // 24: proto.API.CardList:output_type -> proto.card.CardListResponse
+	20, // 25: proto.API.CardCreate:output_type -> proto.card.CardResponse
+	20, // 26: proto.API.CardShow:output_type -> proto.card.CardResponse
+	20, // 27: proto.API.CardUpdate:output_type -> proto.card.CardResponse
+	20, // 28: proto.API.CardDelete:output_type -> proto.card.CardResponse
+	21, // 29: proto.API.TextList:output_type -> proto.text.TextListResponse
+	22, // 30: proto.API.TextCreate:output_type -> proto.text.TextResponse
+	22, // 31: proto.API.TextShow:output_type -> proto.text.TextResponse
+	22, // 32: proto.API.TextUpdate:output_type -> proto.text.TextResponse
+	22, // 33: proto.API.TextDelete:output_type -> proto.text.TextResponse
+	17, // [17:34] is the sub-list for method output_type
+	0,  // [0:17] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_proto_schema_proto_init() }

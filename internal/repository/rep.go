@@ -20,6 +20,16 @@ type Repository interface {
 	PasswordCreate(ctx context.Context, userID, name, login, password string) (*models.Password, error)
 	PasswordUpdate(ctx context.Context, userID, id, name, login, password string) (*models.Password, error)
 	PasswordDelete(ctx context.Context, userID, id string) (*models.Password, error)
+
+	CardList(ctx context.Context, userID, name, page string) ([]models.Card, error)
+	CardCreate(ctx context.Context, userID, name, number, expired, code string) (*models.Card, error)
+	CardUpdate(ctx context.Context, userID, id, name, number, expired, code string) (*models.Card, error)
+	CardDelete(ctx context.Context, userID, id string) (*models.Card, error)
+
+	TextList(ctx context.Context, userID, name, page string) ([]models.Text, error)
+	TextCreate(ctx context.Context, userID, name, text string) (*models.Text, error)
+	TextUpdate(ctx context.Context, userID, id, name, text string) (*models.Text, error)
+	TextDelete(ctx context.Context, userID, id string) (*models.Text, error)
 }
 
 // ErrConflictUnique ошибка конфликта уникальности при выполнении команды

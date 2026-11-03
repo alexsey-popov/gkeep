@@ -1,0 +1,153 @@
+package handler
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"strings"
+
+	"github.com/alexsey-popov/gkeep/internal/auth"
+	"github.com/alexsey-popov/gkeep/internal/repository"
+	"github.com/alexsey-popov/gkeep/proto/card"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+// CardList получение списка записей пользователя
+func (h *Handler) CardList(ctx context.Context, in *card.CardListRequest) (*card.CardListResponse, error) {
+	var response card.CardListResponse
+
+	userID, err := auth.UserIDFromContext(ctx)
+	if err != nil || userID == "" {
+		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
+	}
+
+	name := in.GetName()
+	page := in.GetPage()
+
+	items, err := h.rep.CardList(ctx, userID, name, page)
+	if err != nil {
+		return &response, status.Error(codes.Internal, "ошибка при получении списка записей")
+	}
+
+	pbList := make([]*card.Card, 0, len(items))
+	for _, item := range items {
+		// Переприсваивать уже не надо, но хуже от этого не будет
+		item := item
+		pbList = append(pbList, card.Card_builder{
+			Id:      &item.Id,
+			Name:    &item.Name,
+			Number:  &item.Number,
+			Expired: &item.Expired,
+			Code:    &item.Code,
+		}.Build())
+	}
+
+	response.SetCard(pbList)
+
+	return &response, nil
+}
+
+// CardCreate создание новой записи пароля
+func (h *Handler) CardCreate(ctx context.Context, in *card.CardCreateRequest) (*card.CardResponse, error) {
+	var response card.CardResponse
+
+	userID, err := auth.UserIDFromContext(ctx)
+	if err != nil || userID == "" {
+		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
+	}
+
+	name := strings.TrimSpace(in.GetName())
+	if name == "" {
+		return &response, status.Error(codes.InvalidArgument, "название не может быть пустым")
+	}
+
+	number := strings.TrimSpace(in.GetNumber())
+	expired := strings.TrimSpace(in.GetExpired())
+	code := strings.TrimSpace(in.GetCode())
+
+	item, err := h.rep.CardCreate(ctx, userID, name, number, expired, code)
+	if err != nil {
+		if errors.Is(err, repository.ErrConflictUnique) {
+			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
+		}
+		return &response, status.Error(codes.Internal, "ошибка при создании записи")
+	}
+
+	response.SetCard(
+		card.Card_builder{
+			Id:      &item.Id,
+			Name:    &item.Name,
+			Number:  &item.Number,
+			Expired: &item.Expired,
+			Code:    &item.Code,
+		}.Build(),
+	)
+
+	return &response, nil
+}
+
+// CardUpdate обновление пароля по логину
+func (h *Handler) CardUpdate(ctx context.Context, in *card.CardUpdateRequest) (*card.CardResponse, error) {
+	var response card.CardResponse
+
+	userID, err := auth.UserIDFromContext(ctx)
+	if err != nil || userID == "" {
+		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
+	}
+
+	item, err := h.rep.CardUpdate(ctx, userID, in.GetId(), in.GetName(), in.GetNumber(), in.GetExpired(), in.GetCode())
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &response, status.Error(codes.NotFound, "запись не найдена")
+		}
+		return &response, status.Error(codes.Internal, "ошибка при обновлении записи")
+	}
+
+	response.SetCard(
+		card.Card_builder{
+			Id:      &item.Id,
+			Name:    &item.Name,
+			Number:  &item.Number,
+			Expired: &item.Expired,
+			Code:    &item.Code,
+		}.Build(),
+	)
+
+	return &response, nil
+}
+
+// CardDelete удаление записи пароля по идентификатору
+func (h *Handler) CardDelete(ctx context.Context, in *card.CardDeleteRequest) (*card.CardResponse, error) {
+	var response card.CardResponse
+
+	userID, err := auth.UserIDFromContext(ctx)
+	if err != nil || userID == "" {
+		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
+	}
+
+	id := strings.TrimSpace(in.GetId())
+	if id == "" {
+		return &response, status.Error(codes.InvalidArgument, "id не указан")
+	}
+
+	item, err := h.rep.CardDelete(ctx, userID, id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &response, status.Error(codes.NotFound, "запись не найдена")
+		}
+		return &response, status.Error(codes.Internal, "ошибка при удалении записи")
+	}
+
+	response.SetCard(
+		card.Card_builder{
+			Id:      &item.Id,
+			Name:    &item.Name,
+			Number:  &item.Number,
+			Expired: &item.Expired,
+			Code:    &item.Code,
+		}.Build(),
+	)
+
+	return &response, nil
+}

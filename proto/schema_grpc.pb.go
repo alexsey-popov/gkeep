@@ -8,7 +8,9 @@ package proto
 
 import (
 	context "context"
+	card "github.com/alexsey-popov/gkeep/proto/card"
 	password "github.com/alexsey-popov/gkeep/proto/password"
+	text "github.com/alexsey-popov/gkeep/proto/text"
 	user "github.com/alexsey-popov/gkeep/proto/user"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -28,6 +30,16 @@ const (
 	API_PasswordShow_FullMethodName   = "/proto.API/PasswordShow"
 	API_PasswordUpdate_FullMethodName = "/proto.API/PasswordUpdate"
 	API_PasswordDelete_FullMethodName = "/proto.API/PasswordDelete"
+	API_CardList_FullMethodName       = "/proto.API/CardList"
+	API_CardCreate_FullMethodName     = "/proto.API/CardCreate"
+	API_CardShow_FullMethodName       = "/proto.API/CardShow"
+	API_CardUpdate_FullMethodName     = "/proto.API/CardUpdate"
+	API_CardDelete_FullMethodName     = "/proto.API/CardDelete"
+	API_TextList_FullMethodName       = "/proto.API/TextList"
+	API_TextCreate_FullMethodName     = "/proto.API/TextCreate"
+	API_TextShow_FullMethodName       = "/proto.API/TextShow"
+	API_TextUpdate_FullMethodName     = "/proto.API/TextUpdate"
+	API_TextDelete_FullMethodName     = "/proto.API/TextDelete"
 )
 
 // APIClient is the client API for API service.
@@ -43,6 +55,18 @@ type APIClient interface {
 	PasswordShow(ctx context.Context, in *password.PasswordShowRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error)
 	PasswordUpdate(ctx context.Context, in *password.PasswordUpdateRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error)
 	PasswordDelete(ctx context.Context, in *password.PasswordDeleteRequest, opts ...grpc.CallOption) (*password.PasswordResponse, error)
+	// Банковские карты
+	CardList(ctx context.Context, in *card.CardListRequest, opts ...grpc.CallOption) (*card.CardListResponse, error)
+	CardCreate(ctx context.Context, in *card.CardCreateRequest, opts ...grpc.CallOption) (*card.CardResponse, error)
+	CardShow(ctx context.Context, in *card.CardShowRequest, opts ...grpc.CallOption) (*card.CardResponse, error)
+	CardUpdate(ctx context.Context, in *card.CardUpdateRequest, opts ...grpc.CallOption) (*card.CardResponse, error)
+	CardDelete(ctx context.Context, in *card.CardDeleteRequest, opts ...grpc.CallOption) (*card.CardResponse, error)
+	// Тексты
+	TextList(ctx context.Context, in *text.TextListRequest, opts ...grpc.CallOption) (*text.TextListResponse, error)
+	TextCreate(ctx context.Context, in *text.TextCreateRequest, opts ...grpc.CallOption) (*text.TextResponse, error)
+	TextShow(ctx context.Context, in *text.TextShowRequest, opts ...grpc.CallOption) (*text.TextResponse, error)
+	TextUpdate(ctx context.Context, in *text.TextUpdateRequest, opts ...grpc.CallOption) (*text.TextResponse, error)
+	TextDelete(ctx context.Context, in *text.TextDeleteRequest, opts ...grpc.CallOption) (*text.TextResponse, error)
 }
 
 type aPIClient struct {
@@ -123,6 +147,106 @@ func (c *aPIClient) PasswordDelete(ctx context.Context, in *password.PasswordDel
 	return out, nil
 }
 
+func (c *aPIClient) CardList(ctx context.Context, in *card.CardListRequest, opts ...grpc.CallOption) (*card.CardListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(card.CardListResponse)
+	err := c.cc.Invoke(ctx, API_CardList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) CardCreate(ctx context.Context, in *card.CardCreateRequest, opts ...grpc.CallOption) (*card.CardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(card.CardResponse)
+	err := c.cc.Invoke(ctx, API_CardCreate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) CardShow(ctx context.Context, in *card.CardShowRequest, opts ...grpc.CallOption) (*card.CardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(card.CardResponse)
+	err := c.cc.Invoke(ctx, API_CardShow_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) CardUpdate(ctx context.Context, in *card.CardUpdateRequest, opts ...grpc.CallOption) (*card.CardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(card.CardResponse)
+	err := c.cc.Invoke(ctx, API_CardUpdate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) CardDelete(ctx context.Context, in *card.CardDeleteRequest, opts ...grpc.CallOption) (*card.CardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(card.CardResponse)
+	err := c.cc.Invoke(ctx, API_CardDelete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) TextList(ctx context.Context, in *text.TextListRequest, opts ...grpc.CallOption) (*text.TextListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(text.TextListResponse)
+	err := c.cc.Invoke(ctx, API_TextList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) TextCreate(ctx context.Context, in *text.TextCreateRequest, opts ...grpc.CallOption) (*text.TextResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(text.TextResponse)
+	err := c.cc.Invoke(ctx, API_TextCreate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) TextShow(ctx context.Context, in *text.TextShowRequest, opts ...grpc.CallOption) (*text.TextResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(text.TextResponse)
+	err := c.cc.Invoke(ctx, API_TextShow_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) TextUpdate(ctx context.Context, in *text.TextUpdateRequest, opts ...grpc.CallOption) (*text.TextResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(text.TextResponse)
+	err := c.cc.Invoke(ctx, API_TextUpdate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aPIClient) TextDelete(ctx context.Context, in *text.TextDeleteRequest, opts ...grpc.CallOption) (*text.TextResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(text.TextResponse)
+	err := c.cc.Invoke(ctx, API_TextDelete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // APIServer is the server API for API service.
 // All implementations must embed UnimplementedAPIServer
 // for forward compatibility.
@@ -136,6 +260,18 @@ type APIServer interface {
 	PasswordShow(context.Context, *password.PasswordShowRequest) (*password.PasswordResponse, error)
 	PasswordUpdate(context.Context, *password.PasswordUpdateRequest) (*password.PasswordResponse, error)
 	PasswordDelete(context.Context, *password.PasswordDeleteRequest) (*password.PasswordResponse, error)
+	// Банковские карты
+	CardList(context.Context, *card.CardListRequest) (*card.CardListResponse, error)
+	CardCreate(context.Context, *card.CardCreateRequest) (*card.CardResponse, error)
+	CardShow(context.Context, *card.CardShowRequest) (*card.CardResponse, error)
+	CardUpdate(context.Context, *card.CardUpdateRequest) (*card.CardResponse, error)
+	CardDelete(context.Context, *card.CardDeleteRequest) (*card.CardResponse, error)
+	// Тексты
+	TextList(context.Context, *text.TextListRequest) (*text.TextListResponse, error)
+	TextCreate(context.Context, *text.TextCreateRequest) (*text.TextResponse, error)
+	TextShow(context.Context, *text.TextShowRequest) (*text.TextResponse, error)
+	TextUpdate(context.Context, *text.TextUpdateRequest) (*text.TextResponse, error)
+	TextDelete(context.Context, *text.TextDeleteRequest) (*text.TextResponse, error)
 	mustEmbedUnimplementedAPIServer()
 }
 
@@ -166,6 +302,36 @@ func (UnimplementedAPIServer) PasswordUpdate(context.Context, *password.Password
 }
 func (UnimplementedAPIServer) PasswordDelete(context.Context, *password.PasswordDeleteRequest) (*password.PasswordResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method PasswordDelete not implemented")
+}
+func (UnimplementedAPIServer) CardList(context.Context, *card.CardListRequest) (*card.CardListResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CardList not implemented")
+}
+func (UnimplementedAPIServer) CardCreate(context.Context, *card.CardCreateRequest) (*card.CardResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CardCreate not implemented")
+}
+func (UnimplementedAPIServer) CardShow(context.Context, *card.CardShowRequest) (*card.CardResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CardShow not implemented")
+}
+func (UnimplementedAPIServer) CardUpdate(context.Context, *card.CardUpdateRequest) (*card.CardResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CardUpdate not implemented")
+}
+func (UnimplementedAPIServer) CardDelete(context.Context, *card.CardDeleteRequest) (*card.CardResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CardDelete not implemented")
+}
+func (UnimplementedAPIServer) TextList(context.Context, *text.TextListRequest) (*text.TextListResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TextList not implemented")
+}
+func (UnimplementedAPIServer) TextCreate(context.Context, *text.TextCreateRequest) (*text.TextResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TextCreate not implemented")
+}
+func (UnimplementedAPIServer) TextShow(context.Context, *text.TextShowRequest) (*text.TextResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TextShow not implemented")
+}
+func (UnimplementedAPIServer) TextUpdate(context.Context, *text.TextUpdateRequest) (*text.TextResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TextUpdate not implemented")
+}
+func (UnimplementedAPIServer) TextDelete(context.Context, *text.TextDeleteRequest) (*text.TextResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method TextDelete not implemented")
 }
 func (UnimplementedAPIServer) mustEmbedUnimplementedAPIServer() {}
 func (UnimplementedAPIServer) testEmbeddedByValue()             {}
@@ -314,6 +480,186 @@ func _API_PasswordDelete_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _API_CardList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(card.CardListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).CardList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_CardList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).CardList(ctx, req.(*card.CardListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_CardCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(card.CardCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).CardCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_CardCreate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).CardCreate(ctx, req.(*card.CardCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_CardShow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(card.CardShowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).CardShow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_CardShow_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).CardShow(ctx, req.(*card.CardShowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_CardUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(card.CardUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).CardUpdate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_CardUpdate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).CardUpdate(ctx, req.(*card.CardUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_CardDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(card.CardDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).CardDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_CardDelete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).CardDelete(ctx, req.(*card.CardDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_TextList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(text.TextListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).TextList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_TextList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).TextList(ctx, req.(*text.TextListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_TextCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(text.TextCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).TextCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_TextCreate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).TextCreate(ctx, req.(*text.TextCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_TextShow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(text.TextShowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).TextShow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_TextShow_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).TextShow(ctx, req.(*text.TextShowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_TextUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(text.TextUpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).TextUpdate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_TextUpdate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).TextUpdate(ctx, req.(*text.TextUpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _API_TextDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(text.TextDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(APIServer).TextDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: API_TextDelete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(APIServer).TextDelete(ctx, req.(*text.TextDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // API_ServiceDesc is the grpc.ServiceDesc for API service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -348,6 +694,46 @@ var API_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PasswordDelete",
 			Handler:    _API_PasswordDelete_Handler,
+		},
+		{
+			MethodName: "CardList",
+			Handler:    _API_CardList_Handler,
+		},
+		{
+			MethodName: "CardCreate",
+			Handler:    _API_CardCreate_Handler,
+		},
+		{
+			MethodName: "CardShow",
+			Handler:    _API_CardShow_Handler,
+		},
+		{
+			MethodName: "CardUpdate",
+			Handler:    _API_CardUpdate_Handler,
+		},
+		{
+			MethodName: "CardDelete",
+			Handler:    _API_CardDelete_Handler,
+		},
+		{
+			MethodName: "TextList",
+			Handler:    _API_TextList_Handler,
+		},
+		{
+			MethodName: "TextCreate",
+			Handler:    _API_TextCreate_Handler,
+		},
+		{
+			MethodName: "TextShow",
+			Handler:    _API_TextShow_Handler,
+		},
+		{
+			MethodName: "TextUpdate",
+			Handler:    _API_TextUpdate_Handler,
+		},
+		{
+			MethodName: "TextDelete",
+			Handler:    _API_TextDelete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

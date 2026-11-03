@@ -1,5 +1,4 @@
 -- 000002_create_passwords_table.up.sql
-
 -- Создание таблицы с паролями
 CREATE TABLE passwords (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

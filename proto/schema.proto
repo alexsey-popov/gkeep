@@ -6,6 +6,8 @@ option go_package = "github.com/alexsey-popov/gkeep/proto";
 
 import "proto/user/user.proto";
 import "proto/password/password.proto";
+import "proto/card/card.proto";
+import "proto/text/text.proto";
 
 service API {
   // Пользователь
@@ -18,4 +20,18 @@ service API {
   rpc PasswordShow(password.PasswordShowRequest) returns (password.PasswordResponse);
   rpc PasswordUpdate(password.PasswordUpdateRequest) returns (password.PasswordResponse);
   rpc PasswordDelete(password.PasswordDeleteRequest) returns (password.PasswordResponse);
+
+  // Банковские карты
+  rpc CardList(card.CardListRequest) returns (card.CardListResponse);
+  rpc CardCreate(card.CardCreateRequest) returns (card.CardResponse);
+  rpc CardShow(card.CardShowRequest) returns (card.CardResponse);
+  rpc CardUpdate(card.CardUpdateRequest) returns (card.CardResponse);
+  rpc CardDelete(card.CardDeleteRequest) returns (card.CardResponse);
+
+  // Тексты
+  rpc TextList(text.TextListRequest) returns (text.TextListResponse);
+  rpc TextCreate(text.TextCreateRequest) returns (text.TextResponse);
+  rpc TextShow(text.TextShowRequest) returns (text.TextResponse);
+  rpc TextUpdate(text.TextUpdateRequest) returns (text.TextResponse);
+  rpc TextDelete(text.TextDeleteRequest) returns (text.TextResponse);
 }

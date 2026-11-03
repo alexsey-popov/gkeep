@@ -1,0 +1,46 @@
+edition = "2023";
+
+package proto.text;
+
+option go_package = "github.com/alexsey-popov/gkeep/proto/text";
+
+// Текст
+message Text {
+  string id = 1;
+  string name = 2;
+  string text = 3;
+}
+
+message TextListRequest {
+  string name = 1;
+  string page = 2;
+}
+
+message TextCreateRequest {
+  string name = 1;
+  string text = 2;
+}
+
+message TextUpdateRequest {
+  string id = 1;
+  string name = 2;
+  string text = 3;
+}
+
+message TextShowRequest {
+  string id = 1;
+}
+
+message TextDeleteRequest {
+  string id = 1;
+}
+
+message TextListResponse {
+  repeated Text text = 1;
+  string error = 2;
+}
+
+message TextResponse {
+  Text text = 1;
+  string error = 2;
+}
