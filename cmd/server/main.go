@@ -77,7 +77,7 @@ func main() {
 	rep := repository.NewDB(db, log, cipher)
 
 	// Создаём обработчик запросов
-	h := handler.New(rep, guard)
+	h := handler.New(rep, guard, cipher)
 
 	srv, err := server.New(log, cfg, db, guard)
 	if err != nil {

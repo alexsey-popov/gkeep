@@ -155,6 +155,17 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 	}
 	tempPath := tempFile.Name()
 
+	var writer io.Writer = tempFile
+	if h.cipher != nil {
+		encWriter, err := h.cipher.NewEncryptWriter(tempFile)
+		if err != nil {
+			_ = tempFile.Close()
+			_ = os.Remove(tempPath)
+			return status.Error(codes.Internal, "ошибка инициализации шифрования файла")
+		}
+		writer = encWriter
+	}
+
 	hasher := sha256.New()
 	var totalBytes int64
 
@@ -178,7 +189,7 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 
 		chunk := req.GetChunk()
 		if len(chunk) > 0 {
-			if _, err := tempFile.Write(chunk); err != nil {
+			if _, err := writer.Write(chunk); err != nil {
 				return status.Error(codes.Internal, "ошибка записи чанка на диск")
 			}
 			hasher.Write(chunk)
@@ -235,6 +246,15 @@ func (h *Handler) FileDownload(in *file.DownloadFileRequest, stream grpc.ServerS
 	}
 	defer f.Close()
 
+	var reader io.Reader = f
+	if h.cipher != nil {
+		decReader, err := h.cipher.NewDecryptReader(f)
+		if err != nil {
+			return status.Error(codes.Internal, "ошибка инициализации расшифровывания файла")
+		}
+		reader = decReader
+	}
+
 	// 1. Отправляем метаданные
 	metaResp := file.DownloadFileResponse_builder{
 		Metadata: file.FileMetadata_builder{
@@ -251,7 +271,7 @@ func (h *Handler) FileDownload(in *file.DownloadFileRequest, stream grpc.ServerS
 	// 2. Отправляем бинарные чанки
 	buf := make([]byte, 64*1024)
 	for {
-		n, err := f.Read(buf)
+		n, err := reader.Read(buf)
 		if n > 0 {
 			chunkResp := &file.DownloadFileResponse{}
 			chunkResp.SetChunk(buf[:n])

@@ -6,11 +6,13 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
+	"io"
 	"sync"
 )
 
 // Service сервис для шифрования/расшифровывания данных
 type Service struct {
+	block  cipher.Block
 	cipher cipher.AEAD
 	mu     sync.Mutex
 }
@@ -54,7 +56,42 @@ func New(key []byte) (*Service, error) {
 	}
 
 	return &Service{
+		block:  aesblock,
 		cipher: aesgcm,
+	}, nil
+}
+
+// NewEncryptWriter создает io.Writer, который шифрует записываемые данные потоковым алгоритмом AES-CTR.
+// В начало целевого writer записывается 16-байтный вектор инициализации (IV).
+func (s *Service) NewEncryptWriter(w io.Writer) (io.Writer, error) {
+	iv, err := generateRandom(aes.BlockSize)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка при создании вектора инициализации: %w", err)
+	}
+
+	if _, err := w.Write(iv); err != nil {
+		return nil, fmt.Errorf("ошибка при записи вектора инициализации: %w", err)
+	}
+
+	stream := cipher.NewCTR(s.block, iv)
+	return &cipher.StreamWriter{
+		S: stream,
+		W: w,
+	}, nil
+}
+
+// NewDecryptReader создает io.Reader, который расшифровывает данные потоковым алгоритмом AES-CTR.
+// Из начала целевого reader считывается 16-байтный вектор инициализации (IV).
+func (s *Service) NewDecryptReader(r io.Reader) (io.Reader, error) {
+	iv := make([]byte, aes.BlockSize)
+	if _, err := io.ReadFull(r, iv); err != nil {
+		return nil, fmt.Errorf("ошибка при чтении вектора инициализации: %w", err)
+	}
+
+	stream := cipher.NewCTR(s.block, iv)
+	return &cipher.StreamReader{
+		S: stream,
+		R: r,
 	}, nil
 }
 
