@@ -40,6 +40,7 @@ func New(log *slog.Logger, cfg *config.Server, db *sqlx.DB, guard *auth.Guard) (
 	srv := grpc.NewServer(
 		grpc.Creds(tlsCreds),
 		grpc.UnaryInterceptor(guard.UnaryServerInterceptor()),
+		grpc.StreamInterceptor(guard.StreamServerInterceptor()),
 	)
 
 	return &Server{

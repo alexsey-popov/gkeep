@@ -20,12 +20,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Файл
+// Метаданные файла
 type File struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,2,opt,name=name"`
-	xxx_hidden_File        *string                `protobuf:"bytes,3,opt,name=file"`
+	xxx_hidden_Size        int64                  `protobuf:"varint,3,opt,name=size"`
+	xxx_hidden_Checksum    *string                `protobuf:"bytes,4,opt,name=checksum"`
+	xxx_hidden_Filename    *string                `protobuf:"bytes,5,opt,name=filename"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -77,10 +79,27 @@ func (x *File) GetName() string {
 	return ""
 }
 
-func (x *File) GetFile() string {
+func (x *File) GetSize() int64 {
 	if x != nil {
-		if x.xxx_hidden_File != nil {
-			return *x.xxx_hidden_File
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *File) GetChecksum() string {
+	if x != nil {
+		if x.xxx_hidden_Checksum != nil {
+			return *x.xxx_hidden_Checksum
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *File) GetFilename() string {
+	if x != nil {
+		if x.xxx_hidden_Filename != nil {
+			return *x.xxx_hidden_Filename
 		}
 		return ""
 	}
@@ -89,17 +108,27 @@ func (x *File) GetFile() string {
 
 func (x *File) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
 func (x *File) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
-func (x *File) SetFile(v string) {
-	x.xxx_hidden_File = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+func (x *File) SetSize(v int64) {
+	x.xxx_hidden_Size = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *File) SetChecksum(v string) {
+	x.xxx_hidden_Checksum = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *File) SetFilename(v string) {
+	x.xxx_hidden_Filename = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
 func (x *File) HasId() bool {
@@ -116,11 +145,25 @@ func (x *File) HasName() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *File) HasFile() bool {
+func (x *File) HasSize() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *File) HasChecksum() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *File) HasFilename() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
 func (x *File) ClearId() {
@@ -133,17 +176,29 @@ func (x *File) ClearName() {
 	x.xxx_hidden_Name = nil
 }
 
-func (x *File) ClearFile() {
+func (x *File) ClearSize() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_File = nil
+	x.xxx_hidden_Size = 0
+}
+
+func (x *File) ClearChecksum() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Checksum = nil
+}
+
+func (x *File) ClearFilename() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Filename = nil
 }
 
 type File_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id   *string
-	Name *string
-	File *string
+	Id       *string
+	Name     *string
+	Size     *int64
+	Checksum *string
+	Filename *string
 }
 
 func (b0 File_builder) Build() *File {
@@ -151,45 +206,50 @@ func (b0 File_builder) Build() *File {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
 		x.xxx_hidden_Id = b.Id
 	}
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
 		x.xxx_hidden_Name = b.Name
 	}
-	if b.File != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_File = b.File
+	if b.Size != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_Size = *b.Size
+	}
+	if b.Checksum != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Checksum = b.Checksum
+	}
+	if b.Filename != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_Filename = b.Filename
 	}
 	return m0
 }
 
-// Структура запроса на создание записи
-type CreateRequest struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_File        *string                `protobuf:"bytes,2,opt,name=file"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+// Запрос на загрузку файла чанками (Client Streaming)
+type UploadFileRequest struct {
+	state           protoimpl.MessageState   `protogen:"opaque.v1"`
+	xxx_hidden_Data isUploadFileRequest_Data `protobuf_oneof:"data"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
-func (x *CreateRequest) Reset() {
-	*x = CreateRequest{}
+func (x *UploadFileRequest) Reset() {
+	*x = UploadFileRequest{}
 	mi := &file_proto_file_file_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateRequest) String() string {
+func (x *UploadFileRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateRequest) ProtoMessage() {}
+func (*UploadFileRequest) ProtoMessage() {}
 
-func (x *CreateRequest) ProtoReflect() protoreflect.Message {
+func (x *UploadFileRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_file_file_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -201,7 +261,182 @@ func (x *CreateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CreateRequest) GetName() string {
+func (x *UploadFileRequest) GetMetadata() *FileMetadata {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Data.(*uploadFileRequest_Metadata); ok {
+			return x.Metadata
+		}
+	}
+	return nil
+}
+
+func (x *UploadFileRequest) GetChunk() []byte {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Data.(*uploadFileRequest_Chunk); ok {
+			return x.Chunk
+		}
+	}
+	return nil
+}
+
+func (x *UploadFileRequest) SetMetadata(v *FileMetadata) {
+	if v == nil {
+		x.xxx_hidden_Data = nil
+		return
+	}
+	x.xxx_hidden_Data = &uploadFileRequest_Metadata{v}
+}
+
+func (x *UploadFileRequest) SetChunk(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Data = &uploadFileRequest_Chunk{v}
+}
+
+func (x *UploadFileRequest) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Data != nil
+}
+
+func (x *UploadFileRequest) HasMetadata() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Data.(*uploadFileRequest_Metadata)
+	return ok
+}
+
+func (x *UploadFileRequest) HasChunk() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Data.(*uploadFileRequest_Chunk)
+	return ok
+}
+
+func (x *UploadFileRequest) ClearData() {
+	x.xxx_hidden_Data = nil
+}
+
+func (x *UploadFileRequest) ClearMetadata() {
+	if _, ok := x.xxx_hidden_Data.(*uploadFileRequest_Metadata); ok {
+		x.xxx_hidden_Data = nil
+	}
+}
+
+func (x *UploadFileRequest) ClearChunk() {
+	if _, ok := x.xxx_hidden_Data.(*uploadFileRequest_Chunk); ok {
+		x.xxx_hidden_Data = nil
+	}
+}
+
+const UploadFileRequest_Data_not_set_case case_UploadFileRequest_Data = 0
+const UploadFileRequest_Metadata_case case_UploadFileRequest_Data = 1
+const UploadFileRequest_Chunk_case case_UploadFileRequest_Data = 2
+
+func (x *UploadFileRequest) WhichData() case_UploadFileRequest_Data {
+	if x == nil {
+		return UploadFileRequest_Data_not_set_case
+	}
+	switch x.xxx_hidden_Data.(type) {
+	case *uploadFileRequest_Metadata:
+		return UploadFileRequest_Metadata_case
+	case *uploadFileRequest_Chunk:
+		return UploadFileRequest_Chunk_case
+	default:
+		return UploadFileRequest_Data_not_set_case
+	}
+}
+
+type UploadFileRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Fields of oneof xxx_hidden_Data:
+	Metadata *FileMetadata
+	Chunk    []byte
+	// -- end of xxx_hidden_Data
+}
+
+func (b0 UploadFileRequest_builder) Build() *UploadFileRequest {
+	m0 := &UploadFileRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Metadata != nil {
+		x.xxx_hidden_Data = &uploadFileRequest_Metadata{b.Metadata}
+	}
+	if b.Chunk != nil {
+		x.xxx_hidden_Data = &uploadFileRequest_Chunk{b.Chunk}
+	}
+	return m0
+}
+
+type case_UploadFileRequest_Data protoreflect.FieldNumber
+
+func (x case_UploadFileRequest_Data) String() string {
+	md := file_proto_file_file_proto_msgTypes[1].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isUploadFileRequest_Data interface {
+	isUploadFileRequest_Data()
+}
+
+type uploadFileRequest_Metadata struct {
+	Metadata *FileMetadata `protobuf:"bytes,1,opt,name=metadata,oneof"` // Передается первым сообщением в потоке
+}
+
+type uploadFileRequest_Chunk struct {
+	Chunk []byte `protobuf:"bytes,2,opt,name=chunk,oneof"` // Последующие бинарные чанки (например, по 64 КБ - 512 КБ)
+}
+
+func (*uploadFileRequest_Metadata) isUploadFileRequest_Data() {}
+
+func (*uploadFileRequest_Chunk) isUploadFileRequest_Data() {}
+
+type FileMetadata struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Size        int64                  `protobuf:"varint,2,opt,name=size"`
+	xxx_hidden_Checksum    *string                `protobuf:"bytes,3,opt,name=checksum"`
+	xxx_hidden_Filename    *string                `protobuf:"bytes,4,opt,name=filename"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *FileMetadata) Reset() {
+	*x = FileMetadata{}
+	mi := &file_proto_file_file_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FileMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FileMetadata) ProtoMessage() {}
+
+func (x *FileMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_file_file_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *FileMetadata) GetName() string {
 	if x != nil {
 		if x.xxx_hidden_Name != nil {
 			return *x.xxx_hidden_Name
@@ -211,99 +446,158 @@ func (x *CreateRequest) GetName() string {
 	return ""
 }
 
-func (x *CreateRequest) GetFile() string {
+func (x *FileMetadata) GetSize() int64 {
 	if x != nil {
-		if x.xxx_hidden_File != nil {
-			return *x.xxx_hidden_File
+		return x.xxx_hidden_Size
+	}
+	return 0
+}
+
+func (x *FileMetadata) GetChecksum() string {
+	if x != nil {
+		if x.xxx_hidden_Checksum != nil {
+			return *x.xxx_hidden_Checksum
 		}
 		return ""
 	}
 	return ""
 }
 
-func (x *CreateRequest) SetName(v string) {
+func (x *FileMetadata) GetFilename() string {
+	if x != nil {
+		if x.xxx_hidden_Filename != nil {
+			return *x.xxx_hidden_Filename
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *FileMetadata) SetName(v string) {
 	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
-func (x *CreateRequest) SetFile(v string) {
-	x.xxx_hidden_File = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+func (x *FileMetadata) SetSize(v int64) {
+	x.xxx_hidden_Size = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
-func (x *CreateRequest) HasName() bool {
+func (x *FileMetadata) SetChecksum(v string) {
+	x.xxx_hidden_Checksum = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *FileMetadata) SetFilename(v string) {
+	x.xxx_hidden_Filename = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+}
+
+func (x *FileMetadata) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *CreateRequest) HasFile() bool {
+func (x *FileMetadata) HasSize() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *CreateRequest) ClearName() {
+func (x *FileMetadata) HasChecksum() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *FileMetadata) HasFilename() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *FileMetadata) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
 }
 
-func (x *CreateRequest) ClearFile() {
+func (x *FileMetadata) ClearSize() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_File = nil
+	x.xxx_hidden_Size = 0
 }
 
-type CreateRequest_builder struct {
+func (x *FileMetadata) ClearChecksum() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Checksum = nil
+}
+
+func (x *FileMetadata) ClearFilename() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Filename = nil
+}
+
+type FileMetadata_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Name *string
-	File *string
+	Name     *string
+	Size     *int64
+	Checksum *string
+	Filename *string
 }
 
-func (b0 CreateRequest_builder) Build() *CreateRequest {
-	m0 := &CreateRequest{}
+func (b0 FileMetadata_builder) Build() *FileMetadata {
+	m0 := &FileMetadata{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
 		x.xxx_hidden_Name = b.Name
 	}
-	if b.File != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_File = b.File
+	if b.Size != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Size = *b.Size
+	}
+	if b.Checksum != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_Checksum = b.Checksum
+	}
+	if b.Filename != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		x.xxx_hidden_Filename = b.Filename
 	}
 	return m0
 }
 
-// Структура запроса на редактирование записи
-type UpdateRequest struct {
+type UploadFileResponse struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,2,opt,name=name"`
-	xxx_hidden_File        *string                `protobuf:"bytes,3,opt,name=file"`
+	xxx_hidden_File        *File                  `protobuf:"bytes,1,opt,name=file"`
+	xxx_hidden_Error       *string                `protobuf:"bytes,2,opt,name=error"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *UpdateRequest) Reset() {
-	*x = UpdateRequest{}
-	mi := &file_proto_file_file_proto_msgTypes[2]
+func (x *UploadFileResponse) Reset() {
+	*x = UploadFileResponse{}
+	mi := &file_proto_file_file_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpdateRequest) String() string {
+func (x *UploadFileResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpdateRequest) ProtoMessage() {}
+func (*UploadFileResponse) ProtoMessage() {}
 
-func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[2]
+func (x *UploadFileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_file_file_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -314,7 +608,110 @@ func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *UpdateRequest) GetId() string {
+func (x *UploadFileResponse) GetFile() *File {
+	if x != nil {
+		return x.xxx_hidden_File
+	}
+	return nil
+}
+
+func (x *UploadFileResponse) GetError() string {
+	if x != nil {
+		if x.xxx_hidden_Error != nil {
+			return *x.xxx_hidden_Error
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *UploadFileResponse) SetFile(v *File) {
+	x.xxx_hidden_File = v
+}
+
+func (x *UploadFileResponse) SetError(v string) {
+	x.xxx_hidden_Error = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *UploadFileResponse) HasFile() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_File != nil
+}
+
+func (x *UploadFileResponse) HasError() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *UploadFileResponse) ClearFile() {
+	x.xxx_hidden_File = nil
+}
+
+func (x *UploadFileResponse) ClearError() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Error = nil
+}
+
+type UploadFileResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	File  *File
+	Error *string
+}
+
+func (b0 UploadFileResponse_builder) Build() *UploadFileResponse {
+	m0 := &UploadFileResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_File = b.File
+	if b.Error != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Error = b.Error
+	}
+	return m0
+}
+
+// Запрос на скачивание файла (Server Streaming)
+type DownloadFileRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *DownloadFileRequest) Reset() {
+	*x = DownloadFileRequest{}
+	mi := &file_proto_file_file_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DownloadFileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DownloadFileRequest) ProtoMessage() {}
+
+func (x *DownloadFileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_file_file_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *DownloadFileRequest) GetId() string {
 	if x != nil {
 		if x.xxx_hidden_Id != nil {
 			return *x.xxx_hidden_Id
@@ -324,108 +721,214 @@ func (x *UpdateRequest) GetId() string {
 	return ""
 }
 
-func (x *UpdateRequest) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *UpdateRequest) GetFile() string {
-	if x != nil {
-		if x.xxx_hidden_File != nil {
-			return *x.xxx_hidden_File
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *UpdateRequest) SetId(v string) {
+func (x *DownloadFileRequest) SetId(v string) {
 	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
 }
 
-func (x *UpdateRequest) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
-}
-
-func (x *UpdateRequest) SetFile(v string) {
-	x.xxx_hidden_File = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
-}
-
-func (x *UpdateRequest) HasId() bool {
+func (x *DownloadFileRequest) HasId() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *UpdateRequest) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *UpdateRequest) HasFile() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
-}
-
-func (x *UpdateRequest) ClearId() {
+func (x *DownloadFileRequest) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
 }
 
-func (x *UpdateRequest) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Name = nil
-}
-
-func (x *UpdateRequest) ClearFile() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
-	x.xxx_hidden_File = nil
-}
-
-type UpdateRequest_builder struct {
+type DownloadFileRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	Id   *string
-	Name *string
-	File *string
+	Id *string
 }
 
-func (b0 UpdateRequest_builder) Build() *UpdateRequest {
-	m0 := &UpdateRequest{}
+func (b0 DownloadFileRequest_builder) Build() *DownloadFileRequest {
+	m0 := &DownloadFileRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
 		x.xxx_hidden_Id = b.Id
-	}
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.File != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
-		x.xxx_hidden_File = b.File
 	}
 	return m0
 }
 
-// Структура ответа с одной записью
+type DownloadFileResponse struct {
+	state           protoimpl.MessageState      `protogen:"opaque.v1"`
+	xxx_hidden_Data isDownloadFileResponse_Data `protobuf_oneof:"data"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *DownloadFileResponse) Reset() {
+	*x = DownloadFileResponse{}
+	mi := &file_proto_file_file_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DownloadFileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DownloadFileResponse) ProtoMessage() {}
+
+func (x *DownloadFileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_file_file_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *DownloadFileResponse) GetMetadata() *FileMetadata {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Data.(*downloadFileResponse_Metadata); ok {
+			return x.Metadata
+		}
+	}
+	return nil
+}
+
+func (x *DownloadFileResponse) GetChunk() []byte {
+	if x != nil {
+		if x, ok := x.xxx_hidden_Data.(*downloadFileResponse_Chunk); ok {
+			return x.Chunk
+		}
+	}
+	return nil
+}
+
+func (x *DownloadFileResponse) SetMetadata(v *FileMetadata) {
+	if v == nil {
+		x.xxx_hidden_Data = nil
+		return
+	}
+	x.xxx_hidden_Data = &downloadFileResponse_Metadata{v}
+}
+
+func (x *DownloadFileResponse) SetChunk(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Data = &downloadFileResponse_Chunk{v}
+}
+
+func (x *DownloadFileResponse) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Data != nil
+}
+
+func (x *DownloadFileResponse) HasMetadata() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Data.(*downloadFileResponse_Metadata)
+	return ok
+}
+
+func (x *DownloadFileResponse) HasChunk() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Data.(*downloadFileResponse_Chunk)
+	return ok
+}
+
+func (x *DownloadFileResponse) ClearData() {
+	x.xxx_hidden_Data = nil
+}
+
+func (x *DownloadFileResponse) ClearMetadata() {
+	if _, ok := x.xxx_hidden_Data.(*downloadFileResponse_Metadata); ok {
+		x.xxx_hidden_Data = nil
+	}
+}
+
+func (x *DownloadFileResponse) ClearChunk() {
+	if _, ok := x.xxx_hidden_Data.(*downloadFileResponse_Chunk); ok {
+		x.xxx_hidden_Data = nil
+	}
+}
+
+const DownloadFileResponse_Data_not_set_case case_DownloadFileResponse_Data = 0
+const DownloadFileResponse_Metadata_case case_DownloadFileResponse_Data = 1
+const DownloadFileResponse_Chunk_case case_DownloadFileResponse_Data = 2
+
+func (x *DownloadFileResponse) WhichData() case_DownloadFileResponse_Data {
+	if x == nil {
+		return DownloadFileResponse_Data_not_set_case
+	}
+	switch x.xxx_hidden_Data.(type) {
+	case *downloadFileResponse_Metadata:
+		return DownloadFileResponse_Metadata_case
+	case *downloadFileResponse_Chunk:
+		return DownloadFileResponse_Chunk_case
+	default:
+		return DownloadFileResponse_Data_not_set_case
+	}
+}
+
+type DownloadFileResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Fields of oneof xxx_hidden_Data:
+	Metadata *FileMetadata
+	Chunk    []byte
+	// -- end of xxx_hidden_Data
+}
+
+func (b0 DownloadFileResponse_builder) Build() *DownloadFileResponse {
+	m0 := &DownloadFileResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Metadata != nil {
+		x.xxx_hidden_Data = &downloadFileResponse_Metadata{b.Metadata}
+	}
+	if b.Chunk != nil {
+		x.xxx_hidden_Data = &downloadFileResponse_Chunk{b.Chunk}
+	}
+	return m0
+}
+
+type case_DownloadFileResponse_Data protoreflect.FieldNumber
+
+func (x case_DownloadFileResponse_Data) String() string {
+	md := file_proto_file_file_proto_msgTypes[5].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type isDownloadFileResponse_Data interface {
+	isDownloadFileResponse_Data()
+}
+
+type downloadFileResponse_Metadata struct {
+	Metadata *FileMetadata `protobuf:"bytes,1,opt,name=metadata,oneof"`
+}
+
+type downloadFileResponse_Chunk struct {
+	Chunk []byte `protobuf:"bytes,2,opt,name=chunk,oneof"`
+}
+
+func (*downloadFileResponse_Metadata) isDownloadFileResponse_Data() {}
+
+func (*downloadFileResponse_Chunk) isDownloadFileResponse_Data() {}
+
+// Стандартные сообщения для CRUD
 type ListResponse struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_File        *[]*File               `protobuf:"bytes,1,rep,name=file"`
+	xxx_hidden_Files       *[]*File               `protobuf:"bytes,1,rep,name=files"`
 	xxx_hidden_Error       *string                `protobuf:"bytes,2,opt,name=error"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
@@ -435,7 +938,7 @@ type ListResponse struct {
 
 func (x *ListResponse) Reset() {
 	*x = ListResponse{}
-	mi := &file_proto_file_file_proto_msgTypes[3]
+	mi := &file_proto_file_file_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -447,7 +950,7 @@ func (x *ListResponse) String() string {
 func (*ListResponse) ProtoMessage() {}
 
 func (x *ListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[3]
+	mi := &file_proto_file_file_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,10 +961,10 @@ func (x *ListResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *ListResponse) GetFile() []*File {
+func (x *ListResponse) GetFiles() []*File {
 	if x != nil {
-		if x.xxx_hidden_File != nil {
-			return *x.xxx_hidden_File
+		if x.xxx_hidden_Files != nil {
+			return *x.xxx_hidden_Files
 		}
 	}
 	return nil
@@ -477,8 +980,8 @@ func (x *ListResponse) GetError() string {
 	return ""
 }
 
-func (x *ListResponse) SetFile(v []*File) {
-	x.xxx_hidden_File = &v
+func (x *ListResponse) SetFiles(v []*File) {
+	x.xxx_hidden_Files = &v
 }
 
 func (x *ListResponse) SetError(v string) {
@@ -501,7 +1004,7 @@ func (x *ListResponse) ClearError() {
 type ListResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	File  []*File
+	Files []*File
 	Error *string
 }
 
@@ -509,7 +1012,7 @@ func (b0 ListResponse_builder) Build() *ListResponse {
 	m0 := &ListResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.xxx_hidden_File = &b.File
+	x.xxx_hidden_Files = &b.Files
 	if b.Error != nil {
 		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
 		x.xxx_hidden_Error = b.Error
@@ -517,7 +1020,6 @@ func (b0 ListResponse_builder) Build() *ListResponse {
 	return m0
 }
 
-// Структура ответа с одной записью
 type Response struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_File        *File                  `protobuf:"bytes,1,opt,name=file"`
@@ -530,7 +1032,7 @@ type Response struct {
 
 func (x *Response) Reset() {
 	*x = Response{}
-	mi := &file_proto_file_file_proto_msgTypes[4]
+	mi := &file_proto_file_file_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -542,7 +1044,7 @@ func (x *Response) String() string {
 func (*Response) ProtoMessage() {}
 
 func (x *Response) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_file_file_proto_msgTypes[4]
+	mi := &file_proto_file_file_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -626,41 +1128,60 @@ var File_proto_file_file_proto protoreflect.FileDescriptor
 const file_proto_file_file_proto_rawDesc = "" +
 	"\n" +
 	"\x15proto/file/file.proto\x12\n" +
-	"proto.file\">\n" +
+	"proto.file\"v\n" +
 	"\x04File\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04file\x18\x03 \x01(\tR\x04file\"7\n" +
-	"\rCreateRequest\x12\x12\n" +
+	"\x04size\x18\x03 \x01(\x03R\x04size\x12\x1a\n" +
+	"\bchecksum\x18\x04 \x01(\tR\bchecksum\x12\x1a\n" +
+	"\bfilename\x18\x05 \x01(\tR\bfilename\"k\n" +
+	"\x11UploadFileRequest\x126\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x18.proto.file.FileMetadataH\x00R\bmetadata\x12\x16\n" +
+	"\x05chunk\x18\x02 \x01(\fH\x00R\x05chunkB\x06\n" +
+	"\x04data\"n\n" +
+	"\fFileMetadata\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
-	"\x04file\x18\x02 \x01(\tR\x04file\"G\n" +
-	"\rUpdateRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04file\x18\x03 \x01(\tR\x04file\"J\n" +
-	"\fListResponse\x12$\n" +
-	"\x04file\x18\x01 \x03(\v2\x10.proto.file.FileR\x04file\x12\x14\n" +
+	"\x04size\x18\x02 \x01(\x03R\x04size\x12\x1a\n" +
+	"\bchecksum\x18\x03 \x01(\tR\bchecksum\x12\x1a\n" +
+	"\bfilename\x18\x04 \x01(\tR\bfilename\"P\n" +
+	"\x12UploadFileResponse\x12$\n" +
+	"\x04file\x18\x01 \x01(\v2\x10.proto.file.FileR\x04file\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"%\n" +
+	"\x13DownloadFileRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"n\n" +
+	"\x14DownloadFileResponse\x126\n" +
+	"\bmetadata\x18\x01 \x01(\v2\x18.proto.file.FileMetadataH\x00R\bmetadata\x12\x16\n" +
+	"\x05chunk\x18\x02 \x01(\fH\x00R\x05chunkB\x06\n" +
+	"\x04data\"L\n" +
+	"\fListResponse\x12&\n" +
+	"\x05files\x18\x01 \x03(\v2\x10.proto.file.FileR\x05files\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\"F\n" +
 	"\bResponse\x12$\n" +
 	"\x04file\x18\x01 \x01(\v2\x10.proto.file.FileR\x04file\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05errorB+Z)github.com/alexsey-popov/gkeep/proto/fileb\beditionsp\xe8\a"
 
-var file_proto_file_file_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_proto_file_file_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_proto_file_file_proto_goTypes = []any{
-	(*File)(nil),          // 0: proto.file.File
-	(*CreateRequest)(nil), // 1: proto.file.CreateRequest
-	(*UpdateRequest)(nil), // 2: proto.file.UpdateRequest
-	(*ListResponse)(nil),  // 3: proto.file.ListResponse
-	(*Response)(nil),      // 4: proto.file.Response
+	(*File)(nil),                 // 0: proto.file.File
+	(*UploadFileRequest)(nil),    // 1: proto.file.UploadFileRequest
+	(*FileMetadata)(nil),         // 2: proto.file.FileMetadata
+	(*UploadFileResponse)(nil),   // 3: proto.file.UploadFileResponse
+	(*DownloadFileRequest)(nil),  // 4: proto.file.DownloadFileRequest
+	(*DownloadFileResponse)(nil), // 5: proto.file.DownloadFileResponse
+	(*ListResponse)(nil),         // 6: proto.file.ListResponse
+	(*Response)(nil),             // 7: proto.file.Response
 }
 var file_proto_file_file_proto_depIdxs = []int32{
-	0, // 0: proto.file.ListResponse.file:type_name -> proto.file.File
-	0, // 1: proto.file.Response.file:type_name -> proto.file.File
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 0: proto.file.UploadFileRequest.metadata:type_name -> proto.file.FileMetadata
+	0, // 1: proto.file.UploadFileResponse.file:type_name -> proto.file.File
+	2, // 2: proto.file.DownloadFileResponse.metadata:type_name -> proto.file.FileMetadata
+	0, // 3: proto.file.ListResponse.files:type_name -> proto.file.File
+	0, // 4: proto.file.Response.file:type_name -> proto.file.File
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_file_file_proto_init() }
@@ -668,13 +1189,21 @@ func file_proto_file_file_proto_init() {
 	if File_proto_file_file_proto != nil {
 		return
 	}
+	file_proto_file_file_proto_msgTypes[1].OneofWrappers = []any{
+		(*uploadFileRequest_Metadata)(nil),
+		(*uploadFileRequest_Chunk)(nil),
+	}
+	file_proto_file_file_proto_msgTypes[5].OneofWrappers = []any{
+		(*downloadFileResponse_Metadata)(nil),
+		(*downloadFileResponse_Chunk)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_file_file_proto_rawDesc), len(file_proto_file_file_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

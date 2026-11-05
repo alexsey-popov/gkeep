@@ -51,6 +51,6 @@ service API {
   rpc FileList(ListRequest) returns (file.ListResponse);
   rpc FileShow(IDRequest) returns (file.Response);
   rpc FileDelete(IDRequest) returns (file.Response);
-  rpc FileCreate(file.CreateRequest) returns (file.Response);
-  rpc FileUpdate(file.UpdateRequest) returns (file.Response);
+  rpc FileUpload(stream file.UploadFileRequest) returns (file.UploadFileResponse);
+  rpc FileDownload(file.DownloadFileRequest) returns (stream file.DownloadFileResponse);
 }

@@ -44,8 +44,8 @@ const (
 	API_FileList_FullMethodName       = "/proto.API/FileList"
 	API_FileShow_FullMethodName       = "/proto.API/FileShow"
 	API_FileDelete_FullMethodName     = "/proto.API/FileDelete"
-	API_FileCreate_FullMethodName     = "/proto.API/FileCreate"
-	API_FileUpdate_FullMethodName     = "/proto.API/FileUpdate"
+	API_FileUpload_FullMethodName     = "/proto.API/FileUpload"
+	API_FileDownload_FullMethodName   = "/proto.API/FileDownload"
 )
 
 // APIClient is the client API for API service.
@@ -77,8 +77,8 @@ type APIClient interface {
 	FileList(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*file.ListResponse, error)
 	FileShow(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*file.Response, error)
 	FileDelete(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*file.Response, error)
-	FileCreate(ctx context.Context, in *file.CreateRequest, opts ...grpc.CallOption) (*file.Response, error)
-	FileUpdate(ctx context.Context, in *file.UpdateRequest, opts ...grpc.CallOption) (*file.Response, error)
+	FileUpload(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[file.UploadFileRequest, file.UploadFileResponse], error)
+	FileDownload(ctx context.Context, in *file.DownloadFileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[file.DownloadFileResponse], error)
 }
 
 type aPIClient struct {
@@ -289,25 +289,37 @@ func (c *aPIClient) FileDelete(ctx context.Context, in *IDRequest, opts ...grpc.
 	return out, nil
 }
 
-func (c *aPIClient) FileCreate(ctx context.Context, in *file.CreateRequest, opts ...grpc.CallOption) (*file.Response, error) {
+func (c *aPIClient) FileUpload(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[file.UploadFileRequest, file.UploadFileResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(file.Response)
-	err := c.cc.Invoke(ctx, API_FileCreate_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &API_ServiceDesc.Streams[0], API_FileUpload_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[file.UploadFileRequest, file.UploadFileResponse]{ClientStream: stream}
+	return x, nil
 }
 
-func (c *aPIClient) FileUpdate(ctx context.Context, in *file.UpdateRequest, opts ...grpc.CallOption) (*file.Response, error) {
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type API_FileUploadClient = grpc.ClientStreamingClient[file.UploadFileRequest, file.UploadFileResponse]
+
+func (c *aPIClient) FileDownload(ctx context.Context, in *file.DownloadFileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[file.DownloadFileResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(file.Response)
-	err := c.cc.Invoke(ctx, API_FileUpdate_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &API_ServiceDesc.Streams[1], API_FileDownload_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[file.DownloadFileRequest, file.DownloadFileResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type API_FileDownloadClient = grpc.ServerStreamingClient[file.DownloadFileResponse]
 
 // APIServer is the server API for API service.
 // All implementations must embed UnimplementedAPIServer
@@ -338,8 +350,8 @@ type APIServer interface {
 	FileList(context.Context, *ListRequest) (*file.ListResponse, error)
 	FileShow(context.Context, *IDRequest) (*file.Response, error)
 	FileDelete(context.Context, *IDRequest) (*file.Response, error)
-	FileCreate(context.Context, *file.CreateRequest) (*file.Response, error)
-	FileUpdate(context.Context, *file.UpdateRequest) (*file.Response, error)
+	FileUpload(grpc.ClientStreamingServer[file.UploadFileRequest, file.UploadFileResponse]) error
+	FileDownload(*file.DownloadFileRequest, grpc.ServerStreamingServer[file.DownloadFileResponse]) error
 	mustEmbedUnimplementedAPIServer()
 }
 
@@ -410,11 +422,11 @@ func (UnimplementedAPIServer) FileShow(context.Context, *IDRequest) (*file.Respo
 func (UnimplementedAPIServer) FileDelete(context.Context, *IDRequest) (*file.Response, error) {
 	return nil, status.Error(codes.Unimplemented, "method FileDelete not implemented")
 }
-func (UnimplementedAPIServer) FileCreate(context.Context, *file.CreateRequest) (*file.Response, error) {
-	return nil, status.Error(codes.Unimplemented, "method FileCreate not implemented")
+func (UnimplementedAPIServer) FileUpload(grpc.ClientStreamingServer[file.UploadFileRequest, file.UploadFileResponse]) error {
+	return status.Error(codes.Unimplemented, "method FileUpload not implemented")
 }
-func (UnimplementedAPIServer) FileUpdate(context.Context, *file.UpdateRequest) (*file.Response, error) {
-	return nil, status.Error(codes.Unimplemented, "method FileUpdate not implemented")
+func (UnimplementedAPIServer) FileDownload(*file.DownloadFileRequest, grpc.ServerStreamingServer[file.DownloadFileResponse]) error {
+	return status.Error(codes.Unimplemented, "method FileDownload not implemented")
 }
 func (UnimplementedAPIServer) mustEmbedUnimplementedAPIServer() {}
 func (UnimplementedAPIServer) testEmbeddedByValue()             {}
@@ -797,41 +809,23 @@ func _API_FileDelete_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _API_FileCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(file.CreateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(APIServer).FileCreate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: API_FileCreate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).FileCreate(ctx, req.(*file.CreateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+func _API_FileUpload_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(APIServer).FileUpload(&grpc.GenericServerStream[file.UploadFileRequest, file.UploadFileResponse]{ServerStream: stream})
 }
 
-func _API_FileUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(file.UpdateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type API_FileUploadServer = grpc.ClientStreamingServer[file.UploadFileRequest, file.UploadFileResponse]
+
+func _API_FileDownload_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(file.DownloadFileRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(APIServer).FileUpdate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: API_FileUpdate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(APIServer).FileUpdate(ctx, req.(*file.UpdateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(APIServer).FileDownload(m, &grpc.GenericServerStream[file.DownloadFileRequest, file.DownloadFileResponse]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type API_FileDownloadServer = grpc.ServerStreamingServer[file.DownloadFileResponse]
 
 // API_ServiceDesc is the grpc.ServiceDesc for API service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -920,15 +914,18 @@ var API_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "FileDelete",
 			Handler:    _API_FileDelete_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "FileCreate",
-			Handler:    _API_FileCreate_Handler,
+			StreamName:    "FileUpload",
+			Handler:       _API_FileUpload_Handler,
+			ClientStreams: true,
 		},
 		{
-			MethodName: "FileUpdate",
-			Handler:    _API_FileUpdate_Handler,
+			StreamName:    "FileDownload",
+			Handler:       _API_FileDownload_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "proto/schema.proto",
 }

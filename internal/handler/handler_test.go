@@ -31,12 +31,18 @@ import (
 type mockRepository struct {
 	users     map[string]*models.User
 	passwords map[string]*models.Password
+	cards     map[string]*models.Card
+	texts     map[string]*models.Text
+	files     map[string]*models.File
 }
 
 func newMockRepository() *mockRepository {
 	return &mockRepository{
 		users:     make(map[string]*models.User),
 		passwords: make(map[string]*models.Password),
+		cards:     make(map[string]*models.Card),
+		texts:     make(map[string]*models.Text),
+		files:     make(map[string]*models.File),
 	}
 }
 
@@ -94,14 +100,15 @@ func (m *mockRepository) PasswordList(ctx context.Context, userID, name, page st
 	return res, nil
 }
 
-func (m *mockRepository) PasswordUpdate(ctx context.Context, userID, login, password string) (*models.Password, error) {
-	for _, p := range m.passwords {
-		if p.UserId == userID && p.Login == login {
-			p.Password = password
-			return p, nil
-		}
+func (m *mockRepository) PasswordUpdate(ctx context.Context, userID, id, name, login, password string) (*models.Password, error) {
+	p, exists := m.passwords[id]
+	if !exists || p.UserId != userID {
+		return nil, sql.ErrNoRows
 	}
-	return nil, sql.ErrNoRows
+	p.Name = name
+	p.Login = login
+	p.Password = password
+	return p, nil
 }
 
 func (m *mockRepository) PasswordDelete(ctx context.Context, userID, id string) (*models.Password, error) {
@@ -113,6 +120,161 @@ func (m *mockRepository) PasswordDelete(ctx context.Context, userID, id string) 
 	return p, nil
 }
 
+func (m *mockRepository) CardCreate(ctx context.Context, userID, name, number, expired, code string) (*models.Card, error) {
+	for _, c := range m.cards {
+		if c.UserId == userID && c.Name == name {
+			return nil, repository.ErrConflictUnique
+		}
+	}
+	id := fmt.Sprintf("card-%d", len(m.cards)+1)
+	card := &models.Card{
+		Id:        id,
+		UserId:    userID,
+		Name:      name,
+		Number:    number,
+		Expired:   expired,
+		Code:      code,
+		CreatedAt: time.Now(),
+	}
+	m.cards[id] = card
+	return card, nil
+}
+
+func (m *mockRepository) CardList(ctx context.Context, userID, name, page string) ([]models.Card, error) {
+	var res []models.Card
+	for _, c := range m.cards {
+		if c.UserId == userID {
+			if name != "" && !strings.Contains(strings.ToLower(c.Name), strings.ToLower(name)) {
+				continue
+			}
+			res = append(res, *c)
+		}
+	}
+	return res, nil
+}
+
+func (m *mockRepository) CardUpdate(ctx context.Context, userID, id, name, number, expired, code string) (*models.Card, error) {
+	c, exists := m.cards[id]
+	if !exists || c.UserId != userID {
+		return nil, sql.ErrNoRows
+	}
+	c.Name = name
+	c.Number = number
+	c.Expired = expired
+	c.Code = code
+	return c, nil
+}
+
+func (m *mockRepository) CardDelete(ctx context.Context, userID, id string) (*models.Card, error) {
+	c, exists := m.cards[id]
+	if !exists || c.UserId != userID {
+		return nil, sql.ErrNoRows
+	}
+	delete(m.cards, id)
+	return c, nil
+}
+
+func (m *mockRepository) TextCreate(ctx context.Context, userID, name, text string) (*models.Text, error) {
+	for _, t := range m.texts {
+		if t.UserId == userID && t.Name == name {
+			return nil, repository.ErrConflictUnique
+		}
+	}
+	id := fmt.Sprintf("text-%d", len(m.texts)+1)
+	t := &models.Text{
+		Id:        id,
+		UserId:    userID,
+		Name:      name,
+		Text:      text,
+		CreatedAt: time.Now(),
+	}
+	m.texts[id] = t
+	return t, nil
+}
+
+func (m *mockRepository) TextList(ctx context.Context, userID, name, page string) ([]models.Text, error) {
+	var res []models.Text
+	for _, t := range m.texts {
+		if t.UserId == userID {
+			if name != "" && !strings.Contains(strings.ToLower(t.Name), strings.ToLower(name)) {
+				continue
+			}
+			res = append(res, *t)
+		}
+	}
+	return res, nil
+}
+
+func (m *mockRepository) TextUpdate(ctx context.Context, userID, id, name, text string) (*models.Text, error) {
+	t, exists := m.texts[id]
+	if !exists || t.UserId != userID {
+		return nil, sql.ErrNoRows
+	}
+	t.Name = name
+	t.Text = text
+	return t, nil
+}
+
+func (m *mockRepository) TextDelete(ctx context.Context, userID, id string) (*models.Text, error) {
+	t, exists := m.texts[id]
+	if !exists || t.UserId != userID {
+		return nil, sql.ErrNoRows
+	}
+	delete(m.texts, id)
+	return t, nil
+}
+
+func (m *mockRepository) FileCreate(ctx context.Context, userID, name, filename, storagePath string, size int64, checksum string) (*models.File, error) {
+	for _, f := range m.files {
+		if f.UserId == userID && f.Name == name {
+			return nil, repository.ErrConflictUnique
+		}
+	}
+	id := fmt.Sprintf("file-%d", len(m.files)+1)
+	f := &models.File{
+		Id:          id,
+		UserId:      userID,
+		Name:        name,
+		Filename:    filename,
+		StoragePath: storagePath,
+		Size:        size,
+		Checksum:    checksum,
+		CreatedAt:   time.Now(),
+	}
+	m.files[id] = f
+	return f, nil
+}
+
+func (m *mockRepository) FileList(ctx context.Context, userID, name, page string) ([]models.File, error) {
+	var res []models.File
+	for _, f := range m.files {
+		if f.UserId == userID {
+			if name != "" && !strings.Contains(strings.ToLower(f.Name), strings.ToLower(name)) {
+				continue
+			}
+			res = append(res, *f)
+		}
+	}
+	return res, nil
+}
+
+func (m *mockRepository) FileShow(ctx context.Context, userID, id string) (*models.File, error) {
+	f, exists := m.files[id]
+	if !exists || f.UserId != userID {
+		return nil, sql.ErrNoRows
+	}
+	return f, nil
+}
+
+func (m *mockRepository) FileDelete(ctx context.Context, userID, id string) (*models.File, error) {
+	f, exists := m.files[id]
+	if !exists || f.UserId != userID {
+		return nil, sql.ErrNoRows
+	}
+	delete(m.files, id)
+	return f, nil
+}
+
 func TestHandler_RegisterAndLoginUser(t *testing.T) {
 	secret := "secret-key"
 	guard := auth.New(secret)
@@ -120,7 +282,7 @@ func TestHandler_RegisterAndLoginUser(t *testing.T) {
 	h := New(rep, guard)
 
 	t.Run("RegisterUser - успешная регистрация и отправка метаданных", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("testuser")
 		req.SetPassword("password123")
 
@@ -136,7 +298,7 @@ func TestHandler_RegisterAndLoginUser(t *testing.T) {
 	})
 
 	t.Run("RegisterUser - конфликт логина", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("testuser")
 		req.SetPassword("password123")
 
@@ -149,7 +311,7 @@ func TestHandler_RegisterAndLoginUser(t *testing.T) {
 	})
 
 	t.Run("LoginUser - успешный вход", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("testuser")
 		req.SetPassword("password123")
 
@@ -160,7 +322,7 @@ func TestHandler_RegisterAndLoginUser(t *testing.T) {
 	})
 
 	t.Run("LoginUser - неверный пароль", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("testuser")
 		req.SetPassword("wrongpassword")
 
@@ -173,7 +335,7 @@ func TestHandler_RegisterAndLoginUser(t *testing.T) {
 	})
 
 	t.Run("LoginUser - несуществующий пользователь", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("nonexistent")
 		req.SetPassword("password123")
 
@@ -221,7 +383,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	var authToken string
 
 	t.Run("1. Регистрация нового пользователя (без токена) - успех + получение токена в header metadata", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("john_doe")
 		req.SetPassword("strong_password")
 
@@ -242,7 +404,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	})
 
 	t.Run("2. Повторная регистрация под тем же логином (без токена) - ошибка AlreadyExists", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("john_doe")
 		req.SetPassword("strong_password")
 
@@ -254,7 +416,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	})
 
 	t.Run("3. Регистрация авторизованным пользователем (обратная проверка) - ошибка PermissionDenied", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("another_user")
 		req.SetPassword("strong_password")
 
@@ -267,7 +429,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	})
 
 	t.Run("4. Логин авторизованным пользователем (обратная проверка) - ошибка PermissionDenied", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("john_doe")
 		req.SetPassword("strong_password")
 
@@ -280,7 +442,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	})
 
 	t.Run("5. Успешный логин неавторизованным пользователем - успех + получение токена в metadata", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("john_doe")
 		req.SetPassword("strong_password")
 
@@ -295,7 +457,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	})
 
 	t.Run("6. Логин с неверным паролем - ошибка Unauthenticated", func(t *testing.T) {
-		req := &pb.UserRequest{}
+		req := &pb.Request{}
 		req.SetLogin("john_doe")
 		req.SetPassword("wrong_password")
 
@@ -309,7 +471,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	var createdPasswordID string
 
 	t.Run("7. PasswordCreate без токена - ошибка Unauthenticated", func(t *testing.T) {
-		req := &pbPassword.PasswordCreateRequest{}
+		req := &pbPassword.CreateRequest{}
 		req.SetName("Google")
 		req.SetLogin("john@gmail.com")
 		req.SetPassword("mysecret123")
@@ -322,7 +484,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	})
 
 	t.Run("8. PasswordCreate с токеном - успех", func(t *testing.T) {
-		req := &pbPassword.PasswordCreateRequest{}
+		req := &pbPassword.CreateRequest{}
 		req.SetName("Google")
 		req.SetLogin("john@gmail.com")
 		req.SetPassword("mysecret123")
@@ -339,7 +501,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 	})
 
 	t.Run("9. PasswordCreate дубликат имени - ошибка AlreadyExists", func(t *testing.T) {
-		req := &pbPassword.PasswordCreateRequest{}
+		req := &pbPassword.CreateRequest{}
 		req.SetName("Google")
 		req.SetLogin("john@gmail.com")
 		req.SetPassword("otherpass")
@@ -354,7 +516,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 
 	t.Run("10. PasswordList - получение списка паролей", func(t *testing.T) {
 		ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("authorization", "Bearer "+authToken))
-		req := &pbPassword.PasswordListRequest{}
+		req := &api.ListRequest{}
 
 		resp, err := client.PasswordList(ctx, req)
 		require.NoError(t, err)
@@ -366,7 +528,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 		ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("authorization", "Bearer "+authToken))
 
 		// Добавляем еще одну запись
-		req2 := &pbPassword.PasswordCreateRequest{}
+		req2 := &pbPassword.CreateRequest{}
 		req2.SetName("GitHub")
 		req2.SetLogin("john_git")
 		req2.SetPassword("gitpass")
@@ -374,7 +536,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 		require.NoError(t, err)
 
 		// Поиск по "goog"
-		listReq := &pbPassword.PasswordListRequest{}
+		listReq := &api.ListRequest{}
 		listReq.SetName("goog")
 		resp, err := client.PasswordList(ctx, listReq)
 		require.NoError(t, err)
@@ -384,7 +546,9 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 
 	t.Run("12. PasswordUpdate - успешное обновление пароля", func(t *testing.T) {
 		ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("authorization", "Bearer "+authToken))
-		req := &pbPassword.PasswordUpdateRequest{}
+		req := &pbPassword.UpdateRequest{}
+		req.SetId(createdPasswordID)
+		req.SetName("Google")
 		req.SetLogin("john@gmail.com")
 		req.SetPassword("newsecret456")
 
@@ -396,7 +560,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 
 	t.Run("13. PasswordDelete - успешное удаление записи", func(t *testing.T) {
 		ctx := metadata.NewOutgoingContext(context.Background(), metadata.Pairs("authorization", "Bearer "+authToken))
-		req := &pbPassword.PasswordDeleteRequest{}
+		req := &api.IDRequest{}
 		req.SetId(createdPasswordID)
 
 		resp, err := client.PasswordDelete(ctx, req)
@@ -405,7 +569,7 @@ func TestGRPCServer_IntegrationWithInterceptor(t *testing.T) {
 		assert.Equal(t, createdPasswordID, resp.GetPassword().GetId())
 
 		// Проверяем, что удаленная запись больше не возвращается
-		listReq := &pbPassword.PasswordListRequest{}
+		listReq := &api.ListRequest{}
 		listReq.SetName("Google")
 		listResp, err := client.PasswordList(ctx, listReq)
 		require.NoError(t, err)
@@ -428,7 +592,7 @@ func TestHandler_PasswordUnitMethods(t *testing.T) {
 	authCtx := jwtauth.NewContext(context.Background(), token, nil)
 
 	t.Run("PasswordCreate - пустой контекст без токена", func(t *testing.T) {
-		req := &pbPassword.PasswordCreateRequest{}
+		req := &pbPassword.CreateRequest{}
 		req.SetName("Test")
 		req.SetLogin("login")
 		req.SetPassword("pass")
@@ -442,7 +606,7 @@ func TestHandler_PasswordUnitMethods(t *testing.T) {
 	})
 
 	t.Run("PasswordCreate - пустое имя", func(t *testing.T) {
-		req := &pbPassword.PasswordCreateRequest{}
+		req := &pbPassword.CreateRequest{}
 		req.SetName("   ")
 		req.SetLogin("login")
 		req.SetPassword("pass")
@@ -455,21 +619,10 @@ func TestHandler_PasswordUnitMethods(t *testing.T) {
 		assert.Nil(t, resp.GetPassword())
 	})
 
-	t.Run("PasswordUpdate - пустой логин", func(t *testing.T) {
-		req := &pbPassword.PasswordUpdateRequest{}
-		req.SetLogin("   ")
-		req.SetPassword("pass")
-
-		resp, err := h.PasswordUpdate(authCtx, req)
-		require.Error(t, err)
-		st, ok := status.FromError(err)
-		require.True(t, ok)
-		assert.Equal(t, codes.InvalidArgument, st.Code())
-		assert.Nil(t, resp.GetPassword())
-	})
-
 	t.Run("PasswordUpdate - запись не найдена", func(t *testing.T) {
-		req := &pbPassword.PasswordUpdateRequest{}
+		req := &pbPassword.UpdateRequest{}
+		req.SetId("unknown_id")
+		req.SetName("Name")
 		req.SetLogin("unknown_login")
 		req.SetPassword("pass")
 
@@ -482,7 +635,7 @@ func TestHandler_PasswordUnitMethods(t *testing.T) {
 	})
 
 	t.Run("PasswordDelete - пустой id", func(t *testing.T) {
-		req := &pbPassword.PasswordDeleteRequest{}
+		req := &api.IDRequest{}
 		req.SetId("   ")
 
 		resp, err := h.PasswordDelete(authCtx, req)
@@ -494,7 +647,7 @@ func TestHandler_PasswordUnitMethods(t *testing.T) {
 	})
 
 	t.Run("PasswordDelete - несуществующий id", func(t *testing.T) {
-		req := &pbPassword.PasswordDeleteRequest{}
+		req := &api.IDRequest{}
 		req.SetId("non-existent-id")
 
 		resp, err := h.PasswordDelete(authCtx, req)

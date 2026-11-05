@@ -25,4 +25,4 @@ CREATE INDEX idx_texts_user_id ON texts(user_id);
 ALTER TABLE texts
     ADD CONSTRAINT fk_texts_users
         FOREIGN KEY (user_id)
-            REFERENCES users(id);
+            REFERENCES users(id) ON DELETE CASCADE;

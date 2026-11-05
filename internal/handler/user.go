@@ -13,8 +13,8 @@ import (
 )
 
 // RegisterUser регистрация пользователя
-func (h *Handler) RegisterUser(ctx context.Context, in *pb.UserRequest) (*pb.UserResponse, error) {
-	var response pb.UserResponse
+func (h *Handler) RegisterUser(ctx context.Context, in *pb.Request) (*pb.Response, error) {
+	var response pb.Response
 
 	password := in.GetPassword()
 	if h.guard != nil {
@@ -62,8 +62,8 @@ func (h *Handler) RegisterUser(ctx context.Context, in *pb.UserRequest) (*pb.Use
 }
 
 // LoginUser аутентификация пользователя
-func (h *Handler) LoginUser(ctx context.Context, in *pb.UserRequest) (*pb.UserResponse, error) {
-	var response pb.UserResponse
+func (h *Handler) LoginUser(ctx context.Context, in *pb.Request) (*pb.Response, error) {
+	var response pb.Response
 
 	user, err := h.rep.GetUser(ctx, in.GetLogin())
 	if err != nil {

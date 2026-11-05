@@ -29,4 +29,4 @@ CREATE INDEX idx_cards_user_id ON cards(user_id);
 ALTER TABLE cards
     ADD CONSTRAINT fk_cards_users
         FOREIGN KEY (user_id)
-            REFERENCES users(id);
+            REFERENCES users(id) ON DELETE CASCADE;

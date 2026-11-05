@@ -151,6 +151,64 @@ func (g Guard) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 
+// StreamServerInterceptor возвращает stream interceptor для gRPC сервера с аутентификацией через metadata
+func (g Guard) StreamServerInterceptor() grpc.StreamServerInterceptor {
+	return func(
+		srv any,
+		ss grpc.ServerStream,
+		info *grpc.StreamServerInfo,
+		handler grpc.StreamHandler,
+	) error {
+		ctx := ss.Context()
+		tokenString := ExtractTokenFromMetadata(ctx)
+
+		if isGuestMethod(info.FullMethod) {
+			// Если эндпоинт предназначен для неаутентифицированного пользователя - проверяем отсутствие аутентификации
+			if tokenString != "" {
+				token, err := g.jwt.Decode(tokenString)
+				if err == nil && token != nil {
+					return status.Error(codes.PermissionDenied, "пользователь уже аутентифицирован в системе")
+				}
+			}
+			return handler(srv, ss)
+		}
+
+		// Проверяем наличие токена
+		if tokenString == "" {
+			return status.Error(codes.Unauthenticated, "отсутствует токен аутентификации")
+		}
+
+		token, err := g.jwt.Decode(tokenString)
+		if err != nil || token == nil {
+			return status.Error(codes.Unauthenticated, "недействительный токен аутентификации")
+		}
+
+		// Помещаем токен в контекст для обработчика
+		ctx = jwtauth.NewContext(ctx, token, nil)
+
+		return handler(srv, newWrappedStream(ss, ctx))
+	}
+}
+
+// wrappedStream структура для подмены контекста в grpc.ServerStream
+type wrappedStream struct {
+	grpc.ServerStream
+	ctx context.Context
+}
+
+// Context возвращает контекст с установленными данными аутентификации
+func (w *wrappedStream) Context() context.Context {
+	return w.ctx
+}
+
+// newWrappedStream создает обертку над grpc.ServerStream с переданным контекстом
+func newWrappedStream(ss grpc.ServerStream, ctx context.Context) grpc.ServerStream {
+	return &wrappedStream{
+		ServerStream: ss,
+		ctx:          ctx,
+	}
+}
+
 // UserIDFromContext извлекает user_id из токена в контексте
 func UserIDFromContext(ctx context.Context) (string, error) {
 	_, claims, err := jwtauth.FromContext(ctx)

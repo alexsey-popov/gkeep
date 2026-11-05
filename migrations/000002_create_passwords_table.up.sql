@@ -27,4 +27,4 @@ CREATE INDEX idx_passwords_user_id ON passwords(user_id);
 ALTER TABLE passwords
     ADD CONSTRAINT fk_passwords_users
         FOREIGN KEY (user_id)
-            REFERENCES users(id);
+            REFERENCES users(id) ON DELETE CASCADE;

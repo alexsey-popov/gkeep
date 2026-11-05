@@ -182,3 +182,147 @@ func TestUnaryServerInterceptor(t *testing.T) {
 		assert.Equal(t, codes.Unauthenticated, st.Code())
 	})
 }
+
+type mockServerStream struct {
+	grpc.ServerStream
+	ctx context.Context
+}
+
+func (m *mockServerStream) Context() context.Context {
+	return m.ctx
+}
+
+// TestStreamServerInterceptor Проверка gRPC stream интерцептора аутентификации
+func TestStreamServerInterceptor(t *testing.T) {
+	secret := "secret"
+	guard := New(secret)
+	interceptor := guard.StreamServerInterceptor()
+
+	dummyHandler := func(srv any, stream grpc.ServerStream) error {
+		userID, err := UserIDFromContext(stream.Context())
+		if err != nil {
+			return err
+		}
+		if userID != "user123" {
+			return status.Error(codes.InvalidArgument, "unexpected user id")
+		}
+		return nil
+	}
+
+	guestDummyHandler := func(srv any, stream grpc.ServerStream) error {
+		return nil
+	}
+
+	t.Run("guest method - positive (без токена для RegisterUser)", func(t *testing.T) {
+		stream := &mockServerStream{ctx: context.Background()}
+		info := &grpc.StreamServerInfo{
+			FullMethod: "/models.Users/RegisterUser",
+		}
+		err := interceptor(nil, stream, info, guestDummyHandler)
+		require.NoError(t, err)
+	})
+
+	t.Run("guest method - positive (без токена для LoginUser)", func(t *testing.T) {
+		stream := &mockServerStream{ctx: context.Background()}
+		info := &grpc.StreamServerInfo{
+			FullMethod: "/models.Users/LoginUser",
+		}
+		err := interceptor(nil, stream, info, guestDummyHandler)
+		require.NoError(t, err)
+	})
+
+	t.Run("guest method - negative (с валидным токеном в authorization Bearer)", func(t *testing.T) {
+		tokenString, _, err := guard.NewUserToken("user123")
+		require.NoError(t, err)
+
+		md := metadata.Pairs("authorization", "Bearer "+tokenString)
+		ctx := metadata.NewIncomingContext(context.Background(), md)
+		stream := &mockServerStream{ctx: ctx}
+		info := &grpc.StreamServerInfo{
+			FullMethod: "/models.Users/RegisterUser",
+		}
+
+		err = interceptor(nil, stream, info, guestDummyHandler)
+		require.Error(t, err)
+
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.PermissionDenied, st.Code())
+	})
+
+	t.Run("guest method - negative (с валидным токеном в заголовке token)", func(t *testing.T) {
+		tokenString, _, err := guard.NewUserToken("user123")
+		require.NoError(t, err)
+
+		md := metadata.Pairs("token", tokenString)
+		ctx := metadata.NewIncomingContext(context.Background(), md)
+		stream := &mockServerStream{ctx: ctx}
+		info := &grpc.StreamServerInfo{
+			FullMethod: "/models.Users/LoginUser",
+		}
+
+		err = interceptor(nil, stream, info, guestDummyHandler)
+		require.Error(t, err)
+
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.PermissionDenied, st.Code())
+	})
+
+	t.Run("guest method - positive (с невалидным токеном обратная проверка разрешает вызов)", func(t *testing.T) {
+		md := metadata.Pairs("authorization", "Bearer invalid-token")
+		ctx := metadata.NewIncomingContext(context.Background(), md)
+		stream := &mockServerStream{ctx: ctx}
+		info := &grpc.StreamServerInfo{
+			FullMethod: "/models.Users/RegisterUser",
+		}
+
+		err := interceptor(nil, stream, info, guestDummyHandler)
+		require.NoError(t, err)
+	})
+
+	t.Run("protected method - positive (с валидным токеном)", func(t *testing.T) {
+		tokenString, _, err := guard.NewUserToken("user123")
+		require.NoError(t, err)
+
+		md := metadata.Pairs("authorization", "Bearer "+tokenString)
+		ctx := metadata.NewIncomingContext(context.Background(), md)
+		stream := &mockServerStream{ctx: ctx}
+		info := &grpc.StreamServerInfo{
+			FullMethod: "/models.Data/StreamData",
+		}
+
+		err = interceptor(nil, stream, info, dummyHandler)
+		require.NoError(t, err)
+	})
+
+	t.Run("protected method - negative (без метаданных/токена)", func(t *testing.T) {
+		stream := &mockServerStream{ctx: context.Background()}
+		info := &grpc.StreamServerInfo{
+			FullMethod: "/models.Data/StreamData",
+		}
+
+		err := interceptor(nil, stream, info, dummyHandler)
+		require.Error(t, err)
+
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unauthenticated, st.Code())
+	})
+
+	t.Run("protected method - negative (с невалидным токеном)", func(t *testing.T) {
+		md := metadata.Pairs("authorization", "Bearer invalid.token.value")
+		ctx := metadata.NewIncomingContext(context.Background(), md)
+		stream := &mockServerStream{ctx: ctx}
+		info := &grpc.StreamServerInfo{
+			FullMethod: "/models.Data/StreamData",
+		}
+
+		err := interceptor(nil, stream, info, dummyHandler)
+		require.Error(t, err)
+
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unauthenticated, st.Code())
+	})
+}

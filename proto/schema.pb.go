@@ -225,7 +225,7 @@ const file_proto_schema_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04page\x18\x02 \x01(\tR\x04page\"\x1b\n" +
 	"\tIDRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id2\xb0\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id2\xd6\n" +
 	"\n" +
 	"\x03API\x129\n" +
 	"\fRegisterUser\x12\x13.proto.user.Request\x1a\x14.proto.user.Response\x126\n" +
@@ -254,34 +254,35 @@ const file_proto_schema_proto_rawDesc = "" +
 	"\bFileList\x12\x12.proto.ListRequest\x1a\x18.proto.file.ListResponse\x122\n" +
 	"\bFileShow\x12\x10.proto.IDRequest\x1a\x14.proto.file.Response\x124\n" +
 	"\n" +
-	"FileDelete\x12\x10.proto.IDRequest\x1a\x14.proto.file.Response\x12=\n" +
+	"FileDelete\x12\x10.proto.IDRequest\x1a\x14.proto.file.Response\x12M\n" +
 	"\n" +
-	"FileCreate\x12\x19.proto.file.CreateRequest\x1a\x14.proto.file.Response\x12=\n" +
-	"\n" +
-	"FileUpdate\x12\x19.proto.file.UpdateRequest\x1a\x14.proto.file.ResponseB&Z$github.com/alexsey-popov/gkeep/protob\beditionsp\xe8\a"
+	"FileUpload\x12\x1d.proto.file.UploadFileRequest\x1a\x1e.proto.file.UploadFileResponse(\x01\x12S\n" +
+	"\fFileDownload\x12\x1f.proto.file.DownloadFileRequest\x1a .proto.file.DownloadFileResponse0\x01B&Z$github.com/alexsey-popov/gkeep/protob\beditionsp\xe8\a"
 
 var file_proto_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_schema_proto_goTypes = []any{
-	(*ListRequest)(nil),            // 0: proto.ListRequest
-	(*IDRequest)(nil),              // 1: proto.IDRequest
-	(*user.Request)(nil),           // 2: proto.user.Request
-	(*password.CreateRequest)(nil), // 3: proto.password.CreateRequest
-	(*password.UpdateRequest)(nil), // 4: proto.password.UpdateRequest
-	(*card.CreateRequest)(nil),     // 5: proto.card.CreateRequest
-	(*card.UpdateRequest)(nil),     // 6: proto.card.UpdateRequest
-	(*text.CreateRequest)(nil),     // 7: proto.text.CreateRequest
-	(*text.UpdateRequest)(nil),     // 8: proto.text.UpdateRequest
-	(*file.CreateRequest)(nil),     // 9: proto.file.CreateRequest
-	(*file.UpdateRequest)(nil),     // 10: proto.file.UpdateRequest
-	(*user.Response)(nil),          // 11: proto.user.Response
-	(*password.ListResponse)(nil),  // 12: proto.password.ListResponse
-	(*password.Response)(nil),      // 13: proto.password.Response
-	(*card.ListResponse)(nil),      // 14: proto.card.ListResponse
-	(*card.Response)(nil),          // 15: proto.card.Response
-	(*text.ListResponse)(nil),      // 16: proto.text.ListResponse
-	(*text.Response)(nil),          // 17: proto.text.Response
-	(*file.ListResponse)(nil),      // 18: proto.file.ListResponse
-	(*file.Response)(nil),          // 19: proto.file.Response
+	(*ListRequest)(nil),               // 0: proto.ListRequest
+	(*IDRequest)(nil),                 // 1: proto.IDRequest
+	(*user.Request)(nil),              // 2: proto.user.Request
+	(*password.CreateRequest)(nil),    // 3: proto.password.CreateRequest
+	(*password.UpdateRequest)(nil),    // 4: proto.password.UpdateRequest
+	(*card.CreateRequest)(nil),        // 5: proto.card.CreateRequest
+	(*card.UpdateRequest)(nil),        // 6: proto.card.UpdateRequest
+	(*text.CreateRequest)(nil),        // 7: proto.text.CreateRequest
+	(*text.UpdateRequest)(nil),        // 8: proto.text.UpdateRequest
+	(*file.UploadFileRequest)(nil),    // 9: proto.file.UploadFileRequest
+	(*file.DownloadFileRequest)(nil),  // 10: proto.file.DownloadFileRequest
+	(*user.Response)(nil),             // 11: proto.user.Response
+	(*password.ListResponse)(nil),     // 12: proto.password.ListResponse
+	(*password.Response)(nil),         // 13: proto.password.Response
+	(*card.ListResponse)(nil),         // 14: proto.card.ListResponse
+	(*card.Response)(nil),             // 15: proto.card.Response
+	(*text.ListResponse)(nil),         // 16: proto.text.ListResponse
+	(*text.Response)(nil),             // 17: proto.text.Response
+	(*file.ListResponse)(nil),         // 18: proto.file.ListResponse
+	(*file.Response)(nil),             // 19: proto.file.Response
+	(*file.UploadFileResponse)(nil),   // 20: proto.file.UploadFileResponse
+	(*file.DownloadFileResponse)(nil), // 21: proto.file.DownloadFileResponse
 }
 var file_proto_schema_proto_depIdxs = []int32{
 	2,  // 0: proto.API.RegisterUser:input_type -> proto.user.Request
@@ -304,8 +305,8 @@ var file_proto_schema_proto_depIdxs = []int32{
 	0,  // 17: proto.API.FileList:input_type -> proto.ListRequest
 	1,  // 18: proto.API.FileShow:input_type -> proto.IDRequest
 	1,  // 19: proto.API.FileDelete:input_type -> proto.IDRequest
-	9,  // 20: proto.API.FileCreate:input_type -> proto.file.CreateRequest
-	10, // 21: proto.API.FileUpdate:input_type -> proto.file.UpdateRequest
+	9,  // 20: proto.API.FileUpload:input_type -> proto.file.UploadFileRequest
+	10, // 21: proto.API.FileDownload:input_type -> proto.file.DownloadFileRequest
 	11, // 22: proto.API.RegisterUser:output_type -> proto.user.Response
 	11, // 23: proto.API.LoginUser:output_type -> proto.user.Response
 	12, // 24: proto.API.PasswordList:output_type -> proto.password.ListResponse
@@ -326,8 +327,8 @@ var file_proto_schema_proto_depIdxs = []int32{
 	18, // 39: proto.API.FileList:output_type -> proto.file.ListResponse
 	19, // 40: proto.API.FileShow:output_type -> proto.file.Response
 	19, // 41: proto.API.FileDelete:output_type -> proto.file.Response
-	19, // 42: proto.API.FileCreate:output_type -> proto.file.Response
-	19, // 43: proto.API.FileUpdate:output_type -> proto.file.Response
+	20, // 42: proto.API.FileUpload:output_type -> proto.file.UploadFileResponse
+	21, // 43: proto.API.FileDownload:output_type -> proto.file.DownloadFileResponse
 	22, // [22:44] is the sub-list for method output_type
 	0,  // [0:22] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name

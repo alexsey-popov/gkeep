@@ -30,6 +30,11 @@ type Repository interface {
 	TextCreate(ctx context.Context, userID, name, text string) (*models.Text, error)
 	TextUpdate(ctx context.Context, userID, id, name, text string) (*models.Text, error)
 	TextDelete(ctx context.Context, userID, id string) (*models.Text, error)
+
+	FileList(ctx context.Context, userID, name, page string) ([]models.File, error)
+	FileShow(ctx context.Context, userID, id string) (*models.File, error)
+	FileCreate(ctx context.Context, userID, name, filename, storagePath string, size int64, checksum string) (*models.File, error)
+	FileDelete(ctx context.Context, userID, id string) (*models.File, error)
 }
 
 // ErrConflictUnique ошибка конфликта уникальности при выполнении команды
