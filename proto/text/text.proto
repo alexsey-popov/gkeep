@@ -11,36 +11,27 @@ message Text {
   string text = 3;
 }
 
-message TextListRequest {
-  string name = 1;
-  string page = 2;
-}
-
-message TextCreateRequest {
+// Структура запроса на создание записи
+message CreateRequest {
   string name = 1;
   string text = 2;
 }
 
-message TextUpdateRequest {
+// Структура запроса на редактирование записи
+message UpdateRequest {
   string id = 1;
   string name = 2;
   string text = 3;
 }
 
-message TextShowRequest {
-  string id = 1;
-}
-
-message TextDeleteRequest {
-  string id = 1;
-}
-
-message TextListResponse {
+// Структура ответа со списком записей
+message ListResponse {
   repeated Text text = 1;
   string error = 2;
 }
 
-message TextResponse {
+// Структура ответа с одной записью
+message Response {
   Text text = 1;
   string error = 2;
 }

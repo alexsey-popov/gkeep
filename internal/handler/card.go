@@ -8,14 +8,15 @@ import (
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/repository"
+	"github.com/alexsey-popov/gkeep/proto"
 	"github.com/alexsey-popov/gkeep/proto/card"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // CardList получение списка записей пользователя
-func (h *Handler) CardList(ctx context.Context, in *card.CardListRequest) (*card.CardListResponse, error) {
-	var response card.CardListResponse
+func (h *Handler) CardList(ctx context.Context, in *proto.ListRequest) (*card.ListResponse, error) {
+	var response card.ListResponse
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -49,8 +50,8 @@ func (h *Handler) CardList(ctx context.Context, in *card.CardListRequest) (*card
 }
 
 // CardCreate создание новой записи пароля
-func (h *Handler) CardCreate(ctx context.Context, in *card.CardCreateRequest) (*card.CardResponse, error) {
-	var response card.CardResponse
+func (h *Handler) CardCreate(ctx context.Context, in *card.CreateRequest) (*card.Response, error) {
+	var response card.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -88,8 +89,8 @@ func (h *Handler) CardCreate(ctx context.Context, in *card.CardCreateRequest) (*
 }
 
 // CardUpdate обновление пароля по логину
-func (h *Handler) CardUpdate(ctx context.Context, in *card.CardUpdateRequest) (*card.CardResponse, error) {
-	var response card.CardResponse
+func (h *Handler) CardUpdate(ctx context.Context, in *card.UpdateRequest) (*card.Response, error) {
+	var response card.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -118,8 +119,8 @@ func (h *Handler) CardUpdate(ctx context.Context, in *card.CardUpdateRequest) (*
 }
 
 // CardDelete удаление записи пароля по идентификатору
-func (h *Handler) CardDelete(ctx context.Context, in *card.CardDeleteRequest) (*card.CardResponse, error) {
-	var response card.CardResponse
+func (h *Handler) CardDelete(ctx context.Context, in *proto.IDRequest) (*card.Response, error) {
+	var response card.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {

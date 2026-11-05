@@ -8,14 +8,15 @@ import (
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/repository"
+	"github.com/alexsey-popov/gkeep/proto"
 	"github.com/alexsey-popov/gkeep/proto/password"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // PasswordList получение списка записей пользователя
-func (h *Handler) PasswordList(ctx context.Context, in *password.PasswordListRequest) (*password.PasswordListResponse, error) {
-	var response password.PasswordListResponse
+func (h *Handler) PasswordList(ctx context.Context, in *proto.ListRequest) (*password.ListResponse, error) {
+	var response password.ListResponse
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -48,8 +49,8 @@ func (h *Handler) PasswordList(ctx context.Context, in *password.PasswordListReq
 }
 
 // PasswordCreate создание новой записи пароля
-func (h *Handler) PasswordCreate(ctx context.Context, in *password.PasswordCreateRequest) (*password.PasswordResponse, error) {
-	var response password.PasswordResponse
+func (h *Handler) PasswordCreate(ctx context.Context, in *password.CreateRequest) (*password.Response, error) {
+	var response password.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -85,8 +86,8 @@ func (h *Handler) PasswordCreate(ctx context.Context, in *password.PasswordCreat
 }
 
 // PasswordUpdate обновление пароля по логину
-func (h *Handler) PasswordUpdate(ctx context.Context, in *password.PasswordUpdateRequest) (*password.PasswordResponse, error) {
-	var response password.PasswordResponse
+func (h *Handler) PasswordUpdate(ctx context.Context, in *password.UpdateRequest) (*password.Response, error) {
+	var response password.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -114,8 +115,8 @@ func (h *Handler) PasswordUpdate(ctx context.Context, in *password.PasswordUpdat
 }
 
 // PasswordDelete удаление записи пароля по идентификатору
-func (h *Handler) PasswordDelete(ctx context.Context, in *password.PasswordDeleteRequest) (*password.PasswordResponse, error) {
-	var response password.PasswordResponse
+func (h *Handler) PasswordDelete(ctx context.Context, in *proto.IDRequest) (*password.Response, error) {
+	var response password.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {

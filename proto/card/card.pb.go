@@ -231,118 +231,8 @@ func (b0 Card_builder) Build() *Card {
 	return m0
 }
 
-type CardListRequest struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Page        *string                `protobuf:"bytes,2,opt,name=page"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CardListRequest) Reset() {
-	*x = CardListRequest{}
-	mi := &file_proto_card_card_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CardListRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CardListRequest) ProtoMessage() {}
-
-func (x *CardListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_card_card_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CardListRequest) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *CardListRequest) GetPage() string {
-	if x != nil {
-		if x.xxx_hidden_Page != nil {
-			return *x.xxx_hidden_Page
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *CardListRequest) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *CardListRequest) SetPage(v string) {
-	x.xxx_hidden_Page = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *CardListRequest) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *CardListRequest) HasPage() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *CardListRequest) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
-}
-
-func (x *CardListRequest) ClearPage() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Page = nil
-}
-
-type CardListRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Name *string
-	Page *string
-}
-
-func (b0 CardListRequest_builder) Build() *CardListRequest {
-	m0 := &CardListRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Page != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_Page = b.Page
-	}
-	return m0
-}
-
-type CardCreateRequest struct {
+// Структура запроса на создание записи
+type CreateRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
 	xxx_hidden_Number      *string                `protobuf:"bytes,2,opt,name=number"`
@@ -354,21 +244,21 @@ type CardCreateRequest struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *CardCreateRequest) Reset() {
-	*x = CardCreateRequest{}
-	mi := &file_proto_card_card_proto_msgTypes[2]
+func (x *CreateRequest) Reset() {
+	*x = CreateRequest{}
+	mi := &file_proto_card_card_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CardCreateRequest) String() string {
+func (x *CreateRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CardCreateRequest) ProtoMessage() {}
+func (*CreateRequest) ProtoMessage() {}
 
-func (x *CardCreateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_card_card_proto_msgTypes[2]
+func (x *CreateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_card_card_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -379,7 +269,7 @@ func (x *CardCreateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CardCreateRequest) GetName() string {
+func (x *CreateRequest) GetName() string {
 	if x != nil {
 		if x.xxx_hidden_Name != nil {
 			return *x.xxx_hidden_Name
@@ -389,7 +279,7 @@ func (x *CardCreateRequest) GetName() string {
 	return ""
 }
 
-func (x *CardCreateRequest) GetNumber() string {
+func (x *CreateRequest) GetNumber() string {
 	if x != nil {
 		if x.xxx_hidden_Number != nil {
 			return *x.xxx_hidden_Number
@@ -399,7 +289,7 @@ func (x *CardCreateRequest) GetNumber() string {
 	return ""
 }
 
-func (x *CardCreateRequest) GetExpired() string {
+func (x *CreateRequest) GetExpired() string {
 	if x != nil {
 		if x.xxx_hidden_Expired != nil {
 			return *x.xxx_hidden_Expired
@@ -409,7 +299,7 @@ func (x *CardCreateRequest) GetExpired() string {
 	return ""
 }
 
-func (x *CardCreateRequest) GetCode() string {
+func (x *CreateRequest) GetCode() string {
 	if x != nil {
 		if x.xxx_hidden_Code != nil {
 			return *x.xxx_hidden_Code
@@ -419,75 +309,75 @@ func (x *CardCreateRequest) GetCode() string {
 	return ""
 }
 
-func (x *CardCreateRequest) SetName(v string) {
+func (x *CreateRequest) SetName(v string) {
 	x.xxx_hidden_Name = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
 }
 
-func (x *CardCreateRequest) SetNumber(v string) {
+func (x *CreateRequest) SetNumber(v string) {
 	x.xxx_hidden_Number = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
 }
 
-func (x *CardCreateRequest) SetExpired(v string) {
+func (x *CreateRequest) SetExpired(v string) {
 	x.xxx_hidden_Expired = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
 }
 
-func (x *CardCreateRequest) SetCode(v string) {
+func (x *CreateRequest) SetCode(v string) {
 	x.xxx_hidden_Code = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
 }
 
-func (x *CardCreateRequest) HasName() bool {
+func (x *CreateRequest) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *CardCreateRequest) HasNumber() bool {
+func (x *CreateRequest) HasNumber() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *CardCreateRequest) HasExpired() bool {
+func (x *CreateRequest) HasExpired() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *CardCreateRequest) HasCode() bool {
+func (x *CreateRequest) HasCode() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
-func (x *CardCreateRequest) ClearName() {
+func (x *CreateRequest) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
 }
 
-func (x *CardCreateRequest) ClearNumber() {
+func (x *CreateRequest) ClearNumber() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Number = nil
 }
 
-func (x *CardCreateRequest) ClearExpired() {
+func (x *CreateRequest) ClearExpired() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
 	x.xxx_hidden_Expired = nil
 }
 
-func (x *CardCreateRequest) ClearCode() {
+func (x *CreateRequest) ClearCode() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
 	x.xxx_hidden_Code = nil
 }
 
-type CardCreateRequest_builder struct {
+type CreateRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Name    *string
@@ -496,8 +386,8 @@ type CardCreateRequest_builder struct {
 	Code    *string
 }
 
-func (b0 CardCreateRequest_builder) Build() *CardCreateRequest {
-	m0 := &CardCreateRequest{}
+func (b0 CreateRequest_builder) Build() *CreateRequest {
+	m0 := &CreateRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
@@ -519,7 +409,8 @@ func (b0 CardCreateRequest_builder) Build() *CardCreateRequest {
 	return m0
 }
 
-type CardUpdateRequest struct {
+// Структура запроса на редактирование записи
+type UpdateRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,2,opt,name=name"`
@@ -532,21 +423,21 @@ type CardUpdateRequest struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *CardUpdateRequest) Reset() {
-	*x = CardUpdateRequest{}
-	mi := &file_proto_card_card_proto_msgTypes[3]
+func (x *UpdateRequest) Reset() {
+	*x = UpdateRequest{}
+	mi := &file_proto_card_card_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CardUpdateRequest) String() string {
+func (x *UpdateRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CardUpdateRequest) ProtoMessage() {}
+func (*UpdateRequest) ProtoMessage() {}
 
-func (x *CardUpdateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_card_card_proto_msgTypes[3]
+func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_card_card_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -557,7 +448,7 @@ func (x *CardUpdateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CardUpdateRequest) GetId() string {
+func (x *UpdateRequest) GetId() string {
 	if x != nil {
 		if x.xxx_hidden_Id != nil {
 			return *x.xxx_hidden_Id
@@ -567,7 +458,7 @@ func (x *CardUpdateRequest) GetId() string {
 	return ""
 }
 
-func (x *CardUpdateRequest) GetName() string {
+func (x *UpdateRequest) GetName() string {
 	if x != nil {
 		if x.xxx_hidden_Name != nil {
 			return *x.xxx_hidden_Name
@@ -577,7 +468,7 @@ func (x *CardUpdateRequest) GetName() string {
 	return ""
 }
 
-func (x *CardUpdateRequest) GetNumber() string {
+func (x *UpdateRequest) GetNumber() string {
 	if x != nil {
 		if x.xxx_hidden_Number != nil {
 			return *x.xxx_hidden_Number
@@ -587,7 +478,7 @@ func (x *CardUpdateRequest) GetNumber() string {
 	return ""
 }
 
-func (x *CardUpdateRequest) GetExpired() string {
+func (x *UpdateRequest) GetExpired() string {
 	if x != nil {
 		if x.xxx_hidden_Expired != nil {
 			return *x.xxx_hidden_Expired
@@ -597,7 +488,7 @@ func (x *CardUpdateRequest) GetExpired() string {
 	return ""
 }
 
-func (x *CardUpdateRequest) GetCode() string {
+func (x *UpdateRequest) GetCode() string {
 	if x != nil {
 		if x.xxx_hidden_Code != nil {
 			return *x.xxx_hidden_Code
@@ -607,92 +498,92 @@ func (x *CardUpdateRequest) GetCode() string {
 	return ""
 }
 
-func (x *CardUpdateRequest) SetId(v string) {
+func (x *UpdateRequest) SetId(v string) {
 	x.xxx_hidden_Id = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
 }
 
-func (x *CardUpdateRequest) SetName(v string) {
+func (x *UpdateRequest) SetName(v string) {
 	x.xxx_hidden_Name = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
 }
 
-func (x *CardUpdateRequest) SetNumber(v string) {
+func (x *UpdateRequest) SetNumber(v string) {
 	x.xxx_hidden_Number = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
 }
 
-func (x *CardUpdateRequest) SetExpired(v string) {
+func (x *UpdateRequest) SetExpired(v string) {
 	x.xxx_hidden_Expired = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
 }
 
-func (x *CardUpdateRequest) SetCode(v string) {
+func (x *UpdateRequest) SetCode(v string) {
 	x.xxx_hidden_Code = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
 }
 
-func (x *CardUpdateRequest) HasId() bool {
+func (x *UpdateRequest) HasId() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *CardUpdateRequest) HasName() bool {
+func (x *UpdateRequest) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *CardUpdateRequest) HasNumber() bool {
+func (x *UpdateRequest) HasNumber() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *CardUpdateRequest) HasExpired() bool {
+func (x *UpdateRequest) HasExpired() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
 }
 
-func (x *CardUpdateRequest) HasCode() bool {
+func (x *UpdateRequest) HasCode() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
-func (x *CardUpdateRequest) ClearId() {
+func (x *UpdateRequest) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
 }
 
-func (x *CardUpdateRequest) ClearName() {
+func (x *UpdateRequest) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Name = nil
 }
 
-func (x *CardUpdateRequest) ClearNumber() {
+func (x *UpdateRequest) ClearNumber() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
 	x.xxx_hidden_Number = nil
 }
 
-func (x *CardUpdateRequest) ClearExpired() {
+func (x *UpdateRequest) ClearExpired() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
 	x.xxx_hidden_Expired = nil
 }
 
-func (x *CardUpdateRequest) ClearCode() {
+func (x *UpdateRequest) ClearCode() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
 	x.xxx_hidden_Code = nil
 }
 
-type CardUpdateRequest_builder struct {
+type UpdateRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Id      *string
@@ -702,8 +593,8 @@ type CardUpdateRequest_builder struct {
 	Code    *string
 }
 
-func (b0 CardUpdateRequest_builder) Build() *CardUpdateRequest {
-	m0 := &CardUpdateRequest{}
+func (b0 UpdateRequest_builder) Build() *UpdateRequest {
+	m0 := &UpdateRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
@@ -729,163 +620,8 @@ func (b0 CardUpdateRequest_builder) Build() *CardUpdateRequest {
 	return m0
 }
 
-type CardShowRequest struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CardShowRequest) Reset() {
-	*x = CardShowRequest{}
-	mi := &file_proto_card_card_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CardShowRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CardShowRequest) ProtoMessage() {}
-
-func (x *CardShowRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_card_card_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CardShowRequest) GetId() string {
-	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *CardShowRequest) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
-}
-
-func (x *CardShowRequest) HasId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *CardShowRequest) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
-}
-
-type CardShowRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id *string
-}
-
-func (b0 CardShowRequest_builder) Build() *CardShowRequest {
-	m0 := &CardShowRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Id = b.Id
-	}
-	return m0
-}
-
-type CardDeleteRequest struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *CardDeleteRequest) Reset() {
-	*x = CardDeleteRequest{}
-	mi := &file_proto_card_card_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CardDeleteRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CardDeleteRequest) ProtoMessage() {}
-
-func (x *CardDeleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_card_card_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *CardDeleteRequest) GetId() string {
-	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *CardDeleteRequest) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
-}
-
-func (x *CardDeleteRequest) HasId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *CardDeleteRequest) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
-}
-
-type CardDeleteRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id *string
-}
-
-func (b0 CardDeleteRequest_builder) Build() *CardDeleteRequest {
-	m0 := &CardDeleteRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Id = b.Id
-	}
-	return m0
-}
-
-type CardListResponse struct {
+// Структура ответа со списком записей
+type ListResponse struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Card        *[]*Card               `protobuf:"bytes,1,rep,name=card"`
 	xxx_hidden_Error       *string                `protobuf:"bytes,2,opt,name=error"`
@@ -895,21 +631,21 @@ type CardListResponse struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *CardListResponse) Reset() {
-	*x = CardListResponse{}
-	mi := &file_proto_card_card_proto_msgTypes[6]
+func (x *ListResponse) Reset() {
+	*x = ListResponse{}
+	mi := &file_proto_card_card_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CardListResponse) String() string {
+func (x *ListResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CardListResponse) ProtoMessage() {}
+func (*ListResponse) ProtoMessage() {}
 
-func (x *CardListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_card_card_proto_msgTypes[6]
+func (x *ListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_card_card_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -920,7 +656,7 @@ func (x *CardListResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CardListResponse) GetCard() []*Card {
+func (x *ListResponse) GetCard() []*Card {
 	if x != nil {
 		if x.xxx_hidden_Card != nil {
 			return *x.xxx_hidden_Card
@@ -929,7 +665,7 @@ func (x *CardListResponse) GetCard() []*Card {
 	return nil
 }
 
-func (x *CardListResponse) GetError() string {
+func (x *ListResponse) GetError() string {
 	if x != nil {
 		if x.xxx_hidden_Error != nil {
 			return *x.xxx_hidden_Error
@@ -939,36 +675,36 @@ func (x *CardListResponse) GetError() string {
 	return ""
 }
 
-func (x *CardListResponse) SetCard(v []*Card) {
+func (x *ListResponse) SetCard(v []*Card) {
 	x.xxx_hidden_Card = &v
 }
 
-func (x *CardListResponse) SetError(v string) {
+func (x *ListResponse) SetError(v string) {
 	x.xxx_hidden_Error = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
-func (x *CardListResponse) HasError() bool {
+func (x *ListResponse) HasError() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *CardListResponse) ClearError() {
+func (x *ListResponse) ClearError() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Error = nil
 }
 
-type CardListResponse_builder struct {
+type ListResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Card  []*Card
 	Error *string
 }
 
-func (b0 CardListResponse_builder) Build() *CardListResponse {
-	m0 := &CardListResponse{}
+func (b0 ListResponse_builder) Build() *ListResponse {
+	m0 := &ListResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Card = &b.Card
@@ -979,7 +715,8 @@ func (b0 CardListResponse_builder) Build() *CardListResponse {
 	return m0
 }
 
-type CardResponse struct {
+// Структура ответа с одной записью
+type Response struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Card        *Card                  `protobuf:"bytes,1,opt,name=card"`
 	xxx_hidden_Error       *string                `protobuf:"bytes,2,opt,name=error"`
@@ -989,21 +726,21 @@ type CardResponse struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *CardResponse) Reset() {
-	*x = CardResponse{}
-	mi := &file_proto_card_card_proto_msgTypes[7]
+func (x *Response) Reset() {
+	*x = Response{}
+	mi := &file_proto_card_card_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CardResponse) String() string {
+func (x *Response) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CardResponse) ProtoMessage() {}
+func (*Response) ProtoMessage() {}
 
-func (x *CardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_card_card_proto_msgTypes[7]
+func (x *Response) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_card_card_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1014,14 +751,14 @@ func (x *CardResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *CardResponse) GetCard() *Card {
+func (x *Response) GetCard() *Card {
 	if x != nil {
 		return x.xxx_hidden_Card
 	}
 	return nil
 }
 
-func (x *CardResponse) GetError() string {
+func (x *Response) GetError() string {
 	if x != nil {
 		if x.xxx_hidden_Error != nil {
 			return *x.xxx_hidden_Error
@@ -1031,47 +768,47 @@ func (x *CardResponse) GetError() string {
 	return ""
 }
 
-func (x *CardResponse) SetCard(v *Card) {
+func (x *Response) SetCard(v *Card) {
 	x.xxx_hidden_Card = v
 }
 
-func (x *CardResponse) SetError(v string) {
+func (x *Response) SetError(v string) {
 	x.xxx_hidden_Error = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
-func (x *CardResponse) HasCard() bool {
+func (x *Response) HasCard() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Card != nil
 }
 
-func (x *CardResponse) HasError() bool {
+func (x *Response) HasError() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *CardResponse) ClearCard() {
+func (x *Response) ClearCard() {
 	x.xxx_hidden_Card = nil
 }
 
-func (x *CardResponse) ClearError() {
+func (x *Response) ClearError() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Error = nil
 }
 
-type CardResponse_builder struct {
+type Response_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Card  *Card
 	Error *string
 }
 
-func (b0 CardResponse_builder) Build() *CardResponse {
-	m0 := &CardResponse{}
+func (b0 Response_builder) Build() *Response {
+	m0 := &Response{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Card = b.Card
@@ -1093,46 +830,36 @@ const file_proto_card_card_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
 	"\x06number\x18\x03 \x01(\tR\x06number\x12\x18\n" +
 	"\aexpired\x18\x04 \x01(\tR\aexpired\x12\x12\n" +
-	"\x04code\x18\x05 \x01(\tR\x04code\"9\n" +
-	"\x0fCardListRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
-	"\x04page\x18\x02 \x01(\tR\x04page\"m\n" +
-	"\x11CardCreateRequest\x12\x12\n" +
+	"\x04code\x18\x05 \x01(\tR\x04code\"i\n" +
+	"\rCreateRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
 	"\x06number\x18\x02 \x01(\tR\x06number\x12\x18\n" +
 	"\aexpired\x18\x03 \x01(\tR\aexpired\x12\x12\n" +
-	"\x04code\x18\x04 \x01(\tR\x04code\"}\n" +
-	"\x11CardUpdateRequest\x12\x0e\n" +
+	"\x04code\x18\x04 \x01(\tR\x04code\"y\n" +
+	"\rUpdateRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
 	"\x06number\x18\x03 \x01(\tR\x06number\x12\x18\n" +
 	"\aexpired\x18\x04 \x01(\tR\aexpired\x12\x12\n" +
-	"\x04code\x18\x05 \x01(\tR\x04code\"!\n" +
-	"\x0fCardShowRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"#\n" +
-	"\x11CardDeleteRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"N\n" +
-	"\x10CardListResponse\x12$\n" +
+	"\x04code\x18\x05 \x01(\tR\x04code\"J\n" +
+	"\fListResponse\x12$\n" +
 	"\x04card\x18\x01 \x03(\v2\x10.proto.card.CardR\x04card\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\"J\n" +
-	"\fCardResponse\x12$\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"F\n" +
+	"\bResponse\x12$\n" +
 	"\x04card\x18\x01 \x01(\v2\x10.proto.card.CardR\x04card\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05errorB+Z)github.com/alexsey-popov/gkeep/proto/cardb\beditionsp\xe8\a"
 
-var file_proto_card_card_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_proto_card_card_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_card_card_proto_goTypes = []any{
-	(*Card)(nil),              // 0: proto.card.Card
-	(*CardListRequest)(nil),   // 1: proto.card.CardListRequest
-	(*CardCreateRequest)(nil), // 2: proto.card.CardCreateRequest
-	(*CardUpdateRequest)(nil), // 3: proto.card.CardUpdateRequest
-	(*CardShowRequest)(nil),   // 4: proto.card.CardShowRequest
-	(*CardDeleteRequest)(nil), // 5: proto.card.CardDeleteRequest
-	(*CardListResponse)(nil),  // 6: proto.card.CardListResponse
-	(*CardResponse)(nil),      // 7: proto.card.CardResponse
+	(*Card)(nil),          // 0: proto.card.Card
+	(*CreateRequest)(nil), // 1: proto.card.CreateRequest
+	(*UpdateRequest)(nil), // 2: proto.card.UpdateRequest
+	(*ListResponse)(nil),  // 3: proto.card.ListResponse
+	(*Response)(nil),      // 4: proto.card.Response
 }
 var file_proto_card_card_proto_depIdxs = []int32{
-	0, // 0: proto.card.CardListResponse.card:type_name -> proto.card.Card
-	0, // 1: proto.card.CardResponse.card:type_name -> proto.card.Card
+	0, // 0: proto.card.ListResponse.card:type_name -> proto.card.Card
+	0, // 1: proto.card.Response.card:type_name -> proto.card.Card
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -1151,7 +878,7 @@ func file_proto_card_card_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_card_card_proto_rawDesc), len(file_proto_card_card_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

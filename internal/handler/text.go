@@ -8,14 +8,15 @@ import (
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/repository"
+	"github.com/alexsey-popov/gkeep/proto"
 	"github.com/alexsey-popov/gkeep/proto/text"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // TextList получение списка записей пользователя
-func (h *Handler) TextList(ctx context.Context, in *text.TextListRequest) (*text.TextListResponse, error) {
-	var response text.TextListResponse
+func (h *Handler) TextList(ctx context.Context, in *proto.ListRequest) (*text.ListResponse, error) {
+	var response text.ListResponse
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -47,8 +48,8 @@ func (h *Handler) TextList(ctx context.Context, in *text.TextListRequest) (*text
 }
 
 // TextCreate создание новой записи пароля
-func (h *Handler) TextCreate(ctx context.Context, in *text.TextCreateRequest) (*text.TextResponse, error) {
-	var response text.TextResponse
+func (h *Handler) TextCreate(ctx context.Context, in *text.CreateRequest) (*text.Response, error) {
+	var response text.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -82,8 +83,8 @@ func (h *Handler) TextCreate(ctx context.Context, in *text.TextCreateRequest) (*
 }
 
 // TextUpdate обновление пароля по логину
-func (h *Handler) TextUpdate(ctx context.Context, in *text.TextUpdateRequest) (*text.TextResponse, error) {
-	var response text.TextResponse
+func (h *Handler) TextUpdate(ctx context.Context, in *text.UpdateRequest) (*text.Response, error) {
+	var response text.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
@@ -110,8 +111,8 @@ func (h *Handler) TextUpdate(ctx context.Context, in *text.TextUpdateRequest) (*
 }
 
 // TextDelete удаление записи пароля по идентификатору
-func (h *Handler) TextDelete(ctx context.Context, in *text.TextDeleteRequest) (*text.TextResponse, error) {
-	var response text.TextResponse
+func (h *Handler) TextDelete(ctx context.Context, in *proto.IDRequest) (*text.Response, error) {
+	var response text.Response
 
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {

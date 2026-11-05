@@ -132,7 +132,8 @@ func (b0 User_builder) Build() *User {
 	return m0
 }
 
-type UserRequest struct {
+// Структура запроса
+type Request struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Login       *string                `protobuf:"bytes,1,opt,name=login"`
 	xxx_hidden_Password    *string                `protobuf:"bytes,2,opt,name=password"`
@@ -142,20 +143,20 @@ type UserRequest struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *UserRequest) Reset() {
-	*x = UserRequest{}
+func (x *Request) Reset() {
+	*x = Request{}
 	mi := &file_proto_user_user_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UserRequest) String() string {
+func (x *Request) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserRequest) ProtoMessage() {}
+func (*Request) ProtoMessage() {}
 
-func (x *UserRequest) ProtoReflect() protoreflect.Message {
+func (x *Request) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_user_user_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -167,7 +168,7 @@ func (x *UserRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *UserRequest) GetLogin() string {
+func (x *Request) GetLogin() string {
 	if x != nil {
 		if x.xxx_hidden_Login != nil {
 			return *x.xxx_hidden_Login
@@ -177,7 +178,7 @@ func (x *UserRequest) GetLogin() string {
 	return ""
 }
 
-func (x *UserRequest) GetPassword() string {
+func (x *Request) GetPassword() string {
 	if x != nil {
 		if x.xxx_hidden_Password != nil {
 			return *x.xxx_hidden_Password
@@ -187,49 +188,49 @@ func (x *UserRequest) GetPassword() string {
 	return ""
 }
 
-func (x *UserRequest) SetLogin(v string) {
+func (x *Request) SetLogin(v string) {
 	x.xxx_hidden_Login = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
-func (x *UserRequest) SetPassword(v string) {
+func (x *Request) SetPassword(v string) {
 	x.xxx_hidden_Password = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
-func (x *UserRequest) HasLogin() bool {
+func (x *Request) HasLogin() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *UserRequest) HasPassword() bool {
+func (x *Request) HasPassword() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *UserRequest) ClearLogin() {
+func (x *Request) ClearLogin() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Login = nil
 }
 
-func (x *UserRequest) ClearPassword() {
+func (x *Request) ClearPassword() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Password = nil
 }
 
-type UserRequest_builder struct {
+type Request_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Login    *string
 	Password *string
 }
 
-func (b0 UserRequest_builder) Build() *UserRequest {
-	m0 := &UserRequest{}
+func (b0 Request_builder) Build() *Request {
+	m0 := &Request{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Login != nil {
@@ -243,7 +244,8 @@ func (b0 UserRequest_builder) Build() *UserRequest {
 	return m0
 }
 
-type UserResponse struct {
+// Структура ответа
+type Response struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_User        *User                  `protobuf:"bytes,1,opt,name=user"`
 	xxx_hidden_Error       *string                `protobuf:"bytes,2,opt,name=error"`
@@ -253,20 +255,20 @@ type UserResponse struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *UserResponse) Reset() {
-	*x = UserResponse{}
+func (x *Response) Reset() {
+	*x = Response{}
 	mi := &file_proto_user_user_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UserResponse) String() string {
+func (x *Response) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserResponse) ProtoMessage() {}
+func (*Response) ProtoMessage() {}
 
-func (x *UserResponse) ProtoReflect() protoreflect.Message {
+func (x *Response) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_user_user_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -278,14 +280,14 @@ func (x *UserResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *UserResponse) GetUser() *User {
+func (x *Response) GetUser() *User {
 	if x != nil {
 		return x.xxx_hidden_User
 	}
 	return nil
 }
 
-func (x *UserResponse) GetError() string {
+func (x *Response) GetError() string {
 	if x != nil {
 		if x.xxx_hidden_Error != nil {
 			return *x.xxx_hidden_Error
@@ -295,47 +297,47 @@ func (x *UserResponse) GetError() string {
 	return ""
 }
 
-func (x *UserResponse) SetUser(v *User) {
+func (x *Response) SetUser(v *User) {
 	x.xxx_hidden_User = v
 }
 
-func (x *UserResponse) SetError(v string) {
+func (x *Response) SetError(v string) {
 	x.xxx_hidden_Error = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
-func (x *UserResponse) HasUser() bool {
+func (x *Response) HasUser() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_User != nil
 }
 
-func (x *UserResponse) HasError() bool {
+func (x *Response) HasError() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *UserResponse) ClearUser() {
+func (x *Response) ClearUser() {
 	x.xxx_hidden_User = nil
 }
 
-func (x *UserResponse) ClearError() {
+func (x *Response) ClearError() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Error = nil
 }
 
-type UserResponse_builder struct {
+type Response_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	User  *User
 	Error *string
 }
 
-func (b0 UserResponse_builder) Build() *UserResponse {
-	m0 := &UserResponse{}
+func (b0 Response_builder) Build() *Response {
+	m0 := &Response{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_User = b.User
@@ -354,22 +356,22 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"proto.user\",\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05login\x18\x02 \x01(\tR\x05login\"?\n" +
-	"\vUserRequest\x12\x14\n" +
+	"\x05login\x18\x02 \x01(\tR\x05login\";\n" +
+	"\aRequest\x12\x14\n" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"J\n" +
-	"\fUserResponse\x12$\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"F\n" +
+	"\bResponse\x12$\n" +
 	"\x04user\x18\x01 \x01(\v2\x10.proto.user.UserR\x04user\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05errorB+Z)github.com/alexsey-popov/gkeep/proto/userb\beditionsp\xe8\a"
 
 var file_proto_user_user_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_proto_user_user_proto_goTypes = []any{
-	(*User)(nil),         // 0: proto.user.User
-	(*UserRequest)(nil),  // 1: proto.user.UserRequest
-	(*UserResponse)(nil), // 2: proto.user.UserResponse
+	(*User)(nil),     // 0: proto.user.User
+	(*Request)(nil),  // 1: proto.user.Request
+	(*Response)(nil), // 2: proto.user.Response
 }
 var file_proto_user_user_proto_depIdxs = []int32{
-	0, // 0: proto.user.UserResponse.user:type_name -> proto.user.User
+	0, // 0: proto.user.Response.user:type_name -> proto.user.User
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

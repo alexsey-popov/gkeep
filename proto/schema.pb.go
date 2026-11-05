@@ -8,6 +8,7 @@ package proto
 
 import (
 	card "github.com/alexsey-popov/gkeep/proto/card"
+	file "github.com/alexsey-popov/gkeep/proto/file"
 	password "github.com/alexsey-popov/gkeep/proto/password"
 	text "github.com/alexsey-popov/gkeep/proto/text"
 	user "github.com/alexsey-popov/gkeep/proto/user"
@@ -24,99 +25,311 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Структура запроса на получение списка данных
+type ListRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Page        *string                `protobuf:"bytes,2,opt,name=page"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *ListRequest) Reset() {
+	*x = ListRequest{}
+	mi := &file_proto_schema_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRequest) ProtoMessage() {}
+
+func (x *ListRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_schema_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ListRequest) GetName() string {
+	if x != nil {
+		if x.xxx_hidden_Name != nil {
+			return *x.xxx_hidden_Name
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ListRequest) GetPage() string {
+	if x != nil {
+		if x.xxx_hidden_Page != nil {
+			return *x.xxx_hidden_Page
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *ListRequest) SetName(v string) {
+	x.xxx_hidden_Name = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *ListRequest) SetPage(v string) {
+	x.xxx_hidden_Page = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *ListRequest) HasName() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *ListRequest) HasPage() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *ListRequest) ClearName() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Name = nil
+}
+
+func (x *ListRequest) ClearPage() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Page = nil
+}
+
+type ListRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Name *string
+	Page *string
+}
+
+func (b0 ListRequest_builder) Build() *ListRequest {
+	m0 := &ListRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Name != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Name = b.Name
+	}
+	if b.Page != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Page = b.Page
+	}
+	return m0
+}
+
+// Структура запроса на получение отдельной записи
+type IDRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *IDRequest) Reset() {
+	*x = IDRequest{}
+	mi := &file_proto_schema_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IDRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IDRequest) ProtoMessage() {}
+
+func (x *IDRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_schema_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *IDRequest) GetId() string {
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *IDRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *IDRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *IDRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+type IDRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id *string
+}
+
+func (b0 IDRequest_builder) Build() *IDRequest {
+	m0 := &IDRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Id = b.Id
+	}
+	return m0
+}
+
 var File_proto_schema_proto protoreflect.FileDescriptor
 
 const file_proto_schema_proto_rawDesc = "" +
 	"\n" +
-	"\x12proto/schema.proto\x12\x05proto\x1a\x15proto/user/user.proto\x1a\x1dproto/password/password.proto\x1a\x15proto/card/card.proto\x1a\x15proto/text/text.proto2\x89\n" +
+	"\x12proto/schema.proto\x12\x05proto\x1a\x15proto/user/user.proto\x1a\x1dproto/password/password.proto\x1a\x15proto/card/card.proto\x1a\x15proto/text/text.proto\x1a\x15proto/file/file.proto\"5\n" +
+	"\vListRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\tR\x04page\"\x1b\n" +
+	"\tIDRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id2\xb0\n" +
 	"\n" +
-	"\x03API\x12A\n" +
-	"\fRegisterUser\x12\x17.proto.user.UserRequest\x1a\x18.proto.user.UserResponse\x12>\n" +
-	"\tLoginUser\x12\x17.proto.user.UserRequest\x1a\x18.proto.user.UserResponse\x12Y\n" +
-	"\fPasswordList\x12#.proto.password.PasswordListRequest\x1a$.proto.password.PasswordListResponse\x12Y\n" +
-	"\x0ePasswordCreate\x12%.proto.password.PasswordCreateRequest\x1a .proto.password.PasswordResponse\x12U\n" +
-	"\fPasswordShow\x12#.proto.password.PasswordShowRequest\x1a .proto.password.PasswordResponse\x12Y\n" +
-	"\x0ePasswordUpdate\x12%.proto.password.PasswordUpdateRequest\x1a .proto.password.PasswordResponse\x12Y\n" +
-	"\x0ePasswordDelete\x12%.proto.password.PasswordDeleteRequest\x1a .proto.password.PasswordResponse\x12E\n" +
-	"\bCardList\x12\x1b.proto.card.CardListRequest\x1a\x1c.proto.card.CardListResponse\x12E\n" +
+	"\x03API\x129\n" +
+	"\fRegisterUser\x12\x13.proto.user.Request\x1a\x14.proto.user.Response\x126\n" +
+	"\tLoginUser\x12\x13.proto.user.Request\x1a\x14.proto.user.Response\x12@\n" +
+	"\fPasswordList\x12\x12.proto.ListRequest\x1a\x1c.proto.password.ListResponse\x12:\n" +
+	"\fPasswordShow\x12\x10.proto.IDRequest\x1a\x18.proto.password.Response\x12<\n" +
+	"\x0ePasswordDelete\x12\x10.proto.IDRequest\x1a\x18.proto.password.Response\x12I\n" +
+	"\x0ePasswordCreate\x12\x1d.proto.password.CreateRequest\x1a\x18.proto.password.Response\x12I\n" +
+	"\x0ePasswordUpdate\x12\x1d.proto.password.UpdateRequest\x1a\x18.proto.password.Response\x128\n" +
+	"\bCardList\x12\x12.proto.ListRequest\x1a\x18.proto.card.ListResponse\x122\n" +
+	"\bCardShow\x12\x10.proto.IDRequest\x1a\x14.proto.card.Response\x124\n" +
 	"\n" +
-	"CardCreate\x12\x1d.proto.card.CardCreateRequest\x1a\x18.proto.card.CardResponse\x12A\n" +
-	"\bCardShow\x12\x1b.proto.card.CardShowRequest\x1a\x18.proto.card.CardResponse\x12E\n" +
+	"CardDelete\x12\x10.proto.IDRequest\x1a\x14.proto.card.Response\x12=\n" +
 	"\n" +
-	"CardUpdate\x12\x1d.proto.card.CardUpdateRequest\x1a\x18.proto.card.CardResponse\x12E\n" +
+	"CardCreate\x12\x19.proto.card.CreateRequest\x1a\x14.proto.card.Response\x12=\n" +
 	"\n" +
-	"CardDelete\x12\x1d.proto.card.CardDeleteRequest\x1a\x18.proto.card.CardResponse\x12E\n" +
-	"\bTextList\x12\x1b.proto.text.TextListRequest\x1a\x1c.proto.text.TextListResponse\x12E\n" +
+	"CardUpdate\x12\x19.proto.card.UpdateRequest\x1a\x14.proto.card.Response\x128\n" +
+	"\bTextList\x12\x12.proto.ListRequest\x1a\x18.proto.text.ListResponse\x122\n" +
+	"\bTextShow\x12\x10.proto.IDRequest\x1a\x14.proto.text.Response\x124\n" +
 	"\n" +
-	"TextCreate\x12\x1d.proto.text.TextCreateRequest\x1a\x18.proto.text.TextResponse\x12A\n" +
-	"\bTextShow\x12\x1b.proto.text.TextShowRequest\x1a\x18.proto.text.TextResponse\x12E\n" +
+	"TextDelete\x12\x10.proto.IDRequest\x1a\x14.proto.text.Response\x12=\n" +
 	"\n" +
-	"TextUpdate\x12\x1d.proto.text.TextUpdateRequest\x1a\x18.proto.text.TextResponse\x12E\n" +
+	"TextCreate\x12\x19.proto.text.CreateRequest\x1a\x14.proto.text.Response\x12=\n" +
 	"\n" +
-	"TextDelete\x12\x1d.proto.text.TextDeleteRequest\x1a\x18.proto.text.TextResponseB&Z$github.com/alexsey-popov/gkeep/protob\beditionsp\xe8\a"
+	"TextUpdate\x12\x19.proto.text.UpdateRequest\x1a\x14.proto.text.Response\x128\n" +
+	"\bFileList\x12\x12.proto.ListRequest\x1a\x18.proto.file.ListResponse\x122\n" +
+	"\bFileShow\x12\x10.proto.IDRequest\x1a\x14.proto.file.Response\x124\n" +
+	"\n" +
+	"FileDelete\x12\x10.proto.IDRequest\x1a\x14.proto.file.Response\x12=\n" +
+	"\n" +
+	"FileCreate\x12\x19.proto.file.CreateRequest\x1a\x14.proto.file.Response\x12=\n" +
+	"\n" +
+	"FileUpdate\x12\x19.proto.file.UpdateRequest\x1a\x14.proto.file.ResponseB&Z$github.com/alexsey-popov/gkeep/protob\beditionsp\xe8\a"
 
+var file_proto_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_schema_proto_goTypes = []any{
-	(*user.UserRequest)(nil),               // 0: proto.user.UserRequest
-	(*password.PasswordListRequest)(nil),   // 1: proto.password.PasswordListRequest
-	(*password.PasswordCreateRequest)(nil), // 2: proto.password.PasswordCreateRequest
-	(*password.PasswordShowRequest)(nil),   // 3: proto.password.PasswordShowRequest
-	(*password.PasswordUpdateRequest)(nil), // 4: proto.password.PasswordUpdateRequest
-	(*password.PasswordDeleteRequest)(nil), // 5: proto.password.PasswordDeleteRequest
-	(*card.CardListRequest)(nil),           // 6: proto.card.CardListRequest
-	(*card.CardCreateRequest)(nil),         // 7: proto.card.CardCreateRequest
-	(*card.CardShowRequest)(nil),           // 8: proto.card.CardShowRequest
-	(*card.CardUpdateRequest)(nil),         // 9: proto.card.CardUpdateRequest
-	(*card.CardDeleteRequest)(nil),         // 10: proto.card.CardDeleteRequest
-	(*text.TextListRequest)(nil),           // 11: proto.text.TextListRequest
-	(*text.TextCreateRequest)(nil),         // 12: proto.text.TextCreateRequest
-	(*text.TextShowRequest)(nil),           // 13: proto.text.TextShowRequest
-	(*text.TextUpdateRequest)(nil),         // 14: proto.text.TextUpdateRequest
-	(*text.TextDeleteRequest)(nil),         // 15: proto.text.TextDeleteRequest
-	(*user.UserResponse)(nil),              // 16: proto.user.UserResponse
-	(*password.PasswordListResponse)(nil),  // 17: proto.password.PasswordListResponse
-	(*password.PasswordResponse)(nil),      // 18: proto.password.PasswordResponse
-	(*card.CardListResponse)(nil),          // 19: proto.card.CardListResponse
-	(*card.CardResponse)(nil),              // 20: proto.card.CardResponse
-	(*text.TextListResponse)(nil),          // 21: proto.text.TextListResponse
-	(*text.TextResponse)(nil),              // 22: proto.text.TextResponse
+	(*ListRequest)(nil),            // 0: proto.ListRequest
+	(*IDRequest)(nil),              // 1: proto.IDRequest
+	(*user.Request)(nil),           // 2: proto.user.Request
+	(*password.CreateRequest)(nil), // 3: proto.password.CreateRequest
+	(*password.UpdateRequest)(nil), // 4: proto.password.UpdateRequest
+	(*card.CreateRequest)(nil),     // 5: proto.card.CreateRequest
+	(*card.UpdateRequest)(nil),     // 6: proto.card.UpdateRequest
+	(*text.CreateRequest)(nil),     // 7: proto.text.CreateRequest
+	(*text.UpdateRequest)(nil),     // 8: proto.text.UpdateRequest
+	(*file.CreateRequest)(nil),     // 9: proto.file.CreateRequest
+	(*file.UpdateRequest)(nil),     // 10: proto.file.UpdateRequest
+	(*user.Response)(nil),          // 11: proto.user.Response
+	(*password.ListResponse)(nil),  // 12: proto.password.ListResponse
+	(*password.Response)(nil),      // 13: proto.password.Response
+	(*card.ListResponse)(nil),      // 14: proto.card.ListResponse
+	(*card.Response)(nil),          // 15: proto.card.Response
+	(*text.ListResponse)(nil),      // 16: proto.text.ListResponse
+	(*text.Response)(nil),          // 17: proto.text.Response
+	(*file.ListResponse)(nil),      // 18: proto.file.ListResponse
+	(*file.Response)(nil),          // 19: proto.file.Response
 }
 var file_proto_schema_proto_depIdxs = []int32{
-	0,  // 0: proto.API.RegisterUser:input_type -> proto.user.UserRequest
-	0,  // 1: proto.API.LoginUser:input_type -> proto.user.UserRequest
-	1,  // 2: proto.API.PasswordList:input_type -> proto.password.PasswordListRequest
-	2,  // 3: proto.API.PasswordCreate:input_type -> proto.password.PasswordCreateRequest
-	3,  // 4: proto.API.PasswordShow:input_type -> proto.password.PasswordShowRequest
-	4,  // 5: proto.API.PasswordUpdate:input_type -> proto.password.PasswordUpdateRequest
-	5,  // 6: proto.API.PasswordDelete:input_type -> proto.password.PasswordDeleteRequest
-	6,  // 7: proto.API.CardList:input_type -> proto.card.CardListRequest
-	7,  // 8: proto.API.CardCreate:input_type -> proto.card.CardCreateRequest
-	8,  // 9: proto.API.CardShow:input_type -> proto.card.CardShowRequest
-	9,  // 10: proto.API.CardUpdate:input_type -> proto.card.CardUpdateRequest
-	10, // 11: proto.API.CardDelete:input_type -> proto.card.CardDeleteRequest
-	11, // 12: proto.API.TextList:input_type -> proto.text.TextListRequest
-	12, // 13: proto.API.TextCreate:input_type -> proto.text.TextCreateRequest
-	13, // 14: proto.API.TextShow:input_type -> proto.text.TextShowRequest
-	14, // 15: proto.API.TextUpdate:input_type -> proto.text.TextUpdateRequest
-	15, // 16: proto.API.TextDelete:input_type -> proto.text.TextDeleteRequest
-	16, // 17: proto.API.RegisterUser:output_type -> proto.user.UserResponse
-	16, // 18: proto.API.LoginUser:output_type -> proto.user.UserResponse
-	17, // 19: proto.API.PasswordList:output_type -> proto.password.PasswordListResponse
-	18, // 20: proto.API.PasswordCreate:output_type -> proto.password.PasswordResponse
-	18, // 21: proto.API.PasswordShow:output_type -> proto.password.PasswordResponse
-	18, // 22: proto.API.PasswordUpdate:output_type -> proto.password.PasswordResponse
-	18, // 23: proto.API.PasswordDelete:output_type -> proto.password.PasswordResponse
-	19, // 24: proto.API.CardList:output_type -> proto.card.CardListResponse
-	20, // 25: proto.API.CardCreate:output_type -> proto.card.CardResponse
-	20, // 26: proto.API.CardShow:output_type -> proto.card.CardResponse
-	20, // 27: proto.API.CardUpdate:output_type -> proto.card.CardResponse
-	20, // 28: proto.API.CardDelete:output_type -> proto.card.CardResponse
-	21, // 29: proto.API.TextList:output_type -> proto.text.TextListResponse
-	22, // 30: proto.API.TextCreate:output_type -> proto.text.TextResponse
-	22, // 31: proto.API.TextShow:output_type -> proto.text.TextResponse
-	22, // 32: proto.API.TextUpdate:output_type -> proto.text.TextResponse
-	22, // 33: proto.API.TextDelete:output_type -> proto.text.TextResponse
-	17, // [17:34] is the sub-list for method output_type
-	0,  // [0:17] is the sub-list for method input_type
+	2,  // 0: proto.API.RegisterUser:input_type -> proto.user.Request
+	2,  // 1: proto.API.LoginUser:input_type -> proto.user.Request
+	0,  // 2: proto.API.PasswordList:input_type -> proto.ListRequest
+	1,  // 3: proto.API.PasswordShow:input_type -> proto.IDRequest
+	1,  // 4: proto.API.PasswordDelete:input_type -> proto.IDRequest
+	3,  // 5: proto.API.PasswordCreate:input_type -> proto.password.CreateRequest
+	4,  // 6: proto.API.PasswordUpdate:input_type -> proto.password.UpdateRequest
+	0,  // 7: proto.API.CardList:input_type -> proto.ListRequest
+	1,  // 8: proto.API.CardShow:input_type -> proto.IDRequest
+	1,  // 9: proto.API.CardDelete:input_type -> proto.IDRequest
+	5,  // 10: proto.API.CardCreate:input_type -> proto.card.CreateRequest
+	6,  // 11: proto.API.CardUpdate:input_type -> proto.card.UpdateRequest
+	0,  // 12: proto.API.TextList:input_type -> proto.ListRequest
+	1,  // 13: proto.API.TextShow:input_type -> proto.IDRequest
+	1,  // 14: proto.API.TextDelete:input_type -> proto.IDRequest
+	7,  // 15: proto.API.TextCreate:input_type -> proto.text.CreateRequest
+	8,  // 16: proto.API.TextUpdate:input_type -> proto.text.UpdateRequest
+	0,  // 17: proto.API.FileList:input_type -> proto.ListRequest
+	1,  // 18: proto.API.FileShow:input_type -> proto.IDRequest
+	1,  // 19: proto.API.FileDelete:input_type -> proto.IDRequest
+	9,  // 20: proto.API.FileCreate:input_type -> proto.file.CreateRequest
+	10, // 21: proto.API.FileUpdate:input_type -> proto.file.UpdateRequest
+	11, // 22: proto.API.RegisterUser:output_type -> proto.user.Response
+	11, // 23: proto.API.LoginUser:output_type -> proto.user.Response
+	12, // 24: proto.API.PasswordList:output_type -> proto.password.ListResponse
+	13, // 25: proto.API.PasswordShow:output_type -> proto.password.Response
+	13, // 26: proto.API.PasswordDelete:output_type -> proto.password.Response
+	13, // 27: proto.API.PasswordCreate:output_type -> proto.password.Response
+	13, // 28: proto.API.PasswordUpdate:output_type -> proto.password.Response
+	14, // 29: proto.API.CardList:output_type -> proto.card.ListResponse
+	15, // 30: proto.API.CardShow:output_type -> proto.card.Response
+	15, // 31: proto.API.CardDelete:output_type -> proto.card.Response
+	15, // 32: proto.API.CardCreate:output_type -> proto.card.Response
+	15, // 33: proto.API.CardUpdate:output_type -> proto.card.Response
+	16, // 34: proto.API.TextList:output_type -> proto.text.ListResponse
+	17, // 35: proto.API.TextShow:output_type -> proto.text.Response
+	17, // 36: proto.API.TextDelete:output_type -> proto.text.Response
+	17, // 37: proto.API.TextCreate:output_type -> proto.text.Response
+	17, // 38: proto.API.TextUpdate:output_type -> proto.text.Response
+	18, // 39: proto.API.FileList:output_type -> proto.file.ListResponse
+	19, // 40: proto.API.FileShow:output_type -> proto.file.Response
+	19, // 41: proto.API.FileDelete:output_type -> proto.file.Response
+	19, // 42: proto.API.FileCreate:output_type -> proto.file.Response
+	19, // 43: proto.API.FileUpdate:output_type -> proto.file.Response
+	22, // [22:44] is the sub-list for method output_type
+	0,  // [0:22] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -133,12 +346,13 @@ func file_proto_schema_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_schema_proto_rawDesc), len(file_proto_schema_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_proto_schema_proto_goTypes,
 		DependencyIndexes: file_proto_schema_proto_depIdxs,
+		MessageInfos:      file_proto_schema_proto_msgTypes,
 	}.Build()
 	File_proto_schema_proto = out.File
 	file_proto_schema_proto_goTypes = nil

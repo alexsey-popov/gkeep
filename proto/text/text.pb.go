@@ -165,118 +165,8 @@ func (b0 Text_builder) Build() *Text {
 	return m0
 }
 
-type TextListRequest struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
-	xxx_hidden_Page        *string                `protobuf:"bytes,2,opt,name=page"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *TextListRequest) Reset() {
-	*x = TextListRequest{}
-	mi := &file_proto_text_text_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TextListRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TextListRequest) ProtoMessage() {}
-
-func (x *TextListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_text_text_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *TextListRequest) GetName() string {
-	if x != nil {
-		if x.xxx_hidden_Name != nil {
-			return *x.xxx_hidden_Name
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *TextListRequest) GetPage() string {
-	if x != nil {
-		if x.xxx_hidden_Page != nil {
-			return *x.xxx_hidden_Page
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *TextListRequest) SetName(v string) {
-	x.xxx_hidden_Name = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
-}
-
-func (x *TextListRequest) SetPage(v string) {
-	x.xxx_hidden_Page = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
-}
-
-func (x *TextListRequest) HasName() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *TextListRequest) HasPage() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
-}
-
-func (x *TextListRequest) ClearName() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Name = nil
-}
-
-func (x *TextListRequest) ClearPage() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
-	x.xxx_hidden_Page = nil
-}
-
-type TextListRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Name *string
-	Page *string
-}
-
-func (b0 TextListRequest_builder) Build() *TextListRequest {
-	m0 := &TextListRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Name != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
-		x.xxx_hidden_Name = b.Name
-	}
-	if b.Page != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
-		x.xxx_hidden_Page = b.Page
-	}
-	return m0
-}
-
-type TextCreateRequest struct {
+// Структура запроса на создание записи
+type CreateRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,1,opt,name=name"`
 	xxx_hidden_Text        *string                `protobuf:"bytes,2,opt,name=text"`
@@ -286,21 +176,21 @@ type TextCreateRequest struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *TextCreateRequest) Reset() {
-	*x = TextCreateRequest{}
-	mi := &file_proto_text_text_proto_msgTypes[2]
+func (x *CreateRequest) Reset() {
+	*x = CreateRequest{}
+	mi := &file_proto_text_text_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TextCreateRequest) String() string {
+func (x *CreateRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TextCreateRequest) ProtoMessage() {}
+func (*CreateRequest) ProtoMessage() {}
 
-func (x *TextCreateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_text_text_proto_msgTypes[2]
+func (x *CreateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_text_text_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -311,7 +201,7 @@ func (x *TextCreateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *TextCreateRequest) GetName() string {
+func (x *CreateRequest) GetName() string {
 	if x != nil {
 		if x.xxx_hidden_Name != nil {
 			return *x.xxx_hidden_Name
@@ -321,7 +211,7 @@ func (x *TextCreateRequest) GetName() string {
 	return ""
 }
 
-func (x *TextCreateRequest) GetText() string {
+func (x *CreateRequest) GetText() string {
 	if x != nil {
 		if x.xxx_hidden_Text != nil {
 			return *x.xxx_hidden_Text
@@ -331,49 +221,49 @@ func (x *TextCreateRequest) GetText() string {
 	return ""
 }
 
-func (x *TextCreateRequest) SetName(v string) {
+func (x *CreateRequest) SetName(v string) {
 	x.xxx_hidden_Name = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
 }
 
-func (x *TextCreateRequest) SetText(v string) {
+func (x *CreateRequest) SetText(v string) {
 	x.xxx_hidden_Text = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
-func (x *TextCreateRequest) HasName() bool {
+func (x *CreateRequest) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *TextCreateRequest) HasText() bool {
+func (x *CreateRequest) HasText() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *TextCreateRequest) ClearName() {
+func (x *CreateRequest) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Name = nil
 }
 
-func (x *TextCreateRequest) ClearText() {
+func (x *CreateRequest) ClearText() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Text = nil
 }
 
-type TextCreateRequest_builder struct {
+type CreateRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Name *string
 	Text *string
 }
 
-func (b0 TextCreateRequest_builder) Build() *TextCreateRequest {
-	m0 := &TextCreateRequest{}
+func (b0 CreateRequest_builder) Build() *CreateRequest {
+	m0 := &CreateRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Name != nil {
@@ -387,7 +277,8 @@ func (b0 TextCreateRequest_builder) Build() *TextCreateRequest {
 	return m0
 }
 
-type TextUpdateRequest struct {
+// Структура запроса на редактирование записи
+type UpdateRequest struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
 	xxx_hidden_Name        *string                `protobuf:"bytes,2,opt,name=name"`
@@ -398,21 +289,21 @@ type TextUpdateRequest struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *TextUpdateRequest) Reset() {
-	*x = TextUpdateRequest{}
-	mi := &file_proto_text_text_proto_msgTypes[3]
+func (x *UpdateRequest) Reset() {
+	*x = UpdateRequest{}
+	mi := &file_proto_text_text_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TextUpdateRequest) String() string {
+func (x *UpdateRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TextUpdateRequest) ProtoMessage() {}
+func (*UpdateRequest) ProtoMessage() {}
 
-func (x *TextUpdateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_text_text_proto_msgTypes[3]
+func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_text_text_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -423,7 +314,7 @@ func (x *TextUpdateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *TextUpdateRequest) GetId() string {
+func (x *UpdateRequest) GetId() string {
 	if x != nil {
 		if x.xxx_hidden_Id != nil {
 			return *x.xxx_hidden_Id
@@ -433,7 +324,7 @@ func (x *TextUpdateRequest) GetId() string {
 	return ""
 }
 
-func (x *TextUpdateRequest) GetName() string {
+func (x *UpdateRequest) GetName() string {
 	if x != nil {
 		if x.xxx_hidden_Name != nil {
 			return *x.xxx_hidden_Name
@@ -443,7 +334,7 @@ func (x *TextUpdateRequest) GetName() string {
 	return ""
 }
 
-func (x *TextUpdateRequest) GetText() string {
+func (x *UpdateRequest) GetText() string {
 	if x != nil {
 		if x.xxx_hidden_Text != nil {
 			return *x.xxx_hidden_Text
@@ -453,58 +344,58 @@ func (x *TextUpdateRequest) GetText() string {
 	return ""
 }
 
-func (x *TextUpdateRequest) SetId(v string) {
+func (x *UpdateRequest) SetId(v string) {
 	x.xxx_hidden_Id = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
 }
 
-func (x *TextUpdateRequest) SetName(v string) {
+func (x *UpdateRequest) SetName(v string) {
 	x.xxx_hidden_Name = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
 }
 
-func (x *TextUpdateRequest) SetText(v string) {
+func (x *UpdateRequest) SetText(v string) {
 	x.xxx_hidden_Text = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
 }
 
-func (x *TextUpdateRequest) HasId() bool {
+func (x *UpdateRequest) HasId() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
 }
 
-func (x *TextUpdateRequest) HasName() bool {
+func (x *UpdateRequest) HasName() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *TextUpdateRequest) HasText() bool {
+func (x *UpdateRequest) HasText() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
 }
 
-func (x *TextUpdateRequest) ClearId() {
+func (x *UpdateRequest) ClearId() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Id = nil
 }
 
-func (x *TextUpdateRequest) ClearName() {
+func (x *UpdateRequest) ClearName() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Name = nil
 }
 
-func (x *TextUpdateRequest) ClearText() {
+func (x *UpdateRequest) ClearText() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
 	x.xxx_hidden_Text = nil
 }
 
-type TextUpdateRequest_builder struct {
+type UpdateRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Id   *string
@@ -512,8 +403,8 @@ type TextUpdateRequest_builder struct {
 	Text *string
 }
 
-func (b0 TextUpdateRequest_builder) Build() *TextUpdateRequest {
-	m0 := &TextUpdateRequest{}
+func (b0 UpdateRequest_builder) Build() *UpdateRequest {
+	m0 := &UpdateRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Id != nil {
@@ -531,163 +422,8 @@ func (b0 TextUpdateRequest_builder) Build() *TextUpdateRequest {
 	return m0
 }
 
-type TextShowRequest struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *TextShowRequest) Reset() {
-	*x = TextShowRequest{}
-	mi := &file_proto_text_text_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TextShowRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TextShowRequest) ProtoMessage() {}
-
-func (x *TextShowRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_text_text_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *TextShowRequest) GetId() string {
-	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *TextShowRequest) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
-}
-
-func (x *TextShowRequest) HasId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *TextShowRequest) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
-}
-
-type TextShowRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id *string
-}
-
-func (b0 TextShowRequest_builder) Build() *TextShowRequest {
-	m0 := &TextShowRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Id = b.Id
-	}
-	return m0
-}
-
-type TextDeleteRequest struct {
-	state                  protoimpl.MessageState `protogen:"opaque.v1"`
-	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
-	XXX_raceDetectHookData protoimpl.RaceDetectHookData
-	XXX_presence           [1]uint32
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
-}
-
-func (x *TextDeleteRequest) Reset() {
-	*x = TextDeleteRequest{}
-	mi := &file_proto_text_text_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TextDeleteRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TextDeleteRequest) ProtoMessage() {}
-
-func (x *TextDeleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_text_text_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-func (x *TextDeleteRequest) GetId() string {
-	if x != nil {
-		if x.xxx_hidden_Id != nil {
-			return *x.xxx_hidden_Id
-		}
-		return ""
-	}
-	return ""
-}
-
-func (x *TextDeleteRequest) SetId(v string) {
-	x.xxx_hidden_Id = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
-}
-
-func (x *TextDeleteRequest) HasId() bool {
-	if x == nil {
-		return false
-	}
-	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
-}
-
-func (x *TextDeleteRequest) ClearId() {
-	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
-	x.xxx_hidden_Id = nil
-}
-
-type TextDeleteRequest_builder struct {
-	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
-
-	Id *string
-}
-
-func (b0 TextDeleteRequest_builder) Build() *TextDeleteRequest {
-	m0 := &TextDeleteRequest{}
-	b, x := &b0, m0
-	_, _ = b, x
-	if b.Id != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
-		x.xxx_hidden_Id = b.Id
-	}
-	return m0
-}
-
-type TextListResponse struct {
+// Структура ответа со списком записей
+type ListResponse struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Text        *[]*Text               `protobuf:"bytes,1,rep,name=text"`
 	xxx_hidden_Error       *string                `protobuf:"bytes,2,opt,name=error"`
@@ -697,21 +433,21 @@ type TextListResponse struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *TextListResponse) Reset() {
-	*x = TextListResponse{}
-	mi := &file_proto_text_text_proto_msgTypes[6]
+func (x *ListResponse) Reset() {
+	*x = ListResponse{}
+	mi := &file_proto_text_text_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TextListResponse) String() string {
+func (x *ListResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TextListResponse) ProtoMessage() {}
+func (*ListResponse) ProtoMessage() {}
 
-func (x *TextListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_text_text_proto_msgTypes[6]
+func (x *ListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_text_text_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -722,7 +458,7 @@ func (x *TextListResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *TextListResponse) GetText() []*Text {
+func (x *ListResponse) GetText() []*Text {
 	if x != nil {
 		if x.xxx_hidden_Text != nil {
 			return *x.xxx_hidden_Text
@@ -731,7 +467,7 @@ func (x *TextListResponse) GetText() []*Text {
 	return nil
 }
 
-func (x *TextListResponse) GetError() string {
+func (x *ListResponse) GetError() string {
 	if x != nil {
 		if x.xxx_hidden_Error != nil {
 			return *x.xxx_hidden_Error
@@ -741,36 +477,36 @@ func (x *TextListResponse) GetError() string {
 	return ""
 }
 
-func (x *TextListResponse) SetText(v []*Text) {
+func (x *ListResponse) SetText(v []*Text) {
 	x.xxx_hidden_Text = &v
 }
 
-func (x *TextListResponse) SetError(v string) {
+func (x *ListResponse) SetError(v string) {
 	x.xxx_hidden_Error = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
-func (x *TextListResponse) HasError() bool {
+func (x *ListResponse) HasError() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *TextListResponse) ClearError() {
+func (x *ListResponse) ClearError() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Error = nil
 }
 
-type TextListResponse_builder struct {
+type ListResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Text  []*Text
 	Error *string
 }
 
-func (b0 TextListResponse_builder) Build() *TextListResponse {
-	m0 := &TextListResponse{}
+func (b0 ListResponse_builder) Build() *ListResponse {
+	m0 := &ListResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Text = &b.Text
@@ -781,7 +517,8 @@ func (b0 TextListResponse_builder) Build() *TextListResponse {
 	return m0
 }
 
-type TextResponse struct {
+// Структура ответа с одной записью
+type Response struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Text        *Text                  `protobuf:"bytes,1,opt,name=text"`
 	xxx_hidden_Error       *string                `protobuf:"bytes,2,opt,name=error"`
@@ -791,21 +528,21 @@ type TextResponse struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *TextResponse) Reset() {
-	*x = TextResponse{}
-	mi := &file_proto_text_text_proto_msgTypes[7]
+func (x *Response) Reset() {
+	*x = Response{}
+	mi := &file_proto_text_text_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TextResponse) String() string {
+func (x *Response) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TextResponse) ProtoMessage() {}
+func (*Response) ProtoMessage() {}
 
-func (x *TextResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_text_text_proto_msgTypes[7]
+func (x *Response) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_text_text_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -816,14 +553,14 @@ func (x *TextResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *TextResponse) GetText() *Text {
+func (x *Response) GetText() *Text {
 	if x != nil {
 		return x.xxx_hidden_Text
 	}
 	return nil
 }
 
-func (x *TextResponse) GetError() string {
+func (x *Response) GetError() string {
 	if x != nil {
 		if x.xxx_hidden_Error != nil {
 			return *x.xxx_hidden_Error
@@ -833,47 +570,47 @@ func (x *TextResponse) GetError() string {
 	return ""
 }
 
-func (x *TextResponse) SetText(v *Text) {
+func (x *Response) SetText(v *Text) {
 	x.xxx_hidden_Text = v
 }
 
-func (x *TextResponse) SetError(v string) {
+func (x *Response) SetError(v string) {
 	x.xxx_hidden_Error = &v
 	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
 }
 
-func (x *TextResponse) HasText() bool {
+func (x *Response) HasText() bool {
 	if x == nil {
 		return false
 	}
 	return x.xxx_hidden_Text != nil
 }
 
-func (x *TextResponse) HasError() bool {
+func (x *Response) HasError() bool {
 	if x == nil {
 		return false
 	}
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
 }
 
-func (x *TextResponse) ClearText() {
+func (x *Response) ClearText() {
 	x.xxx_hidden_Text = nil
 }
 
-func (x *TextResponse) ClearError() {
+func (x *Response) ClearError() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
 	x.xxx_hidden_Error = nil
 }
 
-type TextResponse_builder struct {
+type Response_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
 	Text  *Text
 	Error *string
 }
 
-func (b0 TextResponse_builder) Build() *TextResponse {
-	m0 := &TextResponse{}
+func (b0 Response_builder) Build() *Response {
+	m0 := &Response{}
 	b, x := &b0, m0
 	_, _ = b, x
 	x.xxx_hidden_Text = b.Text
@@ -893,42 +630,32 @@ const file_proto_text_text_proto_rawDesc = "" +
 	"\x04Text\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text\"9\n" +
-	"\x0fTextListRequest\x12\x12\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text\"7\n" +
+	"\rCreateRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
-	"\x04page\x18\x02 \x01(\tR\x04page\";\n" +
-	"\x11TextCreateRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
-	"\x04text\x18\x02 \x01(\tR\x04text\"K\n" +
-	"\x11TextUpdateRequest\x12\x0e\n" +
+	"\x04text\x18\x02 \x01(\tR\x04text\"G\n" +
+	"\rUpdateRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text\"!\n" +
-	"\x0fTextShowRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"#\n" +
-	"\x11TextDeleteRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"N\n" +
-	"\x10TextListResponse\x12$\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text\"J\n" +
+	"\fListResponse\x12$\n" +
 	"\x04text\x18\x01 \x03(\v2\x10.proto.text.TextR\x04text\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\"J\n" +
-	"\fTextResponse\x12$\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"F\n" +
+	"\bResponse\x12$\n" +
 	"\x04text\x18\x01 \x01(\v2\x10.proto.text.TextR\x04text\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05errorB+Z)github.com/alexsey-popov/gkeep/proto/textb\beditionsp\xe8\a"
 
-var file_proto_text_text_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_proto_text_text_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_text_text_proto_goTypes = []any{
-	(*Text)(nil),              // 0: proto.text.Text
-	(*TextListRequest)(nil),   // 1: proto.text.TextListRequest
-	(*TextCreateRequest)(nil), // 2: proto.text.TextCreateRequest
-	(*TextUpdateRequest)(nil), // 3: proto.text.TextUpdateRequest
-	(*TextShowRequest)(nil),   // 4: proto.text.TextShowRequest
-	(*TextDeleteRequest)(nil), // 5: proto.text.TextDeleteRequest
-	(*TextListResponse)(nil),  // 6: proto.text.TextListResponse
-	(*TextResponse)(nil),      // 7: proto.text.TextResponse
+	(*Text)(nil),          // 0: proto.text.Text
+	(*CreateRequest)(nil), // 1: proto.text.CreateRequest
+	(*UpdateRequest)(nil), // 2: proto.text.UpdateRequest
+	(*ListResponse)(nil),  // 3: proto.text.ListResponse
+	(*Response)(nil),      // 4: proto.text.Response
 }
 var file_proto_text_text_proto_depIdxs = []int32{
-	0, // 0: proto.text.TextListResponse.text:type_name -> proto.text.Text
-	0, // 1: proto.text.TextResponse.text:type_name -> proto.text.Text
+	0, // 0: proto.text.ListResponse.text:type_name -> proto.text.Text
+	0, // 1: proto.text.Response.text:type_name -> proto.text.Text
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -947,7 +674,7 @@ func file_proto_text_text_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_text_text_proto_rawDesc), len(file_proto_text_text_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

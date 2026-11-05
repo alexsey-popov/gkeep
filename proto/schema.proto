@@ -8,30 +8,49 @@ import "proto/user/user.proto";
 import "proto/password/password.proto";
 import "proto/card/card.proto";
 import "proto/text/text.proto";
+import "proto/file/file.proto";
+
+// Структура запроса на получение списка данных
+message ListRequest {
+  string name = 1;
+  string page = 2;
+}
+
+// Структура запроса на получение отдельной записи
+message IDRequest {
+  string id = 1;
+}
 
 service API {
   // Пользователь
-  rpc RegisterUser(user.UserRequest) returns (user.UserResponse);
-  rpc LoginUser(user.UserRequest) returns (user.UserResponse);
+  rpc RegisterUser(user.Request) returns (user.Response);
+  rpc LoginUser(user.Request) returns (user.Response);
 
   // Пароли
-  rpc PasswordList(password.PasswordListRequest) returns (password.PasswordListResponse);
-  rpc PasswordCreate(password.PasswordCreateRequest) returns (password.PasswordResponse);
-  rpc PasswordShow(password.PasswordShowRequest) returns (password.PasswordResponse);
-  rpc PasswordUpdate(password.PasswordUpdateRequest) returns (password.PasswordResponse);
-  rpc PasswordDelete(password.PasswordDeleteRequest) returns (password.PasswordResponse);
+  rpc PasswordList(ListRequest) returns (password.ListResponse);
+  rpc PasswordShow(IDRequest) returns (password.Response);
+  rpc PasswordDelete(IDRequest) returns (password.Response);
+  rpc PasswordCreate(password.CreateRequest) returns (password.Response);
+  rpc PasswordUpdate(password.UpdateRequest) returns (password.Response);
 
   // Банковские карты
-  rpc CardList(card.CardListRequest) returns (card.CardListResponse);
-  rpc CardCreate(card.CardCreateRequest) returns (card.CardResponse);
-  rpc CardShow(card.CardShowRequest) returns (card.CardResponse);
-  rpc CardUpdate(card.CardUpdateRequest) returns (card.CardResponse);
-  rpc CardDelete(card.CardDeleteRequest) returns (card.CardResponse);
+  rpc CardList(ListRequest) returns (card.ListResponse);
+  rpc CardShow(IDRequest) returns (card.Response);
+  rpc CardDelete(IDRequest) returns (card.Response);
+  rpc CardCreate(card.CreateRequest) returns (card.Response);
+  rpc CardUpdate(card.UpdateRequest) returns (card.Response);
 
   // Тексты
-  rpc TextList(text.TextListRequest) returns (text.TextListResponse);
-  rpc TextCreate(text.TextCreateRequest) returns (text.TextResponse);
-  rpc TextShow(text.TextShowRequest) returns (text.TextResponse);
-  rpc TextUpdate(text.TextUpdateRequest) returns (text.TextResponse);
-  rpc TextDelete(text.TextDeleteRequest) returns (text.TextResponse);
+  rpc TextList(ListRequest) returns (text.ListResponse);
+  rpc TextShow(IDRequest) returns (text.Response);
+  rpc TextDelete(IDRequest) returns (text.Response);
+  rpc TextCreate(text.CreateRequest) returns (text.Response);
+  rpc TextUpdate(text.UpdateRequest) returns (text.Response);
+
+  // Файлы
+  rpc FileList(ListRequest) returns (file.ListResponse);
+  rpc FileShow(IDRequest) returns (file.Response);
+  rpc FileDelete(IDRequest) returns (file.Response);
+  rpc FileCreate(file.CreateRequest) returns (file.Response);
+  rpc FileUpdate(file.UpdateRequest) returns (file.Response);
 }

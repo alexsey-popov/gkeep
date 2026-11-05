@@ -40,7 +40,12 @@ gen-proto:
 --go_out=. --go_opt=paths=source_relative \
 --go-grpc_out=. --go-grpc_opt=paths=source_relative \
 --go_opt=default_api_level=API_OPAQUE \
-proto/user/user.proto proto/password/password.proto proto/card/card.proto proto/text/text.proto proto/schema.proto
+proto/user/user.proto \
+proto/password/password.proto \
+proto/card/card.proto \
+proto/text/text.proto \
+proto/file/file.proto \
+proto/schema.proto
 
 # Создание TLS сертификата для клиента и сервера
 cert:

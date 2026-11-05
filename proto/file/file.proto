@@ -1,0 +1,37 @@
+edition = "2023";
+
+package proto.file;
+
+option go_package = "github.com/alexsey-popov/gkeep/proto/file";
+
+// Файл
+message File {
+  string id = 1;
+  string name = 2;
+  string file = 3;
+}
+
+// Структура запроса на создание записи
+message CreateRequest {
+  string name = 1;
+  string file = 2;
+}
+
+// Структура запроса на редактирование записи
+message UpdateRequest {
+  string id = 1;
+  string name = 2;
+  string file = 3;
+}
+
+// Структура ответа с одной записью
+message ListResponse {
+  repeated File file = 1;
+  string error = 2;
+}
+
+// Структура ответа с одной записью
+message Response {
+  File file = 1;
+  string error = 2;
+}
