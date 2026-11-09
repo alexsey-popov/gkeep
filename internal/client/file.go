@@ -357,8 +357,15 @@ func (a *App) handleFileUpload() {
 			chunkReq := &pbFile.UploadFileRequest{}
 			chunkReq.SetChunk(buf[:n])
 			if sendErr := stream.Send(chunkReq); sendErr != nil {
-				st := status.Convert(sendErr)
-				a.showErrorModal(fmt.Sprintf("Ошибка отправки чанка файла:\n%s", st.Message()), "file_upload")
+				// Если поток был закрыт сервером, вызываем CloseAndRecv(), чтобы получить реальный gRPC-статус ошибки
+				_, recvErr := stream.CloseAndRecv()
+				if recvErr != nil {
+					st := status.Convert(recvErr)
+					a.showErrorModal(fmt.Sprintf("Ошибка загрузки файла на сервере:\n%s", st.Message()), "file_upload")
+				} else {
+					st := status.Convert(sendErr)
+					a.showErrorModal(fmt.Sprintf("Ошибка отправки чанка файла:\n%s", st.Message()), "file_upload")
+				}
 				return
 			}
 		}

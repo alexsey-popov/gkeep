@@ -87,25 +87,6 @@ func (rep *Repository) GetMany[T Cipherer](ctx context.Context, query string, ar
 	return items, nil
 }
 
-// GetOne получение отдельной записи
-func (rep *Repository) GetOne[T Cipherer](ctx context.Context, query string, args ...any) (item T, err error) {
-	// Делаем запрос
-	if err = rep.db.GetContext(ctx, &item, query, args...); err != nil {
-		//rep.log.Error(ErrExec.Error(), slog.Any("error", err))
-		//return item, ErrExec
-		return item, errors.Join(ErrExec, err)
-	}
-
-	// Расшифровываем данные
-	if err = item.Decrypt(rep.cipher); err != nil {
-		//rep.log.Error(ErrDecrypt.Error(), slog.Any("error", err))
-		//return item, ErrDecrypt
-		return item, errors.Join(ErrDecrypt, err)
-	}
-
-	return item, nil
-}
-
 // PutOne создание записи
 func (rep *Repository) PutOne[T Cipherer](ctx context.Context, query string, item T) (T, error) {
 	// Шифруем данные

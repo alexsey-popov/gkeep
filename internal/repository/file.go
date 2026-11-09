@@ -29,40 +29,42 @@ func (rep *Repository) FileList(ctx context.Context, userID, name, page string) 
 }
 
 // FileCreate создание новой записи с файлом
-func (rep *Repository) FileCreate(ctx context.Context, userID, name, filename, storagePath string, size int64, checksum string) (*models.File, error) {
-	var item models.File
+func (rep *Repository) FileCreate(ctx context.Context, item *models.File) error {
+	query := `INSERT INTO files (user_id, name, filename, storage_path, size, checksum) VALUES (:user_id, :name, :filename, :storage_path, :size, :checksum) RETURNING id, user_id, name, filename, storage_path, size, checksum, created_at`
+	item, err := rep.PutOne[*models.File](ctx, query, item)
 
-	query := `INSERT INTO files (user_id, name, filename, storage_path, size, checksum) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, user_id, name, filename, storage_path, size, checksum, created_at`
-
-	err := rep.db.GetContext(ctx, &item, query, userID, name, filename, storagePath, size, checksum)
 	if err != nil {
+		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation && pgErr.ConstraintName == "idx_files_name_user_id_unique" {
-			return &item, ErrConflictUnique
+			return ErrConflictUnique
 		}
 
-		rep.log.Error("ошибка при создании записи файла в БД", slog.Any("error", err))
-		return &item, errors.New("ошибка при создании записи файла в БД")
+		rep.log.Error("ошибка при создании записи в БД", slog.Any("error", err))
+		return ErrExec
 	}
 
-	return &item, nil
+	return nil
 }
 
 // FileShow получение информации о файле по идентификатору
 func (rep *Repository) FileShow(ctx context.Context, userID, id string) (*models.File, error) {
-	var item models.File
+	query := `SELECT id, user_id, name, filename, storage_path, size, checksum, created_at FROM files WHERE user_id = :user_id AND id = :id`
 
-	query := `SELECT id, user_id, name, filename, storage_path, size, checksum, created_at FROM files WHERE user_id = $1 AND id = $2`
+	item := &models.File{
+		Id:     id,
+		UserId: userID,
+	}
 
-	err := rep.db.GetContext(ctx, &item, query, userID, id)
+	item, err := rep.PutOne[*models.File](ctx, query, item)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			rep.log.Error("ошибка при получении файла из БД", slog.Any("error", err))
 		}
-		return &item, err
+		return item, err
 	}
 
-	return &item, nil
+	return item, nil
 }
 
 // FileDelete удаление записи файла по идентификатору

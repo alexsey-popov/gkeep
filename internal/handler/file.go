@@ -142,7 +142,18 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 		return status.Error(codes.InvalidArgument, "первым сообщением должны быть метаданные файла")
 	}
 
-	// 2. Создаем директорию attachments/{userId}/{date} и файл для накопления чанков
+	// 2. Валидируем данные
+	item := models.File{
+		UserId:   userID,
+		Name:     meta.GetName(),
+		Filename: meta.GetFilename(),
+		Checksum: meta.GetChecksum(),
+	}
+	if err = h.validator.Validate(item); err != nil {
+		return status.Error(codes.InvalidArgument, h.validator.TransErrors(err).Error())
+	}
+
+	// 3. Создаем директорию attachments/{userId}/{date} и файл для накопления чанков
 	dateStr := time.Now().Format("2006-01-02")
 	dir := filepath.Join("attachments", userID, dateStr)
 	if err := os.MkdirAll(dir, 0755); err != nil {
@@ -177,7 +188,7 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 		}
 	}()
 
-	// 3. Потоковое чтение чанков
+	// 4. Потоковое чтение чанков
 	for {
 		req, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
@@ -197,17 +208,19 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 		}
 	}
 
-	// 4. Проверка целостности
+	// 5. Проверка целостности
 	calculatedChecksum := hex.EncodeToString(hasher.Sum(nil))
 	if meta.GetChecksum() != "" && meta.GetChecksum() != calculatedChecksum {
 		return status.Error(codes.InvalidArgument, "несовпадение контрольной суммы файла")
 	}
 
-	// 5. Сохранение метаданных в репозитории
-	fileRecord, err := h.rep.FileCreate(ctx, userID, strings.TrimSpace(meta.GetName()), strings.TrimSpace(meta.GetFilename()), tempPath, totalBytes, calculatedChecksum)
-	if err != nil {
+	item.StoragePath = tempPath
+	item.Size = totalBytes
+
+	// 6. Сохранение метаданных в репозитории
+	if err = h.rep.FileCreate(ctx, &item); err != nil {
 		if errors.Is(err, repository.ErrConflictUnique) {
-			return status.Error(codes.AlreadyExists, "файл с таким названием уже существует")
+			return status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
 		}
 		return status.Error(codes.Internal, "ошибка сохранения информации о файле")
 	}
@@ -215,7 +228,7 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 	success = true
 
 	var resp file.UploadFileResponse
-	resp.SetFile(toProtoFile(fileRecord))
+	resp.SetFile(toProtoFile(&item))
 	return stream.SendAndClose(&resp)
 }
 
