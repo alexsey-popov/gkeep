@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
+	"github.com/alexsey-popov/gkeep/internal/models"
 	"github.com/alexsey-popov/gkeep/internal/repository"
 	"github.com/alexsey-popov/gkeep/proto"
 	"github.com/alexsey-popov/gkeep/proto/text"
@@ -56,15 +57,18 @@ func (h *Handler) TextCreate(ctx context.Context, in *text.CreateRequest) (*text
 		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
 	}
 
-	name := strings.TrimSpace(in.GetName())
-	if name == "" {
-		return &response, status.Error(codes.InvalidArgument, "название не может быть пустым")
+	item := models.Text{
+		UserId: userID,
+		Name:   in.GetName(),
+		Text:   in.GetText(),
 	}
 
-	value := strings.TrimSpace(in.GetText())
+	// Валидируем данные
+	if err = h.validator.Validate(item); err != nil {
+		return &response, status.Error(codes.InvalidArgument, h.validator.TransErrors(err).Error())
+	}
 
-	item, err := h.rep.TextCreate(ctx, userID, name, value)
-	if err != nil {
+	if err = h.rep.TextCreate(ctx, &item); err != nil {
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
 		}
@@ -91,8 +95,19 @@ func (h *Handler) TextUpdate(ctx context.Context, in *text.UpdateRequest) (*text
 		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
 	}
 
-	item, err := h.rep.TextUpdate(ctx, userID, in.GetId(), in.GetName(), in.GetText())
-	if err != nil {
+	item := models.Text{
+		Id:     in.GetId(),
+		UserId: userID,
+		Name:   in.GetName(),
+		Text:   in.GetText(),
+	}
+
+	// Валидируем данные
+	if err = h.validator.Validate(item); err != nil {
+		return &response, status.Error(codes.InvalidArgument, h.validator.TransErrors(err).Error())
+	}
+
+	if err = h.rep.TextUpdate(ctx, &item); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}

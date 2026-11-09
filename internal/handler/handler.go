@@ -15,7 +15,7 @@ import (
 type Handler struct {
 	pb.UnimplementedAPIServer
 
-	rep       repository.Repository
+	rep       *repository.Repository
 	guard     *auth.Guard
 	cipher    *crypto.Service
 	validator *validator.Validator
@@ -24,7 +24,7 @@ type Handler struct {
 
 // New создание нового обработчика
 func New(
-	rep repository.Repository,
+	rep *repository.Repository,
 	guard *auth.Guard,
 	cipher *crypto.Service,
 	val *validator.Validator,

@@ -75,7 +75,7 @@ func main() {
 	}
 
 	// Создаём репозиторий
-	rep := repository.NewDB(db, log, cipher)
+	rep := repository.New(db, log, cipher)
 
 	// Создаём валидатор
 	val, err := validator.New()

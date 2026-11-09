@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
+	"github.com/alexsey-popov/gkeep/internal/models"
 	"github.com/alexsey-popov/gkeep/internal/repository"
 	"github.com/alexsey-popov/gkeep/proto"
 	"github.com/alexsey-popov/gkeep/proto/card"
@@ -58,17 +59,20 @@ func (h *Handler) CardCreate(ctx context.Context, in *card.CreateRequest) (*card
 		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
 	}
 
-	name := strings.TrimSpace(in.GetName())
-	if name == "" {
-		return &response, status.Error(codes.InvalidArgument, "название не может быть пустым")
+	item := models.Card{
+		UserId:  userID,
+		Name:    in.GetName(),
+		Number:  in.GetNumber(),
+		Expired: in.GetExpired(),
+		Code:    in.GetCode(),
 	}
 
-	number := strings.TrimSpace(in.GetNumber())
-	expired := strings.TrimSpace(in.GetExpired())
-	code := strings.TrimSpace(in.GetCode())
+	// Валидируем данные
+	if err = h.validator.Validate(item); err != nil {
+		return &response, status.Error(codes.InvalidArgument, h.validator.TransErrors(err).Error())
+	}
 
-	item, err := h.rep.CardCreate(ctx, userID, name, number, expired, code)
-	if err != nil {
+	if err = h.rep.CardCreate(ctx, &item); err != nil {
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
 		}
@@ -97,8 +101,22 @@ func (h *Handler) CardUpdate(ctx context.Context, in *card.UpdateRequest) (*card
 		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
 	}
 
-	item, err := h.rep.CardUpdate(ctx, userID, in.GetId(), in.GetName(), in.GetNumber(), in.GetExpired(), in.GetCode())
-	if err != nil {
+	item := &models.Card{
+		Id:      in.GetId(),
+		UserId:  userID,
+		Name:    in.GetName(),
+		Number:  in.GetNumber(),
+		Expired: in.GetExpired(),
+		Code:    in.GetCode(),
+	}
+
+	// Валидируем данные
+	if err = h.validator.Validate(item); err != nil {
+		return &response, status.Error(codes.InvalidArgument, h.validator.TransErrors(err).Error())
+	}
+
+	// Обновляем данные
+	if err = h.rep.CardUpdate(ctx, item); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}

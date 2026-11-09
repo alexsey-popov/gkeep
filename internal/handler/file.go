@@ -57,7 +57,7 @@ func (h *Handler) FileList(ctx context.Context, in *proto.ListRequest) (*file.Li
 	pbList := make([]*file.File, 0, len(items))
 	for _, item := range items {
 		item := item
-		pbList = append(pbList, toProtoFile(&item))
+		pbList = append(pbList, toProtoFile(item))
 	}
 
 	response.SetFiles(pbList)

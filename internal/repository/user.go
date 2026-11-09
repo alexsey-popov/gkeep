@@ -13,7 +13,7 @@ import (
 )
 
 // CreateUser создание нового пользователя
-func (rep DB) CreateUser(ctx context.Context, user *models.User) error {
+func (rep *Repository) CreateUser(ctx context.Context, user *models.User) error {
 	// Добавляем нового пользователя в БД
 	query := `INSERT INTO users (login, password) VALUES ($1, $2) RETURNING *`
 
@@ -33,7 +33,7 @@ func (rep DB) CreateUser(ctx context.Context, user *models.User) error {
 }
 
 // GetUser получение пользователя по логину
-func (rep DB) GetUser(ctx context.Context, login string) (*models.User, error) {
+func (rep *Repository) GetUser(ctx context.Context, login string) (*models.User, error) {
 	var user models.User
 
 	err := rep.db.GetContext(ctx, &user, `SELECT * FROM users WHERE login = $1 LIMIT 1`, login)
