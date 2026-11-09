@@ -14,6 +14,7 @@ import (
 	"github.com/alexsey-popov/gkeep/internal/handler"
 	"github.com/alexsey-popov/gkeep/internal/repository"
 	"github.com/alexsey-popov/gkeep/internal/server"
+	"github.com/alexsey-popov/gkeep/internal/validator"
 	"github.com/alexsey-popov/gkeep/migrations"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -76,8 +77,17 @@ func main() {
 	// Создаём репозиторий
 	rep := repository.NewDB(db, log, cipher)
 
+	// Создаём валидатор
+	val, err := validator.New()
+	if err != nil {
+		log.Error("Ошибка при создании валидатора",
+			slog.Any("error", err),
+		)
+		os.Exit(1)
+	}
+
 	// Создаём обработчик запросов
-	h := handler.New(rep, guard, cipher)
+	h := handler.New(rep, guard, cipher, val, log)
 
 	srv, err := server.New(log, cfg, db, guard)
 	if err != nil {

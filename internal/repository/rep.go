@@ -13,12 +13,12 @@ import (
 
 // Repository репозиторий
 type Repository interface {
-	CreateUser(ctx context.Context, login, password string) (*models.User, error)
+	CreateUser(ctx context.Context, user *models.User) error
 	GetUser(ctx context.Context, login string) (*models.User, error)
 
 	PasswordList(ctx context.Context, userID, name, page string) ([]models.Password, error)
-	PasswordCreate(ctx context.Context, userID, name, login, password string) (*models.Password, error)
-	PasswordUpdate(ctx context.Context, userID, id, name, login, password string) (*models.Password, error)
+	PasswordCreate(ctx context.Context, password *models.Password) error
+	PasswordUpdate(ctx context.Context, password *models.Password) error
 	PasswordDelete(ctx context.Context, userID, id string) (*models.Password, error)
 
 	CardList(ctx context.Context, userID, name, page string) ([]models.Card, error)

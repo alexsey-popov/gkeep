@@ -5,6 +5,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"sync"
@@ -112,6 +113,16 @@ func (s *Service) Encrypt(src []byte) ([]byte, error) {
 	return dst, nil
 }
 
+// EncryptStr шифрование данных c с выводом в строку
+func (s *Service) EncryptStr(src string) (string, error) {
+	bytes, err := s.Encrypt([]byte(src))
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%x", bytes), nil
+}
+
 // Decrypt расшифровывание данных
 func (s *Service) Decrypt(dst []byte) ([]byte, error) {
 	nonceSize := s.cipher.NonceSize()
@@ -132,4 +143,32 @@ func (s *Service) Decrypt(dst []byte) ([]byte, error) {
 	}
 
 	return src, nil
+}
+
+// Decrypt расшифровывание данных
+func (s *Service) DecryptStr(data string) (string, error) {
+	// Декодируем hex строку
+	dataBytes, err := hex.DecodeString(data)
+	if err != nil {
+		return "", fmt.Errorf("Ошибка при декодировании hex поля: %w", err)
+	}
+
+	nonceSize := s.cipher.NonceSize()
+	if len(dataBytes) < nonceSize {
+		return "", fmt.Errorf("зашифрованные данные слишком короткие")
+	}
+
+	nonce := dataBytes[:nonceSize]
+	ciphertext := dataBytes[nonceSize:]
+
+	// Защищаем aesgcm т.к. он не является потокобезопасным
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	src, err := s.cipher.Open(nil, nonce, ciphertext, nil) // расшифровываем
+	if err != nil {
+		return "", fmt.Errorf("ошибка при декодировании: %w", err)
+	}
+
+	return string(src), nil
 }

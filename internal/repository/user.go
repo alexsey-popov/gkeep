@@ -13,25 +13,23 @@ import (
 )
 
 // CreateUser создание нового пользователя
-func (rep DB) CreateUser(ctx context.Context, login, passHash string) (*models.User, error) {
-	var user models.User
-
+func (rep DB) CreateUser(ctx context.Context, user *models.User) error {
 	// Добавляем нового пользователя в БД
 	query := `INSERT INTO users (login, password) VALUES ($1, $2) RETURNING *`
 
-	err := rep.db.GetContext(ctx, &user, query, login, passHash)
+	err := rep.db.GetContext(ctx, user, query, user.Login, user.Password)
 	if err != nil {
 		// Если произошла ошибка уникальности по полю login - выводим соответствующую ошибку
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation && pgErr.ConstraintName == "idx_users_login_unique" {
-			return &user, ErrConflictUnique
+			return ErrConflictUnique
 		}
 
 		rep.log.Error("ошибка при создании нового пользователя в БД", slog.Any("error", err))
-		return &user, errors.New("ошибка при создании нового пользователя в БД")
+		return errors.New("ошибка при создании нового пользователя в БД")
 	}
 
-	return &user, nil
+	return nil
 }
 
 // GetUser получение пользователя по логину

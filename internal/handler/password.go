@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
+	"github.com/alexsey-popov/gkeep/internal/models"
 	"github.com/alexsey-popov/gkeep/internal/repository"
 	"github.com/alexsey-popov/gkeep/proto"
 	"github.com/alexsey-popov/gkeep/proto/password"
@@ -52,33 +53,40 @@ func (h *Handler) PasswordList(ctx context.Context, in *proto.ListRequest) (*pas
 func (h *Handler) PasswordCreate(ctx context.Context, in *password.CreateRequest) (*password.Response, error) {
 	var response password.Response
 
+	// Получаем ID пользователя
 	userID, err := auth.UserIDFromContext(ctx)
 	if err != nil || userID == "" {
 		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
 	}
 
-	name := strings.TrimSpace(in.GetName())
-	if name == "" {
-		return &response, status.Error(codes.InvalidArgument, "название не может быть пустым")
+	pass := models.Password{
+		UserId:   userID,
+		Name:     strings.TrimSpace(in.GetName()),
+		Login:    strings.TrimSpace(in.GetLogin()),
+		Password: in.GetPassword(),
+		//Hashed:   false,
 	}
 
-	login := strings.TrimSpace(in.GetLogin())
-	pwd := in.GetPassword()
+	// Валидируем данные
+	if err = h.validator.Validate(pass); err != nil {
+		return &response, status.Error(codes.InvalidArgument, h.validator.TransErrors(err).Error())
+	}
 
-	item, err := h.rep.PasswordCreate(ctx, userID, name, login, pwd)
-	if err != nil {
+	// Отражаем данные в базе
+	if err = h.rep.PasswordCreate(ctx, &pass); err != nil {
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
 		}
+
 		return &response, status.Error(codes.Internal, "ошибка при создании записи")
 	}
 
 	response.SetPassword(
 		password.Password_builder{
-			Id:       &item.Id,
-			Name:     &item.Name,
-			Login:    &item.Login,
-			Password: &item.Password,
+			Id:       &pass.Id,
+			Name:     &pass.Name,
+			Login:    &pass.Login,
+			Password: &pass.Password,
 		}.Build(),
 	)
 
@@ -94,8 +102,20 @@ func (h *Handler) PasswordUpdate(ctx context.Context, in *password.UpdateRequest
 		return &response, status.Error(codes.Unauthenticated, "пользователь не аутентифицирован")
 	}
 
-	item, err := h.rep.PasswordUpdate(ctx, userID, in.GetId(), in.GetName(), in.GetLogin(), in.GetPassword())
-	if err != nil {
+	pass := models.Password{
+		Id:       in.GetId(),
+		UserId:   userID,
+		Name:     strings.TrimSpace(in.GetName()),
+		Login:    strings.TrimSpace(in.GetLogin()),
+		Password: in.GetPassword(),
+	}
+
+	// Валидируем данные
+	if err = h.validator.Validate(pass); err != nil {
+		return &response, status.Error(codes.InvalidArgument, h.validator.TransErrors(err).Error())
+	}
+
+	if err = h.rep.PasswordUpdate(ctx, &pass); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}
@@ -104,10 +124,10 @@ func (h *Handler) PasswordUpdate(ctx context.Context, in *password.UpdateRequest
 
 	response.SetPassword(
 		password.Password_builder{
-			Id:       &item.Id,
-			Name:     &item.Name,
-			Login:    &item.Login,
-			Password: &item.Password,
+			Id:       &pass.Id,
+			Name:     &pass.Name,
+			Login:    &pass.Login,
+			Password: &pass.Password,
 		}.Build(),
 	)
 

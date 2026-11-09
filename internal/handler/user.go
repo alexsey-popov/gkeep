@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/alexsey-popov/gkeep/internal/models"
 	"github.com/alexsey-popov/gkeep/internal/repository"
 	pb "github.com/alexsey-popov/gkeep/proto/user"
 	"google.golang.org/grpc"
@@ -16,16 +17,25 @@ import (
 func (h *Handler) RegisterUser(ctx context.Context, in *pb.Request) (*pb.Response, error) {
 	var response pb.Response
 
-	password := in.GetPassword()
+	// Создаём модель пользователя и проводим валидацию
+	user := models.User{
+		Login:    in.GetLogin(),
+		Password: in.GetPassword(),
+	}
+	if err := h.validator.Validate(user); err != nil {
+		return &response, status.Error(codes.InvalidArgument, h.validator.TransErrors(err).Error())
+	}
+
+	// Далее шифруем пароль и подменяем пароль на зашифрованную версию
 	if h.guard != nil {
-		hash, err := h.guard.GetHash(password)
+		hash, err := h.guard.GetHash(user.Password)
 		if err != nil {
 			return &response, status.Error(codes.Internal, "ошибка при обработке пароля")
 		}
-		password = hash
+		user.Password = hash
 	}
 
-	user, err := h.rep.CreateUser(ctx, in.GetLogin(), password)
+	err := h.rep.CreateUser(ctx, &user)
 	if err != nil {
 		// Если произошла ошибка уникальности - пишем другое
 		if errors.Is(err, repository.ErrConflictUnique) {

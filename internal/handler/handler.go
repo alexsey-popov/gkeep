@@ -2,9 +2,12 @@
 package handler
 
 import (
+	"log/slog"
+
 	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/crypto"
 	"github.com/alexsey-popov/gkeep/internal/repository"
+	"github.com/alexsey-popov/gkeep/internal/validator"
 	pb "github.com/alexsey-popov/gkeep/proto"
 )
 
@@ -12,23 +15,26 @@ import (
 type Handler struct {
 	pb.UnimplementedAPIServer
 
-	rep    repository.Repository
-	guard  *auth.Guard
-	cipher *crypto.Service
+	rep       repository.Repository
+	guard     *auth.Guard
+	cipher    *crypto.Service
+	validator *validator.Validator
+	log       *slog.Logger
 }
 
 // New создание нового обработчика
-func New(rep repository.Repository, guard *auth.Guard, cipher ...*crypto.Service) *Handler {
-	var c *crypto.Service
-	if len(cipher) > 0 {
-		c = cipher[0]
+func New(
+	rep repository.Repository,
+	guard *auth.Guard,
+	cipher *crypto.Service,
+	val *validator.Validator,
+	log *slog.Logger,
+) *Handler {
+	return &Handler{
+		rep:       rep,
+		guard:     guard,
+		cipher:    cipher,
+		validator: val,
+		log:       log,
 	}
-
-	h := &Handler{
-		rep:    rep,
-		guard:  guard,
-		cipher: c,
-	}
-
-	return h
 }
