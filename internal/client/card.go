@@ -128,15 +128,18 @@ func (a *App) initCardCreateForm() {
 
 	a.createCardNumberField = tview.NewInputField().
 		SetLabel("Номер карты: ").
-		SetFieldWidth(32)
+		SetFieldWidth(32).
+		SetAcceptanceFunc(tview.InputFieldMaxLength(19))
 
 	a.createCardExpiredField = tview.NewInputField().
 		SetLabel("Срок действия: ").
-		SetFieldWidth(32)
+		SetFieldWidth(32).
+		SetAcceptanceFunc(tview.InputFieldMaxLength(4))
 
 	a.createCardCodeField = tview.NewInputField().
 		SetLabel("Код (CVV): ").
-		SetFieldWidth(32)
+		SetFieldWidth(32).
+		SetAcceptanceFunc(tview.InputFieldMaxLength(3))
 
 	a.cardCreateForm = tview.NewForm().
 		AddFormItem(a.createCardNameField).
@@ -168,15 +171,18 @@ func (a *App) initCardEditForm() {
 
 	a.editCardNumberField = tview.NewInputField().
 		SetLabel("Номер карты: ").
-		SetFieldWidth(32)
+		SetFieldWidth(32).
+		SetAcceptanceFunc(tview.InputFieldMaxLength(19))
 
 	a.editCardExpiredField = tview.NewInputField().
 		SetLabel("Срок действия: ").
-		SetFieldWidth(32)
+		SetFieldWidth(32).
+		SetAcceptanceFunc(tview.InputFieldMaxLength(4))
 
 	a.editCardCodeField = tview.NewInputField().
 		SetLabel("Код (CVV): ").
-		SetFieldWidth(32)
+		SetFieldWidth(32).
+		SetAcceptanceFunc(tview.InputFieldMaxLength(3))
 
 	a.cardEditForm = tview.NewForm().
 		AddFormItem(a.editCardIDField).
