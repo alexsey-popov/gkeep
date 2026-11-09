@@ -23,6 +23,8 @@ import (
 )
 
 // toProtoFile преобразует модель File в protobuf сообщение File
+const maxFileSize = 100 * 1024 * 1024 // 100 МБ
+
 func toProtoFile(item *models.File) *file.File {
 	if item == nil {
 		return nil
@@ -142,6 +144,10 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 		return status.Error(codes.InvalidArgument, "первым сообщением должны быть метаданные файла")
 	}
 
+	if meta.GetSize() > maxFileSize {
+		return status.Error(codes.InvalidArgument, "размер файла превышает максимально допустимый лимит (100 МБ)")
+	}
+
 	// 2. Валидируем данные
 	item := models.File{
 		UserId:   userID,
@@ -182,7 +188,7 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 
 	var success bool
 	defer func() {
-		tempFile.Close()
+		_ = tempFile.Close()
 		if !success {
 			_ = os.Remove(tempPath)
 		}
@@ -200,11 +206,14 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 
 		chunk := req.GetChunk()
 		if len(chunk) > 0 {
+			totalBytes += int64(len(chunk))
+			if totalBytes > maxFileSize {
+				return status.Error(codes.InvalidArgument, "размер файла превышает максимально допустимый лимит (100 МБ)")
+			}
 			if _, err := writer.Write(chunk); err != nil {
 				return status.Error(codes.Internal, "ошибка записи чанка на диск")
 			}
 			hasher.Write(chunk)
-			totalBytes += int64(len(chunk))
 		}
 	}
 

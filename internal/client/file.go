@@ -294,6 +294,10 @@ func (a *App) handleFileUpload() {
 		a.showErrorModal("Указанный путь является директорией, а не файлом", "file_upload")
 		return
 	}
+	if fileInfo.Size() > 100*1024*1024 {
+		a.showErrorModal("Размер файла превышает максимально допустимый лимит (100 МБ)", "file_upload")
+		return
+	}
 
 	fileHandle, err := os.Open(filePath)
 	if err != nil {
