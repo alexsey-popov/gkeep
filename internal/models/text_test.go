@@ -44,7 +44,7 @@ func TestText_Encrypt_Decrypt(t *testing.T) {
 
 		err := item.Decrypt(cipher)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании поля")
+		assert.Contains(t, err.Error(), "ошибка при декодировании поля")
 	})
 }
 

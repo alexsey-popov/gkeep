@@ -1,3 +1,4 @@
+// Обработчик для gRPC запросов
 package handler
 
 import (

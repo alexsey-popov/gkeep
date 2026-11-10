@@ -1,3 +1,4 @@
+// Клиентское приложение (TUI)
 package client
 
 import (
@@ -428,6 +429,7 @@ func (a *App) SetCurrentTextPage(p int) {
 	a.currentTextPage = p
 }
 
+// getTextsListTitle возвращает заголовок для списка записей
 func (a *App) getTextsListTitle() string {
 	if a.currentTextPage <= 1 {
 		return " [::b]Список текстовых данных (Стр. 1)[::-] "

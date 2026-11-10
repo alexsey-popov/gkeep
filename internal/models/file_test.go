@@ -50,7 +50,7 @@ func TestFile_Encrypt_Decrypt(t *testing.T) {
 
 		err := f.Decrypt(cipher)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании поля")
+		assert.Contains(t, err.Error(), "ошибка при декодировании поля")
 	})
 
 	t.Run("decrypt error on invalid storage path", func(t *testing.T) {
@@ -64,7 +64,7 @@ func TestFile_Encrypt_Decrypt(t *testing.T) {
 
 		err = f.Decrypt(cipher)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании поля")
+		assert.Contains(t, err.Error(), "ошибка при декодировании поля")
 	})
 }
 

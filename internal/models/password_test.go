@@ -48,7 +48,7 @@ func TestPassword_Encrypt_Decrypt(t *testing.T) {
 
 		err := pass.Decrypt(cipher)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании поля login")
+		assert.Contains(t, err.Error(), "ошибка при декодировании поля login")
 	})
 
 	t.Run("decrypt error on invalid password", func(t *testing.T) {
@@ -62,7 +62,7 @@ func TestPassword_Encrypt_Decrypt(t *testing.T) {
 
 		err = pass.Decrypt(cipher)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании поля password")
+		assert.Contains(t, err.Error(), "ошибка при декодировании поля password")
 	})
 }
 

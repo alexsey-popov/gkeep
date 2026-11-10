@@ -1,3 +1,4 @@
+// Клиентское приложение (TUI)
 package client
 
 import (
@@ -242,10 +243,12 @@ func (a *App) handleLogout() {
 	a.pages.SwitchToPage("login")
 }
 
+// getLoginTitle выводит заголовок для входа
 func (a *App) getLoginTitle() string {
 	return fmt.Sprintf(" [::b]Вход в gKeep[::-] [gray](%s)[-] ", a.version)
 }
 
+// getRegisterTitle выводит заголовок для регистрации
 func (a *App) getRegisterTitle() string {
 	return fmt.Sprintf(" [::b]Регистрация[::-] [gray](%s)[-] ", a.version)
 }

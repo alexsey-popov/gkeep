@@ -64,8 +64,8 @@ func (rep *Repository) PrepareSearchAndPaginate(query string, args []any, search
 	return query, args
 }
 
-// GetMany получение списка записей
-func (rep *Repository) GetMany[T Cipherer](ctx context.Context, query string, args ...any) (items []T, err error) {
+// Select получение списка записей
+func (rep *Repository) Select[T Cipherer](ctx context.Context, query string, args ...any) (items []T, err error) {
 	// Делаем запрос
 	err = rep.db.SelectContext(ctx, &items, query, args...)
 	if err != nil {
@@ -87,8 +87,8 @@ func (rep *Repository) GetMany[T Cipherer](ctx context.Context, query string, ar
 	return items, nil
 }
 
-// PutOne создание записи
-func (rep *Repository) PutOne[T Cipherer](ctx context.Context, query string, item T) error {
+// Exec создание записи
+func (rep *Repository) Exec[T Cipherer](ctx context.Context, query string, item T) error {
 	// Шифруем данные
 	if err := item.Encrypt(rep.cipher); err != nil {
 		//rep.log.Error(ErrEncrypt.Error(), slog.Any("error", err))

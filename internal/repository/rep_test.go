@@ -111,7 +111,7 @@ func TestRepository_PrepareSearchAndPaginate(t *testing.T) {
 	})
 }
 
-func TestRepository_GetMany(t *testing.T) {
+func TestRepository_Select(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		rep, mock, cipher := setupTestRepo(t)
 
@@ -128,7 +128,7 @@ func TestRepository_GetMany(t *testing.T) {
 			WithArgs("user-1").
 			WillReturnRows(rows)
 
-		items, err := rep.GetMany[*mockCipherItem](context.Background(), "SELECT id, data, created_at FROM texts WHERE user_id = $1", "user-1")
+		items, err := rep.Select[*mockCipherItem](context.Background(), "SELECT id, data, created_at FROM texts WHERE user_id = $1", "user-1")
 		require.NoError(t, err)
 		require.Len(t, items, 2)
 		assert.Equal(t, "secret1", items[0].Data)
@@ -142,7 +142,7 @@ func TestRepository_GetMany(t *testing.T) {
 		mock.ExpectQuery(`^SELECT id FROM texts$`).
 			WillReturnError(errors.New("db error"))
 
-		items, err := rep.GetMany[*mockCipherItem](context.Background(), "SELECT id FROM texts")
+		items, err := rep.Select[*mockCipherItem](context.Background(), "SELECT id FROM texts")
 		require.Error(t, err)
 		assert.True(t, errors.Is(err, ErrExec))
 		assert.Nil(t, items)
@@ -159,7 +159,7 @@ func TestRepository_GetMany(t *testing.T) {
 		mock.ExpectQuery(`^SELECT id, data, created_at FROM texts$`).
 			WillReturnRows(rows)
 
-		items, err := rep.GetMany[*mockCipherItem](context.Background(), "SELECT id, data, created_at FROM texts")
+		items, err := rep.Select[*mockCipherItem](context.Background(), "SELECT id, data, created_at FROM texts")
 		require.Error(t, err)
 		assert.True(t, errors.Is(err, ErrDecrypt))
 		assert.Len(t, items, 1)
@@ -167,7 +167,7 @@ func TestRepository_GetMany(t *testing.T) {
 	})
 }
 
-func TestRepository_PutOne(t *testing.T) {
+func TestRepository_Exec(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		rep, mock, cipher := setupTestRepo(t)
 
@@ -185,7 +185,7 @@ func TestRepository_PutOne(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows([]string{"id", "data", "created_at"}).AddRow("id-1", encData, time.Now()))
 
 		query := `INSERT INTO texts (id, data) VALUES (:id, :data) RETURNING id, data, created_at`
-		err = rep.PutOne[*mockCipherItem](context.Background(), query, item)
+		err = rep.Exec[*mockCipherItem](context.Background(), query, item)
 		require.NoError(t, err)
 		assert.Equal(t, "plain-secret", item.Data)
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -201,7 +201,7 @@ func TestRepository_PutOne(t *testing.T) {
 		}
 
 		query := `INSERT INTO texts (id, data) VALUES (:id, :data) RETURNING id, data, created_at`
-		err := rep.PutOne[*mockCipherItem](context.Background(), query, item)
+		err := rep.Exec[*mockCipherItem](context.Background(), query, item)
 		require.Error(t, err)
 		assert.True(t, errors.Is(err, ErrEncrypt))
 	})
@@ -218,7 +218,7 @@ func TestRepository_PutOne(t *testing.T) {
 			WillReturnError(errors.New("prepare failed"))
 
 		query := `INSERT INTO texts (id, data) VALUES (:id, :data) RETURNING id, data, created_at`
-		err := rep.PutOne[*mockCipherItem](context.Background(), query, item)
+		err := rep.Exec[*mockCipherItem](context.Background(), query, item)
 		require.Error(t, err)
 		assert.True(t, errors.Is(err, ErrPrepare))
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -238,7 +238,7 @@ func TestRepository_PutOne(t *testing.T) {
 			WillReturnError(sql.ErrConnDone)
 
 		query := `INSERT INTO texts (id, data) VALUES (:id, :data) RETURNING id, data, created_at`
-		err := rep.PutOne[*mockCipherItem](context.Background(), query, item)
+		err := rep.Exec[*mockCipherItem](context.Background(), query, item)
 		require.Error(t, err)
 		assert.True(t, errors.Is(err, ErrExec))
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -258,7 +258,7 @@ func TestRepository_PutOne(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows([]string{"id", "data", "created_at"}).AddRow("id-1", "corrupted_cipher_data", time.Now()))
 
 		query := `INSERT INTO texts (id, data) VALUES (:id, :data) RETURNING id, data, created_at`
-		err := rep.PutOne[*mockCipherItem](context.Background(), query, item)
+		err := rep.Exec[*mockCipherItem](context.Background(), query, item)
 		require.Error(t, err)
 		assert.True(t, errors.Is(err, ErrDecrypt))
 		require.NoError(t, mock.ExpectationsWereMet())

@@ -1,3 +1,4 @@
+// Клиентское приложение (TUI)
 package client
 
 import (
@@ -470,6 +471,7 @@ func (a *App) SetCurrentCardPage(p int) {
 	a.currentCardPage = p
 }
 
+// getTextsListTitle возвращает заголовок для списка записей
 func (a *App) getCardsListTitle() string {
 	if a.currentCardPage <= 1 {
 		return " [::b]Список банковских карт (Стр. 1)[::-] "

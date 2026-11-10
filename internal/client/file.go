@@ -1,3 +1,4 @@
+// Клиентское приложение (TUI)
 package client
 
 import (
@@ -589,6 +590,7 @@ func (a *App) SetCurrentFilePage(p int) {
 	a.currentFilePage = p
 }
 
+// getTextsListTitle возвращает заголовок для списка записей
 func (a *App) getFilesListTitle() string {
 	if a.currentFilePage <= 1 {
 		return " [::b]Список файлов (Стр. 1)[::-] "

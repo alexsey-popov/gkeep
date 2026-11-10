@@ -1,3 +1,4 @@
+// Клиент для менеджера паролей
 package main
 
 import (
@@ -18,17 +19,19 @@ var (
 )
 
 func main() {
+	// Подготавливаем конфигурацию
 	cfg, err := config.NewClient(os.Args[1:], os.LookupEnv)
 	if err != nil {
 		log.Fatalf("ошибка инициализации конфигурации клиента: %v", err)
 	}
 
-	// Получает TLS сертификат
+	// Получаем TLS сертификат
 	tlsCreds, err := credentials.NewClientTLSFromFile(cfg.TLSCert, "")
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Подключаемся к серверу по gPRC и не забываем закрыть подключение
 	conn, err := grpc.NewClient(
 		cfg.Address,
 		grpc.WithTransportCredentials(tlsCreds),
@@ -42,9 +45,11 @@ func main() {
 		}
 	}()
 
+	// Получаем клиент для взаимодействия с сервером и инициализируем клиентское приложение
 	usersClient := pb.NewAPIClient(conn)
 	app := client.NewApp(usersClient, fmt.Sprintf("%s %s", Version, BuildDate))
 
+	// Запускаем клиентское приложение
 	if err := app.Run(); err != nil {
 		log.Fatalf("ошибка выполнения приложения: %v", err)
 	}

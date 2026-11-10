@@ -19,7 +19,7 @@ func (rep *Repository) FileList(ctx context.Context, userID, name, page string) 
 	args := []any{userID}
 	query, args = rep.PrepareSearchAndPaginate(query, args, name, page)
 
-	items, err := rep.GetMany[*models.File](ctx, query, args...)
+	items, err := rep.Select[*models.File](ctx, query, args...)
 	if err != nil {
 		rep.log.Error("Ошибка при получении списка паролей", slog.Any("error", err))
 		return nil, ErrExec
@@ -31,7 +31,7 @@ func (rep *Repository) FileList(ctx context.Context, userID, name, page string) 
 // FileCreate создание новой записи с файлом
 func (rep *Repository) FileCreate(ctx context.Context, item *models.File) error {
 	query := `INSERT INTO files (user_id, name, filename, storage_path, size, checksum) VALUES (:user_id, :name, :filename, :storage_path, :size, :checksum) RETURNING id, user_id, name, filename, storage_path, size, checksum, created_at`
-	err := rep.PutOne[*models.File](ctx, query, item)
+	err := rep.Exec[*models.File](ctx, query, item)
 
 	if err != nil {
 		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
@@ -56,7 +56,7 @@ func (rep *Repository) FileShow(ctx context.Context, userID, id string) (*models
 		UserId: userID,
 	}
 
-	err := rep.PutOne[*models.File](ctx, query, item)
+	err := rep.Exec[*models.File](ctx, query, item)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
 			rep.log.Error("ошибка при получении файла из БД", slog.Any("error", err))

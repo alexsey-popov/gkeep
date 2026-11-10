@@ -183,7 +183,7 @@ func TestService_DecryptStr_Invalid(t *testing.T) {
 	t.Run("negative - некорректный hex", func(t *testing.T) {
 		_, err := service.DecryptStr("not-a-valid-hex-string!@#")
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании hex поля")
+		assert.Contains(t, err.Error(), "ошибка при декодировании hex поля")
 	})
 
 	t.Run("negative - слишком короткий hex", func(t *testing.T) {

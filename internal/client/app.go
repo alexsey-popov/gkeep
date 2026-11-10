@@ -1,3 +1,4 @@
+// Клиентское приложение (TUI)
 package client
 
 import (

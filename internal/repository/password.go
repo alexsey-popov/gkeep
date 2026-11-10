@@ -19,7 +19,7 @@ func (rep *Repository) PasswordList(ctx context.Context, userID, name, page stri
 	args := []any{userID}
 	query, args = rep.PrepareSearchAndPaginate(query, args, name, page)
 
-	items, err := rep.GetMany[*models.Password](ctx, query, args...)
+	items, err := rep.Select[*models.Password](ctx, query, args...)
 	if err != nil {
 		rep.log.Error("Ошибка при получении списка паролей", slog.Any("error", err))
 		return nil, ErrExec
@@ -32,7 +32,7 @@ func (rep *Repository) PasswordList(ctx context.Context, userID, name, page stri
 func (rep *Repository) PasswordCreate(ctx context.Context, item *models.Password) error {
 	// Выполняем запрос
 	query := `INSERT INTO passwords (user_id, name, login, password) VALUES (:user_id, :name, :login, :password) RETURNING id, user_id, name, login, password, created_at`
-	err := rep.PutOne[*models.Password](ctx, query, item)
+	err := rep.Exec[*models.Password](ctx, query, item)
 
 	if err != nil {
 		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
@@ -52,7 +52,7 @@ func (rep *Repository) PasswordCreate(ctx context.Context, item *models.Password
 func (rep *Repository) PasswordUpdate(ctx context.Context, item *models.Password) error {
 	// Выполняем запрос
 	query := `UPDATE passwords SET name = :name, login = :login, password = :password WHERE id = :id AND user_id = :user_id RETURNING id, user_id, name, login, password, created_at`
-	err := rep.PutOne[*models.Password](ctx, query, item)
+	err := rep.Exec[*models.Password](ctx, query, item)
 
 	if err != nil {
 		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем

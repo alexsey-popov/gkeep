@@ -53,7 +53,7 @@ func TestCard_Encrypt_Decrypt(t *testing.T) {
 
 		err := card.Decrypt(cipher)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании поля number")
+		assert.Contains(t, err.Error(), "ошибка при декодировании поля number")
 	})
 
 	t.Run("decrypt error on invalid expired", func(t *testing.T) {
@@ -68,7 +68,7 @@ func TestCard_Encrypt_Decrypt(t *testing.T) {
 
 		err = card.Decrypt(cipher)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании поля expired")
+		assert.Contains(t, err.Error(), "ошибка при декодировании поля expired")
 	})
 
 	t.Run("decrypt error on invalid code", func(t *testing.T) {
@@ -85,7 +85,7 @@ func TestCard_Encrypt_Decrypt(t *testing.T) {
 
 		err = card.Decrypt(cipher)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "Ошибка при декодировании поля code")
+		assert.Contains(t, err.Error(), "ошибка при декодировании поля code")
 	})
 }
 

@@ -1,3 +1,4 @@
+// Клиентское приложение (TUI)
 package client
 
 import (
@@ -450,6 +451,7 @@ func (a *App) SetCurrentPage(p int) {
 	a.currentPage = p
 }
 
+// getPasswordsListTitle возвращает заголовок для списка паролей
 func (a *App) getPasswordsListTitle() string {
 	if a.currentPage <= 1 {
 		return " [::b]Список паролей (Стр. 1)[::-] "
