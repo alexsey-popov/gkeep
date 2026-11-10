@@ -1,13 +1,13 @@
 SHELL := /bin/bash
 
 # Подключение к БД
-DATABASE_DSN="postgres://gkeep:gkeep@localhost:5432/gkeep?sslmode=disable"
+#DATABASE_DSN="postgres://gkeep:gkeep@localhost:5432/gkeep?sslmode=disable"
 
 # Секретный JWT токен
-JWT="secret"
+#JWT="secret"
 
 # Ключ шифрования данных в БД
-CRYPTO_KEY="778d2643f49a2203ca3c43786f648618"
+#CRYPTO_KEY="778d2643f49a2203ca3c43786f648618"
 
 # Название файла отчётом по покрытию кода тестами
 COVER_FILE?=cover.out
