@@ -117,6 +117,9 @@ func (h *Handler) CardUpdate(ctx context.Context, in *card.UpdateRequest) (*card
 
 	// Обновляем данные
 	if err = h.rep.CardUpdate(ctx, item); err != nil {
+		if errors.Is(err, repository.ErrConflictUnique) {
+			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
+		}
 		if errors.Is(err, sql.ErrNoRows) {
 			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}

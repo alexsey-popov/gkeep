@@ -10,7 +10,7 @@ import (
 
 type Request struct {
 	Name   string `validate:"required,min=3,max=255" label:"Логин"`
-	Number string `validate:"order"`
+	Number string `validate:"number"`
 }
 
 // TestValidator_Validate Проверка функции Validate у структуры Validator

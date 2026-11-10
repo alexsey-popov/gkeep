@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
+	"log/slog"
 	"net"
 	"os"
 	"path/filepath"
@@ -15,9 +16,10 @@ import (
 
 	"github.com/alexsey-popov/gkeep/internal/auth"
 	"github.com/alexsey-popov/gkeep/internal/crypto"
+	"github.com/alexsey-popov/gkeep/internal/models"
+	"github.com/alexsey-popov/gkeep/internal/validator"
 	api "github.com/alexsey-popov/gkeep/proto"
 	"github.com/alexsey-popov/gkeep/proto/file"
-	"github.com/go-chi/jwtauth/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -29,18 +31,7 @@ import (
 )
 
 func TestHandler_FileUnitMethods(t *testing.T) {
-	secret := "secret-jwt-token"
-	guard := auth.New(secret)
-	rep := newMockRepository()
-	h := New(rep, guard)
-
-	tokenString, _, err := guard.NewUserToken("user-123")
-	require.NoError(t, err)
-
-	token, err := guard.JWTAuth().Decode(tokenString)
-	require.NoError(t, err)
-
-	authCtx := jwtauth.NewContext(context.Background(), token, nil)
+	h, rep, _, authCtx, userID := setupTest(t)
 
 	// Создаем тестовый файл в репозитории
 	tmp, err := os.CreateTemp("", "test-file-*")
@@ -50,7 +41,15 @@ func TestHandler_FileUnitMethods(t *testing.T) {
 	require.NoError(t, err)
 	tmp.Close()
 
-	createdFile, err := rep.FileCreate(authCtx, "user-123", "Мой документ", "document.txt", tmp.Name(), 11, "checksum-abc")
+	createdFile := &models.File{
+		UserId:      userID,
+		Name:        "Мой документ",
+		Filename:    "document.txt",
+		StoragePath: tmp.Name(),
+		Size:        11,
+		Checksum:    "checksum-abc",
+	}
+	err = rep.FileCreate(authCtx, createdFile)
 	require.NoError(t, err)
 
 	t.Run("FileList - unauthenticated", func(t *testing.T) {
@@ -74,9 +73,23 @@ func TestHandler_FileUnitMethods(t *testing.T) {
 		assert.Equal(t, "checksum-abc", resp.GetFiles()[0].GetChecksum())
 	})
 
+	t.Run("FileList - repository error", func(t *testing.T) {
+		hErr, repErr, _, authCtxErr, _ := setupTest(t)
+		repErr.fileListErr = errors.New("db error")
+
+		req := &api.ListRequest{}
+		resp, err := hErr.FileList(authCtxErr, req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Internal, st.Code())
+		assert.Nil(t, resp.GetFiles())
+	})
+
 	t.Run("FileShow - unauthenticated", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId(createdFile.Id)
+		req := api.IDRequest_builder{
+			Id: &createdFile.Id,
+		}.Build()
 		resp, err := h.FileShow(context.Background(), req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
@@ -86,8 +99,9 @@ func TestHandler_FileUnitMethods(t *testing.T) {
 	})
 
 	t.Run("FileShow - empty id", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId("   ")
+		req := api.IDRequest_builder{
+			Id: stringPtr("   "),
+		}.Build()
 		resp, err := h.FileShow(authCtx, req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
@@ -97,8 +111,9 @@ func TestHandler_FileUnitMethods(t *testing.T) {
 	})
 
 	t.Run("FileShow - not found", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId("unknown-id")
+		req := api.IDRequest_builder{
+			Id: stringPtr("unknown-id"),
+		}.Build()
 		resp, err := h.FileShow(authCtx, req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
@@ -107,9 +122,25 @@ func TestHandler_FileUnitMethods(t *testing.T) {
 		assert.Nil(t, resp.GetFile())
 	})
 
+	t.Run("FileShow - repository error", func(t *testing.T) {
+		hErr, repErr, _, authCtxErr, _ := setupTest(t)
+		repErr.fileShowErr = errors.New("db error")
+
+		req := api.IDRequest_builder{
+			Id: stringPtr("file-1"),
+		}.Build()
+		resp, err := hErr.FileShow(authCtxErr, req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Internal, st.Code())
+		assert.Nil(t, resp.GetFile())
+	})
+
 	t.Run("FileShow - authenticated success", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId(createdFile.Id)
+		req := api.IDRequest_builder{
+			Id: &createdFile.Id,
+		}.Build()
 		resp, err := h.FileShow(authCtx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp.GetFile())
@@ -118,9 +149,22 @@ func TestHandler_FileUnitMethods(t *testing.T) {
 		assert.Equal(t, "document.txt", resp.GetFile().GetFilename())
 	})
 
+	t.Run("FileDelete - unauthenticated", func(t *testing.T) {
+		req := api.IDRequest_builder{
+			Id: &createdFile.Id,
+		}.Build()
+		resp, err := h.FileDelete(context.Background(), req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Unauthenticated, st.Code())
+		assert.Nil(t, resp.GetFile())
+	})
+
 	t.Run("FileDelete - empty id", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId("")
+		req := api.IDRequest_builder{
+			Id: stringPtr(""),
+		}.Build()
 		resp, err := h.FileDelete(authCtx, req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
@@ -130,8 +174,9 @@ func TestHandler_FileUnitMethods(t *testing.T) {
 	})
 
 	t.Run("FileDelete - not found", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId("nonexistent-file-id")
+		req := api.IDRequest_builder{
+			Id: stringPtr("nonexistent-file-id"),
+		}.Build()
 		resp, err := h.FileDelete(authCtx, req)
 		require.Error(t, err)
 		st, ok := status.FromError(err)
@@ -140,9 +185,25 @@ func TestHandler_FileUnitMethods(t *testing.T) {
 		assert.Nil(t, resp.GetFile())
 	})
 
+	t.Run("FileDelete - repository error", func(t *testing.T) {
+		hErr, repErr, _, authCtxErr, _ := setupTest(t)
+		repErr.fileDeleteErr = errors.New("db error")
+
+		req := api.IDRequest_builder{
+			Id: stringPtr("file-1"),
+		}.Build()
+		resp, err := hErr.FileDelete(authCtxErr, req)
+		require.Error(t, err)
+		st, ok := status.FromError(err)
+		require.True(t, ok)
+		assert.Equal(t, codes.Internal, st.Code())
+		assert.Nil(t, resp.GetFile())
+	})
+
 	t.Run("FileDelete - authenticated success", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId(createdFile.Id)
+		req := api.IDRequest_builder{
+			Id: &createdFile.Id,
+		}.Build()
 		resp, err := h.FileDelete(authCtx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp.GetFile())
@@ -169,9 +230,12 @@ func TestHandler_FileStreamingIntegration(t *testing.T) {
 	rep := newMockRepository()
 	cipherService, err := crypto.NewWithTempKey()
 	require.NoError(t, err)
-	h := New(rep, guard, cipherService)
+	val, err := validator.New()
+	require.NoError(t, err)
+	log := slog.New(slog.NewTextHandler(io.Discard, nil))
+	h := New(rep, guard, cipherService, val, log)
 
-	tokenString, _, err := guard.NewUserToken("user-stream-123")
+	tokenString, _, err := guard.NewUserToken("00000000-0000-0000-0000-000000000001")
 	require.NoError(t, err)
 
 	buffer := 1024 * 1024
@@ -254,10 +318,10 @@ func TestHandler_FileStreamingIntegration(t *testing.T) {
 
 		uploadedFileID = resp.GetFile().GetId()
 
-		// Проверяем, что файл сохранен в attachments/user-stream-123/{date}
+		// Проверяем, что файл сохранен в attachments/00000000-0000-0000-0000-000000000001/{date}
 		dateStr := time.Now().Format("2006-01-02")
-		expectedDir := filepath.Join("attachments", "user-stream-123", dateStr)
-		savedFile, err := rep.FileShow(context.Background(), "user-stream-123", uploadedFileID)
+		expectedDir := filepath.Join("attachments", "00000000-0000-0000-0000-000000000001", dateStr)
+		savedFile, err := rep.FileShow(context.Background(), "00000000-0000-0000-0000-000000000001", uploadedFileID)
 		require.NoError(t, err)
 		savedFilePath = savedFile.StoragePath
 		assert.True(t, strings.HasPrefix(savedFile.StoragePath, expectedDir), "файл должен сохраняться в директории %s, получено: %s", expectedDir, savedFile.StoragePath)
@@ -280,8 +344,9 @@ func TestHandler_FileStreamingIntegration(t *testing.T) {
 	})
 
 	t.Run("3. FileShow - просмотр метаданных загруженного файла", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId(uploadedFileID)
+		req := api.IDRequest_builder{
+			Id: &uploadedFileID,
+		}.Build()
 		resp, err := client.FileShow(authCtx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp.GetFile())
@@ -355,8 +420,9 @@ func TestHandler_FileStreamingIntegration(t *testing.T) {
 	})
 
 	t.Run("6. FileDelete - удаление файла", func(t *testing.T) {
-		req := &api.IDRequest{}
-		req.SetId(uploadedFileID)
+		req := api.IDRequest_builder{
+			Id: &uploadedFileID,
+		}.Build()
 
 		resp, err := client.FileDelete(authCtx, req)
 		require.NoError(t, err)

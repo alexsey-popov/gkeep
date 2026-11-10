@@ -108,6 +108,9 @@ func (h *Handler) TextUpdate(ctx context.Context, in *text.UpdateRequest) (*text
 	}
 
 	if err = h.rep.TextUpdate(ctx, &item); err != nil {
+		if errors.Is(err, repository.ErrConflictUnique) {
+			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
+		}
 		if errors.Is(err, sql.ErrNoRows) {
 			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}
