@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,9 +23,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// toProtoFile преобразует модель File в protobuf сообщение File
+// maxFileSize Максимальный размер файла (100 Мб)
 const maxFileSize = 100 * 1024 * 1024 // 100 МБ
 
+// toProtoFile преобразует модель File в protobuf сообщение File
 func toProtoFile(item *models.File) *file.File {
 	if item == nil {
 		return nil
@@ -94,7 +96,7 @@ func (h *Handler) FileShow(ctx context.Context, in *proto.IDRequest) (*file.Resp
 	return &response, nil
 }
 
-// FileDelete удаление записи файла по идентификатору
+// FileDelete удаление файла по идентификатору
 func (h *Handler) FileDelete(ctx context.Context, in *proto.IDRequest) (*file.Response, error) {
 	var response file.Response
 
@@ -117,7 +119,10 @@ func (h *Handler) FileDelete(ctx context.Context, in *proto.IDRequest) (*file.Re
 	}
 
 	if item.StoragePath != "" {
-		_ = os.Remove(item.StoragePath)
+		err = os.Remove(item.StoragePath)
+		if err != nil {
+			h.log.Error("Ошибка при удалении файла", slog.Any("error", err))
+		}
 	}
 
 	response.SetFile(toProtoFile(item))
@@ -176,8 +181,12 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 	if h.cipher != nil {
 		encWriter, err := h.cipher.NewEncryptWriter(tempFile)
 		if err != nil {
-			_ = tempFile.Close()
-			_ = os.Remove(tempPath)
+			if err = tempFile.Close(); err != nil {
+				h.log.Error("Ошибка при закрытии файла", slog.Any("error", err))
+			}
+			if err = os.Remove(tempPath); err != nil {
+				h.log.Error("Ошибка при удалении файла", slog.Any("error", err))
+			}
 			return status.Error(codes.Internal, "ошибка инициализации шифрования файла")
 		}
 		writer = encWriter

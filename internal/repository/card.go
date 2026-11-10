@@ -32,7 +32,7 @@ func (rep *Repository) CardList(ctx context.Context, userID, name, page string) 
 func (rep *Repository) CardCreate(ctx context.Context, item *models.Card) error {
 	// Выполняем запрос
 	query := `INSERT INTO cards (user_id, name, number, expired, code) VALUES (:user_id, :name, :number, :expired, :code) RETURNING id, user_id, name, number, expired, code, created_at`
-	item, err := rep.PutOne[*models.Card](ctx, query, item)
+	err := rep.PutOne[*models.Card](ctx, query, item)
 
 	if err != nil {
 		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
@@ -51,7 +51,7 @@ func (rep *Repository) CardCreate(ctx context.Context, item *models.Card) error 
 // CardUpdate обновление пароля по логину пользователя
 func (rep *Repository) CardUpdate(ctx context.Context, item *models.Card) error {
 	query := `UPDATE cards SET name = :name, number = :number, expired = :expired, code = :code WHERE id = :id AND user_id = :user_id RETURNING id, user_id, name, number, expired, code, created_at`
-	item, err := rep.PutOne[*models.Card](ctx, query, item)
+	err := rep.PutOne[*models.Card](ctx, query, item)
 
 	if err != nil {
 		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем

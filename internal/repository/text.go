@@ -32,7 +32,7 @@ func (rep *Repository) TextList(ctx context.Context, userID, name, page string) 
 func (rep *Repository) TextCreate(ctx context.Context, item *models.Text) error {
 	// Выполняем запрос
 	query := `INSERT INTO texts (user_id, name, text) VALUES (:user_id, :name, :text) RETURNING id, user_id, name, text, created_at`
-	item, err := rep.PutOne[*models.Text](ctx, query, item)
+	err := rep.PutOne[*models.Text](ctx, query, item)
 
 	if err != nil {
 		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
@@ -52,7 +52,7 @@ func (rep *Repository) TextCreate(ctx context.Context, item *models.Text) error 
 func (rep *Repository) TextUpdate(ctx context.Context, item *models.Text) error {
 	// Выполняем запрос
 	query := `UPDATE texts SET name = :name, text = :text WHERE id = :id AND user_id = :user_id RETURNING id, user_id, name, text, created_at`
-	item, err := rep.PutOne[*models.Text](ctx, query, item)
+	err := rep.PutOne[*models.Text](ctx, query, item)
 
 	if err != nil {
 		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем

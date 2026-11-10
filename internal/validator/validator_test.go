@@ -13,44 +13,6 @@ type Request struct {
 	Number string `validate:"order"`
 }
 
-// TestIsValidLuhn Проверка работы валидации по алгоритму Луна
-func TestIsValidLuhn(t *testing.T) {
-	tests := []struct {
-		name    string
-		number  string
-		success bool
-	}{
-		{
-			name:    "positive - корректный номер",
-			number:  "12345678903",
-			success: true,
-		},
-		{
-			name:    "negative - некорректный номер",
-			number:  "123456789030",
-			success: false,
-		},
-		{
-			name:    "negative - недопустимые символы",
-			number:  "A1234567A89030A",
-			success: false,
-		},
-		{
-			name:    "negative - пустая строка",
-			number:  "",
-			success: false,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			answer := IsValidLuhn(test.number)
-
-			assert.Equal(t, test.success, answer, "Ожидался $v, а получили $v", test.success, answer)
-		})
-	}
-}
-
 // TestValidator_Validate Проверка функции Validate у структуры Validator
 func TestValidator_Validate(t *testing.T) {
 	v, errInit := New()

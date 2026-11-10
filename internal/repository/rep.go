@@ -88,32 +88,32 @@ func (rep *Repository) GetMany[T Cipherer](ctx context.Context, query string, ar
 }
 
 // PutOne создание записи
-func (rep *Repository) PutOne[T Cipherer](ctx context.Context, query string, item T) (T, error) {
+func (rep *Repository) PutOne[T Cipherer](ctx context.Context, query string, item T) error {
 	// Шифруем данные
 	if err := item.Encrypt(rep.cipher); err != nil {
 		//rep.log.Error(ErrEncrypt.Error(), slog.Any("error", err))
 		//return item, ErrEncrypt
-		return item, errors.Join(ErrEncrypt, err)
+		return errors.Join(ErrEncrypt, err)
 	}
 
 	// Подготавливаем запрос
 	stmt, err := rep.db.PrepareNamed(query)
 	if err != nil {
-		return item, errors.Join(ErrPrepare, err)
+		return errors.Join(ErrPrepare, err)
 	}
 	defer stmt.Close()
 
 	err = stmt.GetContext(ctx, item, item)
 	if err != nil {
-		return item, errors.Join(ErrExec, err)
+		return errors.Join(ErrExec, err)
 	}
 
 	// Расшифровываем данные
 	if err = item.Decrypt(rep.cipher); err != nil {
 		//rep.log.Error(ErrDecrypt.Error(), slog.Any("error", err))
 		//return item, ErrDecrypt
-		return item, errors.Join(ErrDecrypt, err)
+		return errors.Join(ErrDecrypt, err)
 	}
 
-	return item, nil
+	return nil
 }
