@@ -33,7 +33,7 @@ func (t *Text) Encrypt(cipher *crypto.Service) error {
 func (t *Text) Decrypt(cipher *crypto.Service) error {
 	text, err := cipher.DecryptStr(t.Text)
 	if err != nil {
-		return fmt.Errorf("Ошибка при декодировании поля: %w", err)
+		return fmt.Errorf("ошибка при декодировании поля: %w", err)
 	}
 	t.Text = text
 

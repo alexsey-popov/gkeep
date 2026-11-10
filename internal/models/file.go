@@ -42,13 +42,13 @@ func (f *File) Encrypt(cipher *crypto.Service) error {
 func (f *File) Decrypt(cipher *crypto.Service) error {
 	filename, err := cipher.DecryptStr(f.Filename)
 	if err != nil {
-		return fmt.Errorf("Ошибка при декодировании поля: %w", err)
+		return fmt.Errorf("ошибка при декодировании поля: %w", err)
 	}
 	f.Filename = filename
 
 	path, err := cipher.DecryptStr(f.StoragePath)
 	if err != nil {
-		return fmt.Errorf("Ошибка при декодировании поля: %w", err)
+		return fmt.Errorf("ошибка при декодировании поля: %w", err)
 	}
 	f.StoragePath = path
 

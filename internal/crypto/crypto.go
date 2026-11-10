@@ -150,7 +150,7 @@ func (s *Service) DecryptStr(data string) (string, error) {
 	// Декодируем hex строку
 	dataBytes, err := hex.DecodeString(data)
 	if err != nil {
-		return "", fmt.Errorf("Ошибка при декодировании hex поля: %w", err)
+		return "", fmt.Errorf("ошибка при декодировании hex поля: %w", err)
 	}
 
 	nonceSize := s.cipher.NonceSize()

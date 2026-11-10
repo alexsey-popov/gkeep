@@ -40,13 +40,13 @@ func (p *Password) Encrypt(cipher *crypto.Service) error {
 func (p *Password) Decrypt(cipher *crypto.Service) error {
 	login, err := cipher.DecryptStr(p.Login)
 	if err != nil {
-		return fmt.Errorf("Ошибка при декодировании поля login: %w", err)
+		return fmt.Errorf("ошибка при декодировании поля login: %w", err)
 	}
 	p.Login = login
 
 	pass, err := cipher.DecryptStr(p.Password)
 	if err != nil {
-		return fmt.Errorf("Ошибка при декодировании поля password: %w", err)
+		return fmt.Errorf("ошибка при декодировании поля password: %w", err)
 	}
 	p.Password = pass
 

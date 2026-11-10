@@ -47,19 +47,19 @@ func (c *Card) Encrypt(cipher *crypto.Service) error {
 func (c *Card) Decrypt(cipher *crypto.Service) error {
 	number, err := cipher.DecryptStr(c.Number)
 	if err != nil {
-		return fmt.Errorf("Ошибка при декодировании поля number: %w", err)
+		return fmt.Errorf("ошибка при декодировании поля number: %w", err)
 	}
 	c.Number = number
 
 	expired, err := cipher.DecryptStr(c.Expired)
 	if err != nil {
-		return fmt.Errorf("Ошибка при декодировании поля expired: %w", err)
+		return fmt.Errorf("ошибка при декодировании поля expired: %w", err)
 	}
 	c.Expired = expired
 
 	code, err := cipher.DecryptStr(c.Code)
 	if err != nil {
-		return fmt.Errorf("Ошибка при декодировании поля code: %w", err)
+		return fmt.Errorf("ошибка при декодировании поля code: %w", err)
 	}
 	c.Code = code
 

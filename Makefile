@@ -58,6 +58,10 @@ cert:
 tests:
 	go test ./... -count=1
 
+# Статический анализ кода
+staticcheck:
+	staticcheck ./...
+
 # Подсчёт покрытия кода тестами с выводом в файл
 tests-cover:
 	go test ./... --coverprofile=$(COVER_FILE)

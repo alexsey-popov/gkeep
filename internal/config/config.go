@@ -42,8 +42,8 @@ const (
 	EnvCryptoKey  = "CRYPTO_KEY"
 )
 
-// MissingRequiredField ошибка, сообщающая о том, что некоторые обязательные поля не были указаны
-var MissingRequiredField = errors.New("некоторые обязательные поля не заполнены")
+// ErrMissingRequiredField ошибка, сообщающая о том, что некоторые обязательные поля не были указаны
+var ErrMissingRequiredField = errors.New("некоторые обязательные поля не заполнены")
 
 // Server - Структура конфигурации для сервера
 type Server struct {
@@ -112,7 +112,7 @@ func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
 	if strings.TrimSpace(cfg.JwtToken) == "" ||
 		strings.TrimSpace(cfg.DatabaseURI) == "" ||
 		len(cfg.CryptoKey) == 0 {
-		return cfg, MissingRequiredField
+		return cfg, ErrMissingRequiredField
 	}
 
 	return cfg, nil

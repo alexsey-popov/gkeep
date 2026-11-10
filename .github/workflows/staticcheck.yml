@@ -1,0 +1,25 @@
+name: Staticcheck
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  staticcheck:
+    name: Run Staticcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Run staticcheck
+        uses: dominikh/staticcheck-action@v1
+        with:
+          version: "latest"
+          install-go: false
