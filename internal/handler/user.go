@@ -78,7 +78,7 @@ func (h *Handler) LoginUser(ctx context.Context, in *pb.Request) (*pb.Response, 
 
 	user, err := h.rep.GetUser(ctx, in.GetLogin())
 	if err != nil {
-		return &response, status.Error(codes.Unknown, err.Error())
+		return &response, status.Error(codes.Internal, "Ошибка на стороне сервера")
 	}
 
 	if h.guard != nil {
