@@ -192,7 +192,7 @@ func TestRepository_FileShow(t *testing.T) {
 
 		file, err := rep.FileShow(context.Background(), "user-1", "file-1")
 		require.Error(t, err)
-		assert.True(t, errors.Is(err, sql.ErrNoRows))
+		assert.True(t, errors.Is(err, ErrNoRows))
 		assert.NotNil(t, file)
 		require.NoError(t, mock.ExpectationsWereMet())
 	})

@@ -116,11 +116,10 @@ func (h *Handler) PasswordUpdate(ctx context.Context, in *password.UpdateRequest
 	}
 
 	if err = h.rep.PasswordUpdate(ctx, &pass); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return &response, status.Error(codes.NotFound, "запись не найдена")
-		}
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
+		} else if errors.Is(err, sql.ErrNoRows) {
+			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}
 
 		return &response, status.Error(codes.Internal, "ошибка при обновлении записи")
