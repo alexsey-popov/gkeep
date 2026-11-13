@@ -46,9 +46,7 @@ func (a *App) initFilesListView() {
 		SetSelectedFunc(a.nextFilePage)
 
 	refreshBtn := tview.NewButton("Обновить").
-		SetSelectedFunc(func() {
-			a.loadFiles()
-		})
+		SetSelectedFunc(a.handleRefreshFiles)
 
 	backBtn := tview.NewButton("Назад").
 		SetSelectedFunc(func() {
@@ -177,6 +175,18 @@ func (a *App) openFileList() {
 	a.currentFilePage = 1
 	a.loadFiles()
 	a.pages.SwitchToPage("file_list")
+}
+
+// handleRefreshFiles выполняет обновление списка файлов и отображает уведомление
+func (a *App) handleRefreshFiles() {
+	a.loadFiles()
+	if !a.pages.HasPage("error_modal") {
+		if a.isFilesCached {
+			a.showInfoModal("Данные обновлены из кеша", "file_list")
+		} else {
+			a.showInfoModal("Данные обновлены", "file_list")
+		}
+	}
 }
 
 // loadFiles выполняет запрос к серверу для получения списка файлов пользователя

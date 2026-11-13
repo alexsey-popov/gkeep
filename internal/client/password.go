@@ -40,9 +40,7 @@ func (a *App) initPasswordsListView() {
 		SetSelectedFunc(a.nextPage)
 
 	refreshBtn := tview.NewButton("Обновить").
-		SetSelectedFunc(func() {
-			a.loadPasswords()
-		})
+		SetSelectedFunc(a.handleRefreshPasswords)
 
 	backBtn := tview.NewButton("Назад").
 		SetSelectedFunc(func() {
@@ -191,6 +189,18 @@ func (a *App) openPasswordList() {
 	a.currentPage = 1
 	a.loadPasswords()
 	a.pages.SwitchToPage("password_list")
+}
+
+// handleRefreshPasswords выполняет обновление списка паролей и отображает уведомление
+func (a *App) handleRefreshPasswords() {
+	a.loadPasswords()
+	if !a.pages.HasPage("error_modal") {
+		if a.isPasswordsCached {
+			a.showInfoModal("Данные обновлены из кеша", "password_list")
+		} else {
+			a.showInfoModal("Данные обновлены", "password_list")
+		}
+	}
 }
 
 // loadPasswords выполняет запрос к серверу для получения списка паролей пользователя

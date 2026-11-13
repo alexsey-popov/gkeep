@@ -40,9 +40,7 @@ func (a *App) initTextsListView() {
 		SetSelectedFunc(a.nextTextPage)
 
 	refreshBtn := tview.NewButton("Обновить").
-		SetSelectedFunc(func() {
-			a.loadTexts()
-		})
+		SetSelectedFunc(a.handleRefreshTexts)
 
 	backBtn := tview.NewButton("Назад").
 		SetSelectedFunc(func() {
@@ -181,6 +179,18 @@ func (a *App) openTextList() {
 	a.currentTextPage = 1
 	a.loadTexts()
 	a.pages.SwitchToPage("text_list")
+}
+
+// handleRefreshTexts выполняет обновление списка текстовых записей и отображает уведомление
+func (a *App) handleRefreshTexts() {
+	a.loadTexts()
+	if !a.pages.HasPage("error_modal") {
+		if a.isTextsCached {
+			a.showInfoModal("Данные обновлены из кеша", "text_list")
+		} else {
+			a.showInfoModal("Данные обновлены", "text_list")
+		}
+	}
 }
 
 // loadTexts выполняет запрос к серверу для получения списка текстовых записей пользователя

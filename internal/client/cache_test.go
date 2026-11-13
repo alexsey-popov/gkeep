@@ -279,3 +279,120 @@ func TestCache_DifferentUsersIsolation(t *testing.T) {
 	// Из-за другого ключа шифрования (другой userID/login) кэш пользователя 1 не прочитается
 	assert.Empty(t, app2.currentPasswords)
 }
+
+func TestCache_RefreshNotifications(t *testing.T) {
+	tmpDir := t.TempDir()
+	cachePath := filepath.Join(tmpDir, "refresh_test.cache")
+
+	passId := "p1"
+	passName := "Pass1"
+	passItem := pbPassword.Password_builder{Id: &passId, Name: &passName}.Build()
+
+	cardId := "c1"
+	cardName := "Card1"
+	cardItem := pbCard.Card_builder{Id: &cardId, Name: &cardName}.Build()
+
+	textId := "t1"
+	textName := "Text1"
+	textItem := pbText.Text_builder{Id: &textId, Name: &textName}.Build()
+
+	fileId := "f1"
+	fileName := "File1"
+	fileItem := pbFile.File_builder{Id: &fileId, Name: &fileName}.Build()
+
+	serverAvailable := true
+	mockClient := &mockUsersClient{
+		passwordListFunc: func(ctx context.Context, in *api.ListRequest, opts ...grpc.CallOption) (*pbPassword.ListResponse, error) {
+			if !serverAvailable {
+				return nil, errors.New("server down")
+			}
+			resp := &pbPassword.ListResponse{}
+			resp.SetPassword([]*pbPassword.Password{passItem})
+			return resp, nil
+		},
+		cardListFunc: func(ctx context.Context, in *api.ListRequest, opts ...grpc.CallOption) (*pbCard.ListResponse, error) {
+			if !serverAvailable {
+				return nil, errors.New("server down")
+			}
+			resp := &pbCard.ListResponse{}
+			resp.SetCard([]*pbCard.Card{cardItem})
+			return resp, nil
+		},
+		textListFunc: func(ctx context.Context, in *api.ListRequest, opts ...grpc.CallOption) (*pbText.ListResponse, error) {
+			if !serverAvailable {
+				return nil, errors.New("server down")
+			}
+			resp := &pbText.ListResponse{}
+			resp.SetText([]*pbText.Text{textItem})
+			return resp, nil
+		},
+		fileListFunc: func(ctx context.Context, in *api.ListRequest, opts ...grpc.CallOption) (*pbFile.ListResponse, error) {
+			if !serverAvailable {
+				return nil, errors.New("server down")
+			}
+			resp := &pbFile.ListResponse{}
+			resp.SetFiles([]*pbFile.File{fileItem})
+			return resp, nil
+		},
+	}
+
+	app := NewApp(mockClient)
+	app.SetCacheFilePath(cachePath)
+	app.session = &Session{UserID: "u1", Login: "user1", Token: "jwt"}
+
+	t.Run("online refresh - пароли, карты, тексты, файлы", func(t *testing.T) {
+		serverAvailable = true
+
+		// Пароли
+		app.handleRefreshPasswords()
+		assert.False(t, app.isPasswordsCached)
+		assert.True(t, app.pages.HasPage("info_modal"))
+		app.pages.RemovePage("info_modal")
+
+		// Карты
+		app.handleRefreshCards()
+		assert.False(t, app.isCardsCached)
+		assert.True(t, app.pages.HasPage("info_modal"))
+		app.pages.RemovePage("info_modal")
+
+		// Тексты
+		app.handleRefreshTexts()
+		assert.False(t, app.isTextsCached)
+		assert.True(t, app.pages.HasPage("info_modal"))
+		app.pages.RemovePage("info_modal")
+
+		// Файлы
+		app.handleRefreshFiles()
+		assert.False(t, app.isFilesCached)
+		assert.True(t, app.pages.HasPage("info_modal"))
+		app.pages.RemovePage("info_modal")
+	})
+
+	t.Run("cached refresh - пароли, карты, тексты, файлы", func(t *testing.T) {
+		serverAvailable = false
+
+		// Пароли из кэша
+		app.handleRefreshPasswords()
+		assert.True(t, app.isPasswordsCached)
+		assert.True(t, app.pages.HasPage("info_modal"))
+		app.pages.RemovePage("info_modal")
+
+		// Карты из кэша
+		app.handleRefreshCards()
+		assert.True(t, app.isCardsCached)
+		assert.True(t, app.pages.HasPage("info_modal"))
+		app.pages.RemovePage("info_modal")
+
+		// Тексты из кэша
+		app.handleRefreshTexts()
+		assert.True(t, app.isTextsCached)
+		assert.True(t, app.pages.HasPage("info_modal"))
+		app.pages.RemovePage("info_modal")
+
+		// Файлы из кэша
+		app.handleRefreshFiles()
+		assert.True(t, app.isFilesCached)
+		assert.True(t, app.pages.HasPage("info_modal"))
+		app.pages.RemovePage("info_modal")
+	})
+}

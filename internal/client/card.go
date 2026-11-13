@@ -40,9 +40,7 @@ func (a *App) initCardsListView() {
 		SetSelectedFunc(a.nextCardPage)
 
 	refreshBtn := tview.NewButton("Обновить").
-		SetSelectedFunc(func() {
-			a.loadCards()
-		})
+		SetSelectedFunc(a.handleRefreshCards)
 
 	backBtn := tview.NewButton("Назад").
 		SetSelectedFunc(func() {
@@ -207,6 +205,18 @@ func (a *App) openCardList() {
 	a.currentCardPage = 1
 	a.loadCards()
 	a.pages.SwitchToPage("card_list")
+}
+
+// handleRefreshCards выполняет обновление списка банковских карт и отображает уведомление
+func (a *App) handleRefreshCards() {
+	a.loadCards()
+	if !a.pages.HasPage("error_modal") {
+		if a.isCardsCached {
+			a.showInfoModal("Данные обновлены из кеша", "card_list")
+		} else {
+			a.showInfoModal("Данные обновлены", "card_list")
+		}
+	}
 }
 
 // loadCards выполняет запрос к серверу для получения списка банковских карт пользователя
