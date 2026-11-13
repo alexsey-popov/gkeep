@@ -5,7 +5,6 @@ import (
 	"encoding/json/v2"
 	"errors"
 	"fmt"
-	"log/slog"
 	"os"
 	"strings"
 	"sync"
@@ -27,7 +26,6 @@ type Cache struct {
 	cipher   *crypto.Service
 	mu       sync.Mutex
 	data     *CacheData
-	log      *slog.Logger
 }
 
 // CacheData структура для хранения всех закешированных данных пользователя
