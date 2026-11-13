@@ -1,0 +1,57 @@
+edition = "2023";
+
+package proto.file;
+
+option go_package = "github.com/alexsey-popov/gkeep/proto/file";
+
+// Метаданные файла
+message File {
+  string id = 1;
+  string name = 2;
+  int64 size = 3;
+  string checksum = 4;
+  string filename = 5;
+}
+
+// Запрос на загрузку файла чанками (Client Streaming)
+message UploadFileRequest {
+  oneof data {
+    FileMetadata metadata = 1; // Передается первым сообщением в потоке
+    bytes chunk = 2;           // Последующие бинарные чанки (например, по 64 КБ - 512 КБ)
+  }
+}
+
+message FileMetadata {
+  string name = 1;
+  int64 size = 2;
+  string checksum = 3; // Например, SHA-256 для валидации целостности
+  string filename = 4;
+}
+
+message UploadFileResponse {
+  File file = 1;
+  string error = 2;
+}
+
+// Запрос на скачивание файла (Server Streaming)
+message DownloadFileRequest {
+  string id = 1;
+}
+
+message DownloadFileResponse {
+  oneof data {
+    FileMetadata metadata = 1;
+    bytes chunk = 2;
+  }
+}
+
+// Стандартные сообщения для CRUD
+message ListResponse {
+  repeated File files = 1;
+  string error = 2;
+}
+
+message Response {
+  File file = 1;
+  string error = 2;
+}

@@ -1,0 +1,43 @@
+edition = "2023";
+
+package proto.card;
+
+option go_package = "github.com/alexsey-popov/gkeep/proto/card";
+
+// Карта
+message Card {
+  string id = 1;
+  string name = 2;
+  string number = 3;
+  string expired = 4;
+  string code = 5;
+}
+
+// Структура запроса на создание записи
+message CreateRequest {
+  string name = 1;
+  string number = 2;
+  string expired = 3;
+  string code = 4;
+}
+
+// Структура запроса на редактирование записи
+message UpdateRequest {
+  string id = 1;
+  string name = 2;
+  string number = 3;
+  string expired = 4;
+  string code = 5;
+}
+
+// Структура ответа со списком записей
+message ListResponse {
+  repeated Card card = 1;
+  string error = 2;
+}
+
+// Структура ответа с одной записью
+message Response {
+  Card card = 1;
+  string error = 2;
+}

@@ -1,0 +1,56 @@
+edition = "2023";
+
+package proto;
+
+option go_package = "github.com/alexsey-popov/gkeep/proto";
+
+import "proto/user/user.proto";
+import "proto/password/password.proto";
+import "proto/card/card.proto";
+import "proto/text/text.proto";
+import "proto/file/file.proto";
+
+// Структура запроса на получение списка данных
+message ListRequest {
+  string name = 1;
+  string page = 2;
+}
+
+// Структура запроса на получение отдельной записи
+message IDRequest {
+  string id = 1;
+}
+
+service API {
+  // Пользователь
+  rpc RegisterUser(user.Request) returns (user.Response);
+  rpc LoginUser(user.Request) returns (user.Response);
+
+  // Пароли
+  rpc PasswordList(ListRequest) returns (password.ListResponse);
+  rpc PasswordShow(IDRequest) returns (password.Response);
+  rpc PasswordDelete(IDRequest) returns (password.Response);
+  rpc PasswordCreate(password.CreateRequest) returns (password.Response);
+  rpc PasswordUpdate(password.UpdateRequest) returns (password.Response);
+
+  // Банковские карты
+  rpc CardList(ListRequest) returns (card.ListResponse);
+  rpc CardShow(IDRequest) returns (card.Response);
+  rpc CardDelete(IDRequest) returns (card.Response);
+  rpc CardCreate(card.CreateRequest) returns (card.Response);
+  rpc CardUpdate(card.UpdateRequest) returns (card.Response);
+
+  // Тексты
+  rpc TextList(ListRequest) returns (text.ListResponse);
+  rpc TextShow(IDRequest) returns (text.Response);
+  rpc TextDelete(IDRequest) returns (text.Response);
+  rpc TextCreate(text.CreateRequest) returns (text.Response);
+  rpc TextUpdate(text.UpdateRequest) returns (text.Response);
+
+  // Файлы
+  rpc FileList(ListRequest) returns (file.ListResponse);
+  rpc FileShow(IDRequest) returns (file.Response);
+  rpc FileDelete(IDRequest) returns (file.Response);
+  rpc FileUpload(stream file.UploadFileRequest) returns (file.UploadFileResponse);
+  rpc FileDownload(file.DownloadFileRequest) returns (stream file.DownloadFileResponse);
+}

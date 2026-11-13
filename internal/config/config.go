@@ -1,0 +1,140 @@
+// Конфигурация сервисов.
+package config
+
+import (
+	"errors"
+	"flag"
+	"fmt"
+	"strings"
+)
+
+const (
+	// Адрес сервера (gRPC)
+	FlagAddress    = "addr"
+	EnvAddress     = "ADDRESS"
+	DefaultAddress = "localhost:50051"
+
+	// Адрес подключения к базе данных
+	FlagDatabaseURI = "db"
+	EnvDatabaseURI  = "DATABASE_URI"
+
+	// Токен проверки аутентификации
+	FlagJwtToken = "jwt"
+	EnvJwtToken  = "JWT_TOKEN"
+
+	// TLS сертификат сервера
+	FlagServerTLSCert    = "srv-tls-cert"
+	EnvServerTLSCert     = "SERVER_TLS_CERT"
+	DefaultServerTLSCert = "server.crt"
+
+	// TLS ключ сервера
+	FlagServerTLSKey    = "srv-tls-key"
+	EnvServerTLSKey     = "SERVER_TLS_KEY"
+	DefaultServerTLSKey = "server.key"
+
+	// TLS сертификат сервера
+	FlagClientTLSCert    = "client-tls-cert"
+	EnvClientTLSCert     = "CLIENT_TLS_CERT"
+	DefaultClientTLSCert = "ca.crt"
+
+	// Ключ шифрования данных в БД
+	FlagCryptoKey = "crypto-key"
+	EnvCryptoKey  = "CRYPTO_KEY"
+)
+
+// ErrMissingRequiredField ошибка, сообщающая о том, что некоторые обязательные поля не были указаны
+var ErrMissingRequiredField = errors.New("некоторые обязательные поля не заполнены")
+
+// Server - Структура конфигурации для сервера
+type Server struct {
+	Address     string
+	DatabaseURI string
+	JwtToken    string
+	TLSCert     string
+	TLSKey      string
+	CryptoKey   []byte
+}
+
+// Client - Структура конфигурации для клиента
+type Client struct {
+	Address string
+	TLSCert string
+}
+
+// EnvLookupFunc заглушка для `os.LookupEnv`
+type EnvLookupFunc func(string) (string, bool)
+
+// getEnvString Получение строковых данных из env или выставление значения по умолчанию
+func getEnvString(lookupFunc EnvLookupFunc, name string, defaultValue string) string {
+	if value, ok := lookupFunc(name); ok {
+		return value
+	}
+
+	return defaultValue
+}
+
+// NewServer парсинг конфига сервера (приоритет по убыванию: флаги, env, default)
+func NewServer(args []string, lookupFunc EnvLookupFunc) (*Server, error) {
+	cfg := &Server{}
+
+	fs := flag.NewFlagSet("app", flag.ContinueOnError)
+
+	// Получаем данные из env или их дефолтные значения
+	userAddress := getEnvString(lookupFunc, EnvAddress, DefaultAddress)
+	databaseURI := getEnvString(lookupFunc, EnvDatabaseURI, "")
+	jwtToken := getEnvString(lookupFunc, EnvJwtToken, "")
+	certTLS := getEnvString(lookupFunc, EnvServerTLSCert, DefaultServerTLSCert)
+	keyTLS := getEnvString(lookupFunc, EnvServerTLSKey, DefaultServerTLSKey)
+	cfg.CryptoKey = []byte(getEnvString(lookupFunc, EnvCryptoKey, ""))
+
+	// Получаем данные из флагов
+	fs.StringVar(&cfg.Address, FlagAddress, userAddress, "Адрес системы программы лояльности")
+	fs.StringVar(&cfg.DatabaseURI, FlagDatabaseURI, databaseURI, "Адрес подключения к базе данных")
+	fs.StringVar(&cfg.JwtToken, FlagJwtToken, jwtToken, "Токен проверки аутентификации пользователей")
+	fs.StringVar(&cfg.TLSCert, FlagServerTLSCert, certTLS, "TLS сертификат для сервера")
+	fs.StringVar(&cfg.TLSKey, FlagServerTLSKey, keyTLS, "TLS ключ для сервера")
+
+	// Отдельно обрабатываем CryptoKey т.к. мы должны получить []byte
+	fs.Func(FlagCryptoKey, "Ключ шифрования данных в БД", func(flagValue string) error {
+		// Если значение флага пусто - подставляем данные из env
+		if strings.TrimSpace(flagValue) != "" {
+			cfg.CryptoKey = []byte(flagValue)
+		}
+
+		return nil
+	})
+
+	if err := fs.Parse(args); err != nil {
+		return nil, fmt.Errorf("ошибка при парсинге флагов: %w", err)
+	}
+
+	// Проверяем заполненность обязательных полей
+	if strings.TrimSpace(cfg.JwtToken) == "" ||
+		strings.TrimSpace(cfg.DatabaseURI) == "" ||
+		len(cfg.CryptoKey) == 0 {
+		return cfg, ErrMissingRequiredField
+	}
+
+	return cfg, nil
+}
+
+// NewClient парсинг конфига сервера (приоритет по убыванию: флаги, env, default)
+func NewClient(args []string, lookupFunc EnvLookupFunc) (*Client, error) {
+	cfg := &Client{}
+
+	fs := flag.NewFlagSet("app", flag.ContinueOnError)
+
+	// Получаем данные из env или их дефолтные значения
+	userAddress := getEnvString(lookupFunc, EnvAddress, DefaultAddress)
+	certTLS := getEnvString(lookupFunc, EnvClientTLSCert, DefaultClientTLSCert)
+
+	// Получаем данные из флагов
+	fs.StringVar(&cfg.Address, FlagAddress, userAddress, "Адрес системы программы лояльности")
+	fs.StringVar(&cfg.TLSCert, FlagClientTLSCert, certTLS, "TLS сертификат для клиента")
+
+	if err := fs.Parse(args); err != nil {
+		return nil, fmt.Errorf("ошибка при парсинге флагов: %w", err)
+	}
+
+	return cfg, nil
+}
