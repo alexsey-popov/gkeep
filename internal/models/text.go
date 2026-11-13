@@ -10,11 +10,11 @@ import (
 
 // Text текстовая информация
 type Text struct {
-	Id        string    `db:"id"`
-	UserId    string    `db:"user_id"`
-	Name      string    `db:"name" validate:"required,min=1,max=255" label:"Название"`
-	Text      string    `db:"text" validate:"required,min=1,max=10000" label:"Текст"`
-	CreatedAt time.Time `db:"created_at"`
+	Id        string    `json:"id" db:"id"`
+	UserId    string    `json:"user_id" db:"user_id"`
+	Name      string    `json:"name" db:"name" validate:"required,min=1,max=255" label:"Название"`
+	Text      string    `json:"text" db:"text" validate:"required,min=1,max=10000" label:"Текст"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 // Encrypt Шифрование чувствительных данных
