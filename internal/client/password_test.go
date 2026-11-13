@@ -52,6 +52,9 @@ func TestApp_Passwords(t *testing.T) {
 			name := in.GetName()
 			login := in.GetLogin()
 			pass := in.GetPassword()
+			name1 = name
+			login1 = login
+			pass1 = pass
 			resp := &pbPassword.Response{}
 			resp.SetPassword(pbPassword.Password_builder{
 				Id:       &id,
@@ -99,10 +102,13 @@ func TestApp_Passwords(t *testing.T) {
 		assert.Equal(t, "Email", app.editPassNameField.GetText())
 		assert.Equal(t, "user@mail.com", app.editPassLoginField.GetText())
 
+		app.editPassNameField.SetText("Email Updated")
 		app.editPassValField.SetText("new-password-456")
 		app.handlePasswordUpdate()
 
 		assert.Equal(t, "new-password-456", app.currentPassword.GetPassword())
+		assert.Equal(t, "Email Updated", app.currentPassword.GetName())
+		assert.Equal(t, "Email Updated", app.currentPasswords[0].GetName())
 	})
 
 	t.Run("positive - удаление пароля", func(t *testing.T) {

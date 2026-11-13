@@ -393,10 +393,12 @@ func (a *App) handlePasswordUpdate() {
 	if resp.GetPassword() != nil {
 		a.currentPassword = resp.GetPassword()
 	} else if a.currentPassword != nil {
+		a.currentPassword.SetName(name)
 		a.currentPassword.SetLogin(login)
 		a.currentPassword.SetPassword(passwordVal)
 	}
 
+	a.loadPasswords()
 	a.openPasswordView(a.currentPassword)
 }
 

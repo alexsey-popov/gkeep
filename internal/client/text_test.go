@@ -47,6 +47,8 @@ func TestApp_Texts(t *testing.T) {
 			id := in.GetId()
 			name := in.GetName()
 			txt := in.GetText()
+			name1 = name
+			val1 = txt
 			resp := &pbText.Response{}
 			resp.SetText(pbText.Text_builder{
 				Id:   &id,
@@ -90,9 +92,12 @@ func TestApp_Texts(t *testing.T) {
 
 		app.openTextEdit(app.currentTexts[0])
 		assert.Equal(t, "My Secret Note", app.editTextNameField.GetText())
+		app.editTextNameField.SetText("Updated Secret Note")
 		app.editTextValField.SetText("Updated secret note content")
 		app.handleTextUpdate()
 		assert.Equal(t, "Updated secret note content", app.currentText.GetText())
+		assert.Equal(t, "Updated Secret Note", app.currentText.GetName())
+		assert.Equal(t, "Updated Secret Note", app.currentTexts[0].GetName())
 	})
 
 	t.Run("positive - удаление записи", func(t *testing.T) {

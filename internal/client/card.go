@@ -417,6 +417,7 @@ func (a *App) handleCardUpdate() {
 		a.currentCard.SetCode(code)
 	}
 
+	a.loadCards()
 	a.openCardView(a.currentCard)
 }
 

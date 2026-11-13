@@ -375,6 +375,7 @@ func (a *App) handleTextUpdate() {
 		a.currentText.SetText(textVal)
 	}
 
+	a.loadTexts()
 	a.openTextView(a.currentText)
 }
 
