@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"path/filepath"
 	"testing"
 
 	api "github.com/alexsey-popov/gkeep/proto"
@@ -188,6 +189,7 @@ func TestApp_TextPagination(t *testing.T) {
 			},
 		}
 		errApp := NewApp(errMockClient)
+		errApp.SetCacheFilePath(filepath.Join(t.TempDir(), "nonexistent.cache"))
 		errApp.session = &Session{Token: "test-token", UserID: "uid-1", Login: "user1"}
 		errApp.loadTexts()
 		assert.True(t, errApp.pages.HasPage("error_modal"))

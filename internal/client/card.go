@@ -228,12 +228,29 @@ func (a *App) loadCards() {
 
 	resp, err := a.usersClient.CardList(ctx, req)
 	if err != nil {
+		// При ошибке сервера пробуем загрузить из кэша
+		cached, cacheErr := a.loadCachedCards(a.currentCardPage)
+		if cacheErr == nil && cached != nil {
+			a.isCardsCached = true
+			a.currentCards = cached
+			a.renderCardsList()
+			return
+		}
+
+		a.isCardsCached = false
 		st := status.Convert(err)
 		a.showErrorModal(fmt.Sprintf("Ошибка получения списка карт:\n%s", st.Message()), "data_types")
 		return
 	}
 
+	a.isCardsCached = false
 	a.currentCards = resp.GetCard()
+	_ = a.saveCachedCards(a.currentCardPage, a.currentCards)
+	a.renderCardsList()
+}
+
+// renderCardsList обновляет визуальный список банковских карт
+func (a *App) renderCardsList() {
 	a.cardsList.Clear()
 	a.cardsFlex.SetTitle(a.getCardsListTitle())
 
@@ -272,11 +289,17 @@ func (a *App) openCardView(c *pbCard.Card) {
 	}
 	a.currentCard = c
 
+	cachedMark := ""
+	if a.isCardsCached {
+		cachedMark = "  [yellow](Локальная копия данных)[-]\n\n"
+	}
+
 	info := fmt.Sprintf(
-		"\n  [yellow]Название:[white]      %s\n\n"+
+		"\n%s  [yellow]Название:[white]      %s\n\n"+
 			"  [yellow]Номер карты:[white]   %s\n\n"+
 			"  [yellow]Срок действия:[white] %s\n\n"+
 			"  [yellow]Код (CVV):[white]     %s\n",
+		cachedMark,
 		c.GetName(),
 		c.GetNumber(),
 		c.GetExpired(),
@@ -471,12 +494,16 @@ func (a *App) SetCurrentCardPage(p int) {
 	a.currentCardPage = p
 }
 
-// getTextsListTitle возвращает заголовок для списка записей
+// getCardsListTitle возвращает заголовок для списка записей
 func (a *App) getCardsListTitle() string {
-	if a.currentCardPage <= 1 {
-		return " [::b]Список банковских карт (Стр. 1)[::-] "
+	cachedMark := ""
+	if a.isCardsCached {
+		cachedMark = " [yellow][Локальная копия данных][-]"
 	}
-	return fmt.Sprintf(" [::b]Список банковских карт (Стр. %d)[::-] ", a.currentCardPage)
+	if a.currentCardPage <= 1 {
+		return fmt.Sprintf(" [::b]Список банковских карт (Стр. 1)%s[::-] ", cachedMark)
+	}
+	return fmt.Sprintf(" [::b]Список банковских карт (Стр. %d)%s[::-] ", a.currentCardPage, cachedMark)
 }
 
 // clearCreateCardFields очищает поля формы создания карты

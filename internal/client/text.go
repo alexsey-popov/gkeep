@@ -202,12 +202,29 @@ func (a *App) loadTexts() {
 
 	resp, err := a.usersClient.TextList(ctx, req)
 	if err != nil {
+		// При ошибке сервера пробуем загрузить из кэша
+		cached, cacheErr := a.loadCachedTexts(a.currentTextPage)
+		if cacheErr == nil && cached != nil {
+			a.isTextsCached = true
+			a.currentTexts = cached
+			a.renderTextsList()
+			return
+		}
+
+		a.isTextsCached = false
 		st := status.Convert(err)
 		a.showErrorModal(fmt.Sprintf("Ошибка получения списка текстов:\n%s", st.Message()), "data_types")
 		return
 	}
 
+	a.isTextsCached = false
 	a.currentTexts = resp.GetText()
+	_ = a.saveCachedTexts(a.currentTextPage, a.currentTexts)
+	a.renderTextsList()
+}
+
+// renderTextsList обновляет визуальный список текстов
+func (a *App) renderTextsList() {
 	a.textsList.Clear()
 	a.textsFlex.SetTitle(a.getTextsListTitle())
 
@@ -246,9 +263,15 @@ func (a *App) openTextView(t *pbText.Text) {
 	}
 	a.currentText = t
 
+	cachedMark := ""
+	if a.isTextsCached {
+		cachedMark = "  [yellow](Локальная копия данных)[-]\n\n"
+	}
+
 	info := fmt.Sprintf(
-		"\n  [yellow]Название:[white] %s\n\n"+
+		"\n%s  [yellow]Название:[white] %s\n\n"+
 			"  [yellow]Текст:[white]\n  %s\n",
+		cachedMark,
 		t.GetName(),
 		t.GetText(),
 	)
@@ -431,10 +454,14 @@ func (a *App) SetCurrentTextPage(p int) {
 
 // getTextsListTitle возвращает заголовок для списка записей
 func (a *App) getTextsListTitle() string {
-	if a.currentTextPage <= 1 {
-		return " [::b]Список текстовых данных (Стр. 1)[::-] "
+	cachedMark := ""
+	if a.isTextsCached {
+		cachedMark = " [yellow][Локальная копия данных][-]"
 	}
-	return fmt.Sprintf(" [::b]Список текстовых данных (Стр. %d)[::-] ", a.currentTextPage)
+	if a.currentTextPage <= 1 {
+		return fmt.Sprintf(" [::b]Список текстовых данных (Стр. 1)%s[::-] ", cachedMark)
+	}
+	return fmt.Sprintf(" [::b]Список текстовых данных (Стр. %d)%s[::-] ", a.currentTextPage, cachedMark)
 }
 
 // clearCreateTextFields очищает поля формы создания текстовой записи

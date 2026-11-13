@@ -126,10 +126,109 @@ func (c *Cache) Load() error {
 	}
 
 	// Десериализуем данные
-	var cache CacheData
-	if err = json.Unmarshal(decrypted, &cache); err != nil {
+	var cacheData CacheData
+	if err = json.Unmarshal(decrypted, &cacheData); err != nil {
 		return ErrUnmarshal
 	}
 
+	if cacheData.Passwords == nil {
+		cacheData.Passwords = make(map[int][]models.Password)
+	}
+	if cacheData.Cards == nil {
+		cacheData.Cards = make(map[int][]models.Card)
+	}
+	if cacheData.Texts == nil {
+		cacheData.Texts = make(map[int][]models.Text)
+	}
+	if cacheData.Files == nil {
+		cacheData.Files = make(map[int][]models.File)
+	}
+
+	c.data = &cacheData
+
 	return nil
+}
+
+// SetPasswords сохраняет страницу паролей в кеш
+func (c *Cache) SetPasswords(page int, items []models.Password) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.data == nil {
+		c.data = newCacheData()
+	}
+	c.data.Passwords[page] = items
+}
+
+// GetPasswords возвращает страницу паролей из кеша
+func (c *Cache) GetPasswords(page int) ([]models.Password, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.data == nil {
+		return nil, false
+	}
+	items, ok := c.data.Passwords[page]
+	return items, ok
+}
+
+// SetCards сохраняет страницу банковских карт в кеш
+func (c *Cache) SetCards(page int, items []models.Card) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.data == nil {
+		c.data = newCacheData()
+	}
+	c.data.Cards[page] = items
+}
+
+// GetCards возвращает страницу банковских карт из кеша
+func (c *Cache) GetCards(page int) ([]models.Card, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.data == nil {
+		return nil, false
+	}
+	items, ok := c.data.Cards[page]
+	return items, ok
+}
+
+// SetTexts сохраняет страницу текстовых записей в кеш
+func (c *Cache) SetTexts(page int, items []models.Text) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.data == nil {
+		c.data = newCacheData()
+	}
+	c.data.Texts[page] = items
+}
+
+// GetTexts возвращает страницу текстовых записей из кеша
+func (c *Cache) GetTexts(page int) ([]models.Text, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.data == nil {
+		return nil, false
+	}
+	items, ok := c.data.Texts[page]
+	return items, ok
+}
+
+// SetFiles сохраняет страницу метаданных файлов в кеш
+func (c *Cache) SetFiles(page int, items []models.File) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.data == nil {
+		c.data = newCacheData()
+	}
+	c.data.Files[page] = items
+}
+
+// GetFiles возвращает страницу метаданных файлов из кеша
+func (c *Cache) GetFiles(page int) ([]models.File, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.data == nil {
+		return nil, false
+	}
+	items, ok := c.data.Files[page]
+	return items, ok
 }
