@@ -35,13 +35,8 @@ func (h *Handler) TextList(ctx context.Context, in *proto.ListRequest) (*text.Li
 
 	pbList := make([]*text.Text, 0, len(items))
 	for _, item := range items {
-		// Переприсваивать уже не надо, но хуже от этого не будет
 		item := item
-		pbList = append(pbList, text.Text_builder{
-			Id:   &item.Id,
-			Name: &item.Name,
-			Text: &item.Text,
-		}.Build())
+		pbList = append(pbList, proto.ConvertText(item))
 	}
 
 	response.SetText(pbList)
@@ -73,16 +68,11 @@ func (h *Handler) TextCreate(ctx context.Context, in *text.CreateRequest) (*text
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
 		}
+
 		return &response, status.Error(codes.Internal, "ошибка при создании записи")
 	}
 
-	response.SetText(
-		text.Text_builder{
-			Id:   &item.Id,
-			Name: &item.Name,
-			Text: &item.Text,
-		}.Build(),
-	)
+	response.SetText(proto.ConvertText(&item))
 
 	return &response, nil
 }
@@ -111,20 +101,13 @@ func (h *Handler) TextUpdate(ctx context.Context, in *text.UpdateRequest) (*text
 	if err = h.rep.TextUpdate(ctx, &item); err != nil {
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
-		}
-		if errors.Is(err, sql.ErrNoRows) {
+		} else if errors.Is(err, sql.ErrNoRows) {
 			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}
 		return &response, status.Error(codes.Internal, "ошибка при обновлении записи")
 	}
 
-	response.SetText(
-		text.Text_builder{
-			Id:   &item.Id,
-			Name: &item.Name,
-			Text: &item.Text,
-		}.Build(),
-	)
+	response.SetText(proto.ConvertText(&item))
 
 	return &response, nil
 }
@@ -151,13 +134,7 @@ func (h *Handler) TextDelete(ctx context.Context, in *proto.IDRequest) (*text.Re
 		return &response, status.Error(codes.Internal, "ошибка при удалении записи")
 	}
 
-	response.SetText(
-		text.Text_builder{
-			Id:   &item.Id,
-			Name: &item.Name,
-			Text: &item.Text,
-		}.Build(),
-	)
+	response.SetText(proto.ConvertText(item))
 
 	return &response, nil
 }

@@ -10,12 +10,12 @@ import (
 
 // Password связка логин/пароль
 type Password struct {
-	Id        string    `db:"id"`
-	UserId    string    `db:"user_id" validate:"required,uuid" label:"ID пользователя"`
-	Name      string    `db:"name" validate:"required,min=2,max=255" label:"Название"`
-	Login     string    `db:"login" validate:"required,min=2,max=255" label:"Логин"`
-	Password  string    `db:"password" validate:"required,min=2,max=255" label:"Пароль"`
-	CreatedAt time.Time `db:"created_at"`
+	Id        string    `json:"id" db:"id"`
+	UserId    string    `json:"user_id" db:"user_id" validate:"required,uuid" label:"ID пользователя"`
+	Name      string    `json:"name" db:"name" validate:"required,min=2,max=255" label:"Название"`
+	Login     string    `json:"login" db:"login" validate:"required,min=2,max=255" label:"Логин"`
+	Password  string    `json:"password" db:"password" validate:"required,min=2,max=255" label:"Пароль"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 // Encrypt Шифрование чувствительных данных

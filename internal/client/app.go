@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	api "github.com/alexsey-popov/gkeep/proto"
@@ -130,6 +131,16 @@ type App struct {
 	currentFiles     []*pbFile.File
 	currentFile      *pbFile.File
 	currentFilePage  int
+
+	// Флаги закешированных данных (офлайн режим)
+	isPasswordsCached bool
+	isCardsCached     bool
+	isTextsCached     bool
+	isFilesCached     bool
+
+	// Путь к файлу локального кэша и мьютекс
+	cacheFilePath string
+	cacheMu       sync.Mutex
 }
 
 // NewApp создает новый экземпляр терминального приложения
@@ -152,6 +163,7 @@ func NewApp(usersClient api.APIClient, version ...string) *App {
 		currentTexts:     make([]*pbText.Text, 0),
 		currentFilePage:  1,
 		currentFiles:     make([]*pbFile.File, 0),
+		cacheFilePath:    ".gkeep_cache",
 	}
 
 	a.initUI()

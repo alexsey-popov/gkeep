@@ -27,21 +27,6 @@ import (
 // maxFileSize Максимальный размер файла (100 Мб)
 const maxFileSize = 100 * 1024 * 1024 // 100 МБ
 
-// toProtoFile преобразует модель File в protobuf сообщение File
-func toProtoFile(item *models.File) *file.File {
-	if item == nil {
-		return nil
-	}
-
-	return file.File_builder{
-		Id:       &item.Id,
-		Name:     &item.Name,
-		Filename: &item.Filename,
-		Size:     &item.Size,
-		Checksum: &item.Checksum,
-	}.Build()
-}
-
 // FileList получение списка файлов пользователя
 func (h *Handler) FileList(ctx context.Context, in *proto.ListRequest) (*file.ListResponse, error) {
 	var response file.ListResponse
@@ -62,7 +47,7 @@ func (h *Handler) FileList(ctx context.Context, in *proto.ListRequest) (*file.Li
 	pbList := make([]*file.File, 0, len(items))
 	for _, item := range items {
 		item := item
-		pbList = append(pbList, toProtoFile(item))
+		pbList = append(pbList, proto.ConvertFile(item))
 	}
 
 	response.SetFiles(pbList)
@@ -92,7 +77,7 @@ func (h *Handler) FileShow(ctx context.Context, in *proto.IDRequest) (*file.Resp
 		return &response, status.Error(codes.Internal, "ошибка при получении записи")
 	}
 
-	response.SetFile(toProtoFile(item))
+	response.SetFile(proto.ConvertFile(item))
 
 	return &response, nil
 }
@@ -126,7 +111,7 @@ func (h *Handler) FileDelete(ctx context.Context, in *proto.IDRequest) (*file.Re
 		}
 	}
 
-	response.SetFile(toProtoFile(item))
+	response.SetFile(proto.ConvertFile(item))
 
 	return &response, nil
 }
@@ -247,7 +232,7 @@ func (h *Handler) FileUpload(stream grpc.ClientStreamingServer[file.UploadFileRe
 	success = true
 
 	var resp file.UploadFileResponse
-	resp.SetFile(toProtoFile(&item))
+	resp.SetFile(proto.ConvertFile(&item))
 	return stream.SendAndClose(&resp)
 }
 

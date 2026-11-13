@@ -192,7 +192,7 @@ func TestRepository_FileShow(t *testing.T) {
 
 		file, err := rep.FileShow(context.Background(), "user-1", "file-1")
 		require.Error(t, err)
-		assert.True(t, errors.Is(err, sql.ErrNoRows))
+		assert.True(t, errors.Is(err, ErrNoRows))
 		assert.NotNil(t, file)
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
@@ -215,10 +215,13 @@ func TestRepository_FileShow(t *testing.T) {
 
 func TestRepository_FileDelete(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		rep, mock, _ := setupTestRepo(t)
+		rep, mock, cipher := setupTestRepo(t)
+
+		encFilename, _ := cipher.EncryptStr("filename.txt")
+		encStoragePath, _ := cipher.EncryptStr("/storage/path")
 
 		rows := sqlmock.NewRows([]string{"id", "user_id", "name", "filename", "storage_path", "size", "checksum", "created_at"}).
-			AddRow("file-1", "user-1", "File to delete", "enc_fn", "enc_sp", int64(1024), "chk", time.Now())
+			AddRow("file-1", "user-1", "File to delete", encFilename, encStoragePath, int64(1024), "chk", time.Now())
 
 		mock.ExpectQuery(`^DELETE FROM files WHERE user_id = \$1 AND id = \$2 RETURNING id, user_id, name, filename, storage_path, size, checksum, created_at$`).
 			WithArgs("user-1", "file-1").
@@ -230,6 +233,8 @@ func TestRepository_FileDelete(t *testing.T) {
 		assert.Equal(t, "file-1", item.Id)
 		assert.Equal(t, "user-1", item.UserId)
 		assert.Equal(t, "File to delete", item.Name)
+		assert.Equal(t, "filename.txt", item.Filename)
+		assert.Equal(t, "/storage/path", item.StoragePath)
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 

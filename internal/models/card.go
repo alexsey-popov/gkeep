@@ -10,13 +10,13 @@ import (
 
 // Card банковская карта
 type Card struct {
-	Id        string    `db:"id"`
-	UserId    string    `db:"user_id"`
-	Name      string    `db:"name" validate:"required,min=1,max=255" label:"Название"`
-	Number    string    `db:"number" validate:"required,number,luhn_checksum" label:"Номер"`
-	Expired   string    `db:"expired" validate:"required,number,len=4" label:"Срок"`
-	Code      string    `db:"code" validate:"required,number,min=3,max=4" label:"Код"`
-	CreatedAt time.Time `db:"created_at"`
+	Id        string    `json:"id" db:"id"`
+	UserId    string    `json:"user_id" db:"user_id"`
+	Name      string    `json:"name" db:"name" validate:"required,min=1,max=255" label:"Название"`
+	Number    string    `json:"number" db:"number" validate:"required,number,luhn_checksum" label:"Номер"`
+	Expired   string    `json:"expired" db:"expired" validate:"required,number,len=4" label:"Срок"`
+	Code      string    `json:"code" db:"code" validate:"required,number,min=3,max=4" label:"Код"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 // Encrypt Шифрование чувствительных данных
