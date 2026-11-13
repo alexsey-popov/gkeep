@@ -66,5 +66,12 @@ func (rep *Repository) FileDelete(ctx context.Context, userID, id string) (*mode
 		return &item, err
 	}
 
+	// Расшифровываем данные
+	if err = item.Decrypt(rep.cipher); err != nil {
+		rep.log.Error("Ошибка при расшифровывании данных", slog.Any("error", err))
+
+		return &item, ErrDecrypt
+	}
+
 	return &item, nil
 }
