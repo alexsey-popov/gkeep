@@ -8,8 +8,6 @@ import (
 	"log/slog"
 
 	"github.com/alexsey-popov/gkeep/internal/models"
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // CardList получение списка банковских карт
@@ -28,40 +26,22 @@ func (rep *Repository) CardList(ctx context.Context, userID, name, page string) 
 	return items, nil
 }
 
-// CardCreate создание новой записи с банковской картой
+// CardCreate создание новой записи
 func (rep *Repository) CardCreate(ctx context.Context, item *models.Card) error {
 	// Выполняем запрос
 	query := `INSERT INTO cards (user_id, name, number, expired, code) VALUES (:user_id, :name, :number, :expired, :code) RETURNING id, user_id, name, number, expired, code, created_at`
-	err := rep.Exec[*models.Card](ctx, query, item)
-
-	if err != nil {
-		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation && pgErr.ConstraintName == "idx_cards_name_user_id_unique" {
-			return ErrConflictUnique
-		}
-
-		rep.log.Error("ошибка при создании записи в БД", slog.Any("error", err))
-		return ErrExec
+	if err := rep.Exec[*models.Card](ctx, query, item); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-// CardUpdate обновление пароля по логину пользователя
+// CardUpdate обновление записи
 func (rep *Repository) CardUpdate(ctx context.Context, item *models.Card) error {
 	query := `UPDATE cards SET name = :name, number = :number, expired = :expired, code = :code WHERE id = :id AND user_id = :user_id RETURNING id, user_id, name, number, expired, code, created_at`
-	err := rep.Exec[*models.Card](ctx, query, item)
-
-	if err != nil {
-		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation && pgErr.ConstraintName == "idx_cards_name_user_id_unique" {
-			return ErrConflictUnique
-		}
-
-		rep.log.Error("ошибка при создании записи в БД", slog.Any("error", err))
-		return ErrExec
+	if err := rep.Exec[*models.Card](ctx, query, item); err != nil {
+		return err
 	}
 
 	return nil

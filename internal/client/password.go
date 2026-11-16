@@ -40,9 +40,7 @@ func (a *App) initPasswordsListView() {
 		SetSelectedFunc(a.nextPage)
 
 	refreshBtn := tview.NewButton("Обновить").
-		SetSelectedFunc(func() {
-			a.loadPasswords()
-		})
+		SetSelectedFunc(a.handleRefreshPasswords)
 
 	backBtn := tview.NewButton("Назад").
 		SetSelectedFunc(func() {
@@ -193,6 +191,18 @@ func (a *App) openPasswordList() {
 	a.pages.SwitchToPage("password_list")
 }
 
+// handleRefreshPasswords выполняет обновление списка паролей и отображает уведомление
+func (a *App) handleRefreshPasswords() {
+	a.loadPasswords()
+	if !a.pages.HasPage("error_modal") {
+		if a.isPasswordsCached {
+			a.showInfoModal("Данные обновлены из кеша", "password_list")
+		} else {
+			a.showInfoModal("Данные обновлены", "password_list")
+		}
+	}
+}
+
 // loadPasswords выполняет запрос к серверу для получения списка паролей пользователя
 func (a *App) loadPasswords() {
 	if a.session == nil || a.session.Token == "" {
@@ -212,12 +222,29 @@ func (a *App) loadPasswords() {
 
 	resp, err := a.usersClient.PasswordList(ctx, req)
 	if err != nil {
+		// При ошибке сервера пробуем загрузить из кэша
+		cached, cacheErr := a.loadCachedPasswords(a.currentPage)
+		if cacheErr == nil && cached != nil {
+			a.isPasswordsCached = true
+			a.currentPasswords = cached
+			a.renderPasswordsList()
+			return
+		}
+
+		a.isPasswordsCached = false
 		st := status.Convert(err)
 		a.showErrorModal(fmt.Sprintf("Ошибка получения списка паролей:\n%s", st.Message()), "data_types")
 		return
 	}
 
+	a.isPasswordsCached = false
 	a.currentPasswords = resp.GetPassword()
+	_ = a.saveCachedPasswords(a.currentPage, a.currentPasswords)
+	a.renderPasswordsList()
+}
+
+// renderPasswordsList обновляет визуальный список паролей
+func (a *App) renderPasswordsList() {
 	a.passwordsList.Clear()
 	a.passwordsFlex.SetTitle(a.getPasswordsListTitle())
 
@@ -256,10 +283,16 @@ func (a *App) openPasswordView(p *pbPassword.Password) {
 	}
 	a.currentPassword = p
 
+	cachedMark := ""
+	if a.isPasswordsCached {
+		cachedMark = "  [yellow](Локальная копия данных)[-]\n\n"
+	}
+
 	info := fmt.Sprintf(
-		"\n  [yellow]Название:[white] %s\n\n"+
+		"\n%s  [yellow]Название:[white] %s\n\n"+
 			"  [yellow]Логин:[white]    %s\n\n"+
 			"  [yellow]Пароль:[white]   %s\n",
+		cachedMark,
 		p.GetName(),
 		p.GetLogin(),
 		p.GetPassword(),
@@ -360,10 +393,12 @@ func (a *App) handlePasswordUpdate() {
 	if resp.GetPassword() != nil {
 		a.currentPassword = resp.GetPassword()
 	} else if a.currentPassword != nil {
+		a.currentPassword.SetName(name)
 		a.currentPassword.SetLogin(login)
 		a.currentPassword.SetPassword(passwordVal)
 	}
 
+	a.loadPasswords()
 	a.openPasswordView(a.currentPassword)
 }
 
@@ -453,10 +488,14 @@ func (a *App) SetCurrentPage(p int) {
 
 // getPasswordsListTitle возвращает заголовок для списка паролей
 func (a *App) getPasswordsListTitle() string {
-	if a.currentPage <= 1 {
-		return " [::b]Список паролей (Стр. 1)[::-] "
+	cachedMark := ""
+	if a.isPasswordsCached {
+		cachedMark = " [yellow][Локальная копия данных][-]"
 	}
-	return fmt.Sprintf(" [::b]Список паролей (Стр. %d)[::-] ", a.currentPage)
+	if a.currentPage <= 1 {
+		return fmt.Sprintf(" [::b]Список паролей (Стр. 1)%s[::-] ", cachedMark)
+	}
+	return fmt.Sprintf(" [::b]Список паролей (Стр. %d)%s[::-] ", a.currentPage, cachedMark)
 }
 
 // clearCreatePasswordFields очищает поля формы создания пароля

@@ -46,7 +46,6 @@ func New(key []byte) (*Service, error) {
 	// NewCipher создает блок шифрования
 	aesblock, err := aes.NewCipher(key)
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
 		return nil, fmt.Errorf("ошибка при создании cipher.Block: %w", err)
 	}
 

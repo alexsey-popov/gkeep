@@ -8,11 +8,9 @@ import (
 	"log/slog"
 
 	"github.com/alexsey-popov/gkeep/internal/models"
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
-// TextList получение списка текстовых записей
+// TextList получение записей
 func (rep *Repository) TextList(ctx context.Context, userID, name, page string) ([]*models.Text, error) {
 	// Подготавливаем шаблон запроса и дополняем его поиском и пагинацией
 	query := `SELECT id, user_id, name, text FROM texts WHERE user_id = $1`
@@ -21,54 +19,35 @@ func (rep *Repository) TextList(ctx context.Context, userID, name, page string) 
 
 	items, err := rep.Select[*models.Text](ctx, query, args...)
 	if err != nil {
-		rep.log.Error("Ошибка при получении списка текстовых записей", slog.Any("error", err))
-		return nil, ErrExec
+		return nil, err
 	}
 
 	return items, nil
 }
 
-// TextCreate создание новой записи с картой
+// TextCreate создание новой записи
 func (rep *Repository) TextCreate(ctx context.Context, item *models.Text) error {
-	// Выполняем запрос
+	// Выполняем запрос БД
 	query := `INSERT INTO texts (user_id, name, text) VALUES (:user_id, :name, :text) RETURNING id, user_id, name, text, created_at`
-	err := rep.Exec[*models.Text](ctx, query, item)
-
-	if err != nil {
-		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation && pgErr.ConstraintName == "idx_texts_name_user_id_unique" {
-			return ErrConflictUnique
-		}
-
-		rep.log.Error("ошибка при создании записи в БД", slog.Any("error", err))
-		return ErrExec
+	if err := rep.Exec[*models.Text](ctx, query, item); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-// TextUpdate обновление пароля по логину пользователя
+// TextUpdate обновление записи
 func (rep *Repository) TextUpdate(ctx context.Context, item *models.Text) error {
-	// Выполняем запрос
+	// Выполняем запрос а БД
 	query := `UPDATE texts SET name = :name, text = :text WHERE id = :id AND user_id = :user_id RETURNING id, user_id, name, text, created_at`
-	err := rep.Exec[*models.Text](ctx, query, item)
-
-	if err != nil {
-		// Если ошибка связана с уникальностью связки name-user_id, то выдаём спец сообщение и не логируем
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation && pgErr.ConstraintName == "idx_texts_name_user_id_unique" {
-			return ErrConflictUnique
-		}
-
-		rep.log.Error("ошибка при создании записи в БД", slog.Any("error", err))
-		return ErrExec
+	if err := rep.Exec[*models.Text](ctx, query, item); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-// TextDelete удаление записи пароля по идентификатору
+// TextDelete удаление записи
 func (rep *Repository) TextDelete(ctx context.Context, userID, id string) (*models.Text, error) {
 	var item models.Text
 

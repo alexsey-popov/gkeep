@@ -3,12 +3,15 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
 	"strconv"
 
 	"github.com/alexsey-popov/gkeep/internal/crypto"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,6 +19,7 @@ var (
 	ErrConflictUnique = errors.New("ошибка уникальности по полю в БД")
 	ErrPrepare        = errors.New("ошибка при подготовке запроса")
 	ErrExec           = errors.New("ошибка при выполнении запроса")
+	ErrNoRows         = errors.New("данные не найдены")
 	ErrEncrypt        = errors.New("ошибка при шифровании данных")
 	ErrDecrypt        = errors.New("ошибка при расшифровывании данных")
 )
@@ -69,18 +73,22 @@ func (rep *Repository) Select[T Cipherer](ctx context.Context, query string, arg
 	// Делаем запрос
 	err = rep.db.SelectContext(ctx, &items, query, args...)
 	if err != nil {
-		//rep.log.Error(ErrExec.Error(), slog.Any("error", err))
-		//return nil, ErrExec
-		return items, errors.Join(ErrExec, err)
+		rep.log.Error("Ошибка при совершении запроса",
+			slog.Any("error", err),
+			slog.String("query", query),
+			slog.Any("args", args),
+		)
+
+		return items, ErrExec
 	}
 
 	// Расшифровываем данные
 	for i := range items {
 		err = items[i].Decrypt(rep.cipher)
 		if err != nil {
-			//rep.log.Error(ErrDecrypt.Error(), slog.Any("error", err))
-			//return nil, ErrDecrypt
-			return items, errors.Join(ErrDecrypt, err)
+			rep.log.Error("Ошибка при расшифровывании данных", slog.Any("error", err))
+
+			return items, ErrDecrypt
 		}
 	}
 
@@ -91,28 +99,52 @@ func (rep *Repository) Select[T Cipherer](ctx context.Context, query string, arg
 func (rep *Repository) Exec[T Cipherer](ctx context.Context, query string, item T) error {
 	// Шифруем данные
 	if err := item.Encrypt(rep.cipher); err != nil {
-		//rep.log.Error(ErrEncrypt.Error(), slog.Any("error", err))
-		//return item, ErrEncrypt
-		return errors.Join(ErrEncrypt, err)
+		rep.log.Error("Ошибка при шифровании данных", slog.Any("error", err))
+
+		return ErrEncrypt
 	}
 
 	// Подготавливаем запрос
 	stmt, err := rep.db.PrepareNamed(query)
 	if err != nil {
-		return errors.Join(ErrPrepare, err)
+		rep.log.Error("Ошибка при формировании sql запроса", slog.Any("error", err))
+
+		return ErrPrepare
 	}
-	defer stmt.Close()
+	defer func() {
+		if err := stmt.Close(); err != nil {
+			rep.log.Error("Ошибка при закрытии подготовленного запроса", slog.Any("error", err))
+		}
+	}()
 
 	err = stmt.GetContext(ctx, item, item)
 	if err != nil {
-		return errors.Join(ErrExec, err)
+		// Если ошибка связана с sql.ErrNoRows, то выдаём спец сообщение и не логируем
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrNoRows
+		}
+
+		// Если ошибка связана с уникальностью, то выдаём спец сообщение и не логируем
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			return ErrConflictUnique
+		}
+
+		// Иначе логируем ошибку и выводим общий ответ
+		rep.log.Error("Ошибка при совершении запроса",
+			slog.Any("error", err),
+			slog.String("query", query),
+			slog.Any("item", item),
+		)
+
+		return ErrExec
 	}
 
 	// Расшифровываем данные
 	if err = item.Decrypt(rep.cipher); err != nil {
-		//rep.log.Error(ErrDecrypt.Error(), slog.Any("error", err))
-		//return item, ErrDecrypt
-		return errors.Join(ErrDecrypt, err)
+		rep.log.Error("Ошибка при расшифровывании данных", slog.Any("error", err))
+
+		return ErrDecrypt
 	}
 
 	return nil

@@ -35,14 +35,8 @@ func (h *Handler) PasswordList(ctx context.Context, in *proto.ListRequest) (*pas
 
 	pbList := make([]*password.Password, 0, len(items))
 	for _, item := range items {
-		// Переприсваивать уже не надо, но хуже от этого не будет
 		item := item
-		pbList = append(pbList, password.Password_builder{
-			Id:       &item.Id,
-			Name:     &item.Name,
-			Login:    &item.Login,
-			Password: &item.Password,
-		}.Build())
+		pbList = append(pbList, proto.ConvertPassword(item))
 	}
 
 	response.SetPassword(pbList)
@@ -81,14 +75,7 @@ func (h *Handler) PasswordCreate(ctx context.Context, in *password.CreateRequest
 		return &response, status.Error(codes.Internal, "ошибка при создании записи")
 	}
 
-	response.SetPassword(
-		password.Password_builder{
-			Id:       &pass.Id,
-			Name:     &pass.Name,
-			Login:    &pass.Login,
-			Password: &pass.Password,
-		}.Build(),
-	)
+	response.SetPassword(proto.ConvertPassword(&pass))
 
 	return &response, nil
 }
@@ -116,24 +103,16 @@ func (h *Handler) PasswordUpdate(ctx context.Context, in *password.UpdateRequest
 	}
 
 	if err = h.rep.PasswordUpdate(ctx, &pass); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return &response, status.Error(codes.NotFound, "запись не найдена")
-		}
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
+		} else if errors.Is(err, sql.ErrNoRows) {
+			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}
 
 		return &response, status.Error(codes.Internal, "ошибка при обновлении записи")
 	}
 
-	response.SetPassword(
-		password.Password_builder{
-			Id:       &pass.Id,
-			Name:     &pass.Name,
-			Login:    &pass.Login,
-			Password: &pass.Password,
-		}.Build(),
-	)
+	response.SetPassword(proto.ConvertPassword(&pass))
 
 	return &response, nil
 }
@@ -160,14 +139,7 @@ func (h *Handler) PasswordDelete(ctx context.Context, in *proto.IDRequest) (*pas
 		return &response, status.Error(codes.Internal, "ошибка при удалении записи")
 	}
 
-	response.SetPassword(
-		password.Password_builder{
-			Id:       &item.Id,
-			Name:     &item.Name,
-			Login:    &item.Login,
-			Password: &item.Password,
-		}.Build(),
-	)
+	response.SetPassword(proto.ConvertPassword(item))
 
 	return &response, nil
 }

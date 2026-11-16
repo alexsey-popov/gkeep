@@ -46,9 +46,7 @@ func (a *App) initFilesListView() {
 		SetSelectedFunc(a.nextFilePage)
 
 	refreshBtn := tview.NewButton("Обновить").
-		SetSelectedFunc(func() {
-			a.loadFiles()
-		})
+		SetSelectedFunc(a.handleRefreshFiles)
 
 	backBtn := tview.NewButton("Назад").
 		SetSelectedFunc(func() {
@@ -179,6 +177,18 @@ func (a *App) openFileList() {
 	a.pages.SwitchToPage("file_list")
 }
 
+// handleRefreshFiles выполняет обновление списка файлов и отображает уведомление
+func (a *App) handleRefreshFiles() {
+	a.loadFiles()
+	if !a.pages.HasPage("error_modal") {
+		if a.isFilesCached {
+			a.showInfoModal("Данные обновлены из кеша", "file_list")
+		} else {
+			a.showInfoModal("Данные обновлены", "file_list")
+		}
+	}
+}
+
 // loadFiles выполняет запрос к серверу для получения списка файлов пользователя
 func (a *App) loadFiles() {
 	if a.session == nil || a.session.Token == "" {
@@ -198,12 +208,29 @@ func (a *App) loadFiles() {
 
 	resp, err := a.usersClient.FileList(ctx, req)
 	if err != nil {
+		// При ошибке сервера пробуем загрузить из кэша
+		cached, cacheErr := a.loadCachedFiles(a.currentFilePage)
+		if cacheErr == nil && cached != nil {
+			a.isFilesCached = true
+			a.currentFiles = cached
+			a.renderFilesList()
+			return
+		}
+
+		a.isFilesCached = false
 		st := status.Convert(err)
 		a.showErrorModal(fmt.Sprintf("Ошибка получения списка файлов:\n%s", st.Message()), "data_types")
 		return
 	}
 
+	a.isFilesCached = false
 	a.currentFiles = resp.GetFiles()
+	_ = a.saveCachedFiles(a.currentFilePage, a.currentFiles)
+	a.renderFilesList()
+}
+
+// renderFilesList обновляет визуальный список файлов
+func (a *App) renderFilesList() {
 	a.filesList.Clear()
 	a.filesFlex.SetTitle(a.getFilesListTitle())
 
@@ -225,6 +252,9 @@ func (a *App) loadFiles() {
 			shortcut = '0'
 		}
 		secondary := fmt.Sprintf("%s (%s)", itemCopy.GetFilename(), formatFileSize(itemCopy.GetSize()))
+		if a.isFilesCached {
+			secondary += " [yellow][Локальная копия данных][-]"
+		}
 		a.filesList.AddItem(
 			itemCopy.GetName(),
 			secondary,
@@ -243,11 +273,17 @@ func (a *App) openFileView(f *pbFile.File) {
 	}
 	a.currentFile = f
 
+	cachedMark := ""
+	if a.isFilesCached {
+		cachedMark = "  [yellow](Локальная копия данных)[-]\n\n"
+	}
+
 	info := fmt.Sprintf(
-		"\n  [yellow]Название:[white]          %s\n\n"+
+		"\n%s  [yellow]Название:[white]          %s\n\n"+
 			"  [yellow]Имя файла:[white]         %s\n\n"+
 			"  [yellow]Размер:[white]            %s\n\n"+
 			"  [yellow]Контрольная сумма:[white] %s\n",
+		cachedMark,
 		f.GetName(),
 		f.GetFilename(),
 		formatFileSize(f.GetSize()),
@@ -590,12 +626,16 @@ func (a *App) SetCurrentFilePage(p int) {
 	a.currentFilePage = p
 }
 
-// getTextsListTitle возвращает заголовок для списка записей
+// getFilesListTitle возвращает заголовок для списка записей
 func (a *App) getFilesListTitle() string {
-	if a.currentFilePage <= 1 {
-		return " [::b]Список файлов (Стр. 1)[::-] "
+	cachedMark := ""
+	if a.isFilesCached {
+		cachedMark = " [yellow][Локальная копия данных][-]"
 	}
-	return fmt.Sprintf(" [::b]Список файлов (Стр. %d)[::-] ", a.currentFilePage)
+	if a.currentFilePage <= 1 {
+		return fmt.Sprintf(" [::b]Список файлов (Стр. 1)%s[::-] ", cachedMark)
+	}
+	return fmt.Sprintf(" [::b]Список файлов (Стр. %d)%s[::-] ", a.currentFilePage, cachedMark)
 }
 
 // clearUploadFileFields очищает поля формы загрузки файла

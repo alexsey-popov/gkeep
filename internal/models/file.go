@@ -10,14 +10,14 @@ import (
 
 // File Файл
 type File struct {
-	Id          string    `db:"id"`
-	UserId      string    `db:"user_id"`
-	Name        string    `db:"name" validate:"required,min=1,max=255" label:"Название"`
-	Filename    string    `db:"filename" validate:"required,min=1,max=255" label:"Название файла"`
-	StoragePath string    `db:"storage_path" label:"Путь до файла"`
-	Size        int64     `db:"size" label:"Размер файла"`
-	Checksum    string    `db:"checksum"`
-	CreatedAt   time.Time `db:"created_at"`
+	Id          string    `json:"id" db:"id"`
+	UserId      string    `json:"user_id" db:"user_id"`
+	Name        string    `json:"name" db:"name" validate:"required,min=1,max=255" label:"Название"`
+	Filename    string    `json:"filename" db:"filename" validate:"required,min=1,max=255" label:"Название файла"`
+	StoragePath string    `json:"storage_path" db:"storage_path" label:"Путь до файла"`
+	Size        int64     `json:"size" db:"size" label:"Размер файла"`
+	Checksum    string    `json:"checksum" db:"checksum"`
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
 }
 
 // Encrypt Шифрование чувствительных данных

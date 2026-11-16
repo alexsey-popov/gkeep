@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"path/filepath"
 	"testing"
 
 	api "github.com/alexsey-popov/gkeep/proto"
@@ -50,6 +51,10 @@ func TestApp_Cards(t *testing.T) {
 			num := in.GetNumber()
 			exp := in.GetExpired()
 			code := in.GetCode()
+			name1 = name
+			num1 = num
+			exp1 = exp
+			code1 = code
 			resp := &pbCard.Response{}
 			resp.SetCard(pbCard.Card_builder{
 				Id:      &id,
@@ -97,9 +102,12 @@ func TestApp_Cards(t *testing.T) {
 
 		app.openCardEdit(app.currentCards[0])
 		assert.Equal(t, "Депозитарий солёных огурцов", app.editCardNameField.GetText())
+		app.editCardNameField.SetText("Карта для огурцов")
 		app.editCardExpiredField.SetText("0130")
 		app.handleCardUpdate()
 		assert.Equal(t, "0130", app.currentCard.GetExpired())
+		assert.Equal(t, "Карта для огурцов", app.currentCard.GetName())
+		assert.Equal(t, "Карта для огурцов", app.currentCards[0].GetName())
 	})
 
 	t.Run("positive - удаление карты", func(t *testing.T) {
@@ -196,6 +204,7 @@ func TestApp_CardPagination(t *testing.T) {
 			},
 		}
 		errApp := NewApp(errMockClient)
+		errApp.SetCacheFilePath(filepath.Join(t.TempDir(), "nonexistent.cache"))
 		errApp.session = &Session{Token: "test-token", UserID: "uid-1", Login: "user1"}
 		errApp.loadCards()
 		assert.True(t, errApp.pages.HasPage("error_modal"))

@@ -233,6 +233,10 @@ func (a *App) handleLogout() {
 	a.currentFiles = nil
 	a.currentFile = nil
 	a.currentFilePage = 1
+	a.isPasswordsCached = false
+	a.isCardsCached = false
+	a.isTextsCached = false
+	a.isFilesCached = false
 	a.clearLoginFields()
 	a.clearRegisterFields()
 	a.clearCreatePasswordFields()

@@ -323,13 +323,14 @@ func TestApp_FilePagination(t *testing.T) {
 		assert.Equal(t, "1", requestedPages[0])
 	})
 
-	t.Run("positive - загрузка списка файлов", func(t *testing.T) {
+	t.Run("negative - ошибка при загрузке списка файлов", func(t *testing.T) {
 		errMockClient := &mockUsersClient{
 			fileListFunc: func(ctx context.Context, in *api.ListRequest, opts ...grpc.CallOption) (*pbFile.ListResponse, error) {
 				return nil, status.Error(codes.Internal, "storage error")
 			},
 		}
 		errApp := NewApp(errMockClient)
+		errApp.SetCacheFilePath(filepath.Join(t.TempDir(), "nonexistent.cache"))
 		errApp.session = &Session{Token: "test-token", UserID: "uid-1", Login: "user1"}
 		errApp.loadFiles()
 		assert.True(t, errApp.pages.HasPage("error_modal"))

@@ -35,15 +35,8 @@ func (h *Handler) CardList(ctx context.Context, in *proto.ListRequest) (*card.Li
 
 	pbList := make([]*card.Card, 0, len(items))
 	for _, item := range items {
-		// Переприсваивать уже не надо, но хуже от этого не будет
 		item := item
-		pbList = append(pbList, card.Card_builder{
-			Id:      &item.Id,
-			Name:    &item.Name,
-			Number:  &item.Number,
-			Expired: &item.Expired,
-			Code:    &item.Code,
-		}.Build())
+		pbList = append(pbList, proto.ConvertCard(item))
 	}
 
 	response.SetCard(pbList)
@@ -80,15 +73,7 @@ func (h *Handler) CardCreate(ctx context.Context, in *card.CreateRequest) (*card
 		return &response, status.Error(codes.Internal, "ошибка при создании записи")
 	}
 
-	response.SetCard(
-		card.Card_builder{
-			Id:      &item.Id,
-			Name:    &item.Name,
-			Number:  &item.Number,
-			Expired: &item.Expired,
-			Code:    &item.Code,
-		}.Build(),
-	)
+	response.SetCard(proto.ConvertCard(&item))
 
 	return &response, nil
 }
@@ -120,22 +105,14 @@ func (h *Handler) CardUpdate(ctx context.Context, in *card.UpdateRequest) (*card
 	if err = h.rep.CardUpdate(ctx, item); err != nil {
 		if errors.Is(err, repository.ErrConflictUnique) {
 			return &response, status.Error(codes.AlreadyExists, "запись с таким названием уже существует")
-		}
-		if errors.Is(err, sql.ErrNoRows) {
+		} else if errors.Is(err, sql.ErrNoRows) {
 			return &response, status.Error(codes.NotFound, "запись не найдена")
 		}
+
 		return &response, status.Error(codes.Internal, "ошибка при обновлении записи")
 	}
 
-	response.SetCard(
-		card.Card_builder{
-			Id:      &item.Id,
-			Name:    &item.Name,
-			Number:  &item.Number,
-			Expired: &item.Expired,
-			Code:    &item.Code,
-		}.Build(),
-	)
+	response.SetCard(proto.ConvertCard(item))
 
 	return &response, nil
 }
@@ -162,15 +139,7 @@ func (h *Handler) CardDelete(ctx context.Context, in *proto.IDRequest) (*card.Re
 		return &response, status.Error(codes.Internal, "ошибка при удалении записи")
 	}
 
-	response.SetCard(
-		card.Card_builder{
-			Id:      &item.Id,
-			Name:    &item.Name,
-			Number:  &item.Number,
-			Expired: &item.Expired,
-			Code:    &item.Code,
-		}.Build(),
-	)
+	response.SetCard(proto.ConvertCard(item))
 
 	return &response, nil
 }

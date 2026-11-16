@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"path/filepath"
 	"testing"
 
 	api "github.com/alexsey-popov/gkeep/proto"
@@ -46,6 +47,8 @@ func TestApp_Texts(t *testing.T) {
 			id := in.GetId()
 			name := in.GetName()
 			txt := in.GetText()
+			name1 = name
+			val1 = txt
 			resp := &pbText.Response{}
 			resp.SetText(pbText.Text_builder{
 				Id:   &id,
@@ -89,9 +92,12 @@ func TestApp_Texts(t *testing.T) {
 
 		app.openTextEdit(app.currentTexts[0])
 		assert.Equal(t, "My Secret Note", app.editTextNameField.GetText())
+		app.editTextNameField.SetText("Updated Secret Note")
 		app.editTextValField.SetText("Updated secret note content")
 		app.handleTextUpdate()
 		assert.Equal(t, "Updated secret note content", app.currentText.GetText())
+		assert.Equal(t, "Updated Secret Note", app.currentText.GetName())
+		assert.Equal(t, "Updated Secret Note", app.currentTexts[0].GetName())
 	})
 
 	t.Run("positive - удаление записи", func(t *testing.T) {
@@ -188,6 +194,7 @@ func TestApp_TextPagination(t *testing.T) {
 			},
 		}
 		errApp := NewApp(errMockClient)
+		errApp.SetCacheFilePath(filepath.Join(t.TempDir(), "nonexistent.cache"))
 		errApp.session = &Session{Token: "test-token", UserID: "uid-1", Login: "user1"}
 		errApp.loadTexts()
 		assert.True(t, errApp.pages.HasPage("error_modal"))
